@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  jupyterlab:
+    image:
+      ${image_name}
+    container_name: ${container_id}
+    ports:
+      - "${jupyter_port}:${jupyter_port}"
+    privileged: true
+    tty: true
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - container_id=${container_id}
+
+      - project_git_url=${project_git_url}
+      - project_branch=${project_branch}
+      - project_name=${project_name}
+
+      - pypi_repo=https://pypi.tuna.tsinghua.edu.cn/simple
+
+      - uid=${uid}
+      - keycloak_server_addr=${keycloak_server_addr}
+      - keycloak_realm=${keycloak_realm}
+      - client_id=${client_id}
+      - client_secret=${client_secret}
+      - scope=openid+email
+      - redirect_url=${container_login_url}
+
+      - kafka_server=${kafka_server}
+      - kafka_topic=${kafka_topic}
+
+      - frp_type = tcp
+      - frp_local_ip = 127.0.0.1
+      - frp_local_port = ${jupyter_port}
+      - frp_server_addr = ${frp_server_addr}
+      - frp_server_port = ${frp_server_port}
+      - frp_remote_port = ${frp_remote_port}
+
+      - CPU=${cpus}
+      - MEM=${mem}
+    entrypoint: /opt/init_container.sh
+    ${runtime}
+    deploy:
+      resources:
+        limits:
+          cpus: "${cpus}"
+          memory: "${mem}G"

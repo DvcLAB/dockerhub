@@ -1,0 +1,54 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Java template
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+*.pem
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+#/src/main/resources/conf/
+/core.iws
+/core.ipr
+/core.iml
+/.gradle/
+/.idea/
+/.idea/core.iml
+/.idea/libraries/
+/.idea/modules/
+/src/main/dist/
+build/
+tmp/
+*.iml
+out/
+gradle.properties
+colorHue.png
+
+gradlew
+gradlew.bat
+gradle/
+/www/
+
+dev.conf
+test.conf
+prod.conf
+src/main/resources/conf/*.conf
+pk/

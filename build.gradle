@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'idea'
+    id 'application'
+}
+
+group 'com.dvclab'
+version '1.0.0'
+
+sourceCompatibility = 1.11
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+mainClassName=""
+applicationDefaultJvmArgs = [
+        "-Xms200m",
+        "-Xmx4000m",
+        "-Dsun.net.inetaddr.ttl=-1",
+        "-Djava.net.preferIPv4Stack=true",
+        "-Dlog4j.configurationFile=log4j2.xml",
+        "-Dlog4j.skipJansi=false",
+        "-Dfile.encoding=UTF8",
+        "-Djdk.http.auth.tunneling.disabledSchemes=\"\""
+]
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+    maven {
+        url "https://reid.red:233/artifactory/gradle-dev-local"
+        credentials {
+            username = artifactory_username
+            password = artifactory_password
+        }
+    }
+}
+
+task copyFiles(){
+    copy {
+        from fileTree('src/main/resources')
+        into 'src/main/dist'
+    }
+    copy {
+        from fileTree('www')
+        into 'src/main/dist/www'
+    }
+}
+
+jar.dependsOn copyFiles
+
+dependencies {
+    compile 'one.rewind:raw-data:2.0.9.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
