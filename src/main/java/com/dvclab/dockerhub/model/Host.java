@@ -19,14 +19,14 @@ public class Host extends DockerHost {
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean gpu_enabled = false;
 
-	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
-	public boolean user_host = false;
-
 	@DatabaseField(dataType = DataType.STRING, width = 64, indexName = "uid-idx")
 	public String uid;
 
+	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
+	public boolean user_host = false;
+
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
-	public String private_key;
+	public String fingerprint;
 
 	/**
 	 *
@@ -36,13 +36,13 @@ public class Host extends DockerHost {
 	/**
 	 *
 	 * @param uid
-	 * @param private_key
+	 * @param fingerprint
 	 */
-	public Host(String uid, String private_key) {
+	public Host(String uid, String fingerprint) {
 		this.uid = uid;
-		this.private_key = private_key;
+		this.fingerprint = fingerprint;
 		this.user_host = true;
-		this.id = StringUtil.md5(uid + "::" + private_key);
+		this.id = StringUtil.md5(uid + "::" + fingerprint);
 	}
 
 	/**

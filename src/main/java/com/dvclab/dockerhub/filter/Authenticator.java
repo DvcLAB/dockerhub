@@ -7,7 +7,6 @@ import com.sun.jersey.api.NotFoundException;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.exception.ModelException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.http.ProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Token 验证以及生成
@@ -70,15 +68,15 @@ public class Authenticator implements Filter {
 
 		String token = getToken(q);
 
-		User user = UserCache.TOKEN_USERS.get(token);
+		String uid = UserCache.TOKEN_UID.get(token);
 
-		if(user == null) {
+		if(uid == null) {
 			Pair<User, Date> verified_info = KeycloakAdapter.getInstance().verifyAccessToken(token);
-
-			user = UserCache.update(token, verified_info.getLeft(), verified_info.getRight());
+			User user = UserCache.update(token, verified_info.getLeft(), verified_info.getRight());
+			q.session().attribute("uid", user.id);
 		}
-
-		q.session().attribute("uid", user.id);
-		q.session().attribute("roles", user.roles);
+		else {
+			q.session().attribute("uid", uid);
+		}
 	}
 }

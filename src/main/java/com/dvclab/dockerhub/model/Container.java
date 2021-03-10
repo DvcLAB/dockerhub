@@ -53,7 +53,10 @@ public class Container extends ModelD {
 	public String jupyter_url;
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
-	public String tunnel_host;
+	public String tunnel_wan_addr;
+
+	@DatabaseField(dataType = DataType.STRING, width = 1024)
+	public String tunnel_lan_addr;
 
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)
 	public int tunnel_port;

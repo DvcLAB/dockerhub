@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration status="INFO">
+
+	<appenders>
+	
+		<File name="log" fileName="log/common.log" append="false">
+			<PatternLayout
+				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%class{1}:%L] %M - %msg%xEx%n" />
+		</File>
+		
+		<Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout charset="UTF-8"
+						   pattern="%highlight{%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level[%t] [%class{1}:%L] %M - %msg%xEx%n}{FATAL=Bright red, ERROR=Bright red, WARN=yellow, INFO=Normal, DEBUG=green, TRACE=blue}" />
+			<!--https://logging.apache.org/log4j/2.x/manual/layouts.html-->
+        </Console>
+
+	</appenders>
+
+	<loggers>
+		<root level="trace">
+			<appender-ref ref="Console"/>
+			<appender-ref ref="log" />
+		</root>
+	</loggers>
+
+</configuration>

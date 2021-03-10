@@ -4,13 +4,10 @@ import com.dvclab.dockerhub.model.User;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.exception.ModelException;
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.http.auth.AuthenticationException;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,14 +22,20 @@ public class UserCache {
 				new ThreadFactoryBuilder().setNameFormat("UserCacheUpdater-%d").build());
 	}
 
-	public static Map<String, User> TOKEN_USERS = new HashMap<>();
+	public static Map<String, String> TOKEN_UID = new HashMap<>();
+	public static Map<String, User> USERS = new HashMap<>();
 
 	/**
 	 * 更新用户缓存信息
+	 *
 	 * @param token
-	 * @param info
+	 * @param user_info
+	 * @param expiration
+	 * @return
 	 * @throws DBInitException
 	 * @throws SQLException
+	 * @throws ModelException.ClassNotEqual
+	 * @throws IllegalAccessException
 	 */
 	public static User update(String token, User user_info, Date expiration) throws DBInitException, SQLException, ModelException.ClassNotEqual, IllegalAccessException {
 
@@ -48,13 +51,14 @@ public class UserCache {
 		user.avatar_url = user_info.avatar_url;
 		user.roles = user_info.roles;
 
-		TOKEN_USERS.put(token, user);
+		TOKEN_UID.put(token, user.id);
+		USERS.put(user.id, user);
 
 		long delay = expiration.getTime() - System.currentTimeMillis();
 
 		// 超过有效期清空用户token缓存
 		ses.schedule(() -> {
-			TOKEN_USERS.remove(token);
+			USERS.remove(TOKEN_UID.remove(token));
 		}, delay, TimeUnit.SECONDS);
 
 		user.upsert();
