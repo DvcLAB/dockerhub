@@ -4,11 +4,15 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.annotation.DBName;
+import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.txt.StringUtil;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -35,6 +39,11 @@ public class Project extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
 
+	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	public List<String> dataset_ids = new ArrayList<>();
+
+	public List<Dataset> datasets;
+
 	public Project() {}
 
 	/**
@@ -43,9 +52,26 @@ public class Project extends ModelD {
 	 * @param url
 	 * @param desc
 	 */
-	public Project(String name, String url, String desc) {
+	public Project(String name, String url, String desc, String cover_img_url, List<String> dataset_urls) throws DBInitException, SQLException {
+
 		this.name = name;
 		this.url = url;
 		this.desc = desc;
+		this.cover_img_url = cover_img_url;
+		this.genId();
+
+		if(! dataset_urls.isEmpty()) {
+			this.datasets = Dataset.getByUrlList(dataset_urls);
+			this.dataset_ids = this.datasets.stream().map(ds -> ds.id).collect(Collectors.toList());
+		}
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public Project genId() {
+		id = StringUtil.md5(url);
+		return this;
 	}
 }

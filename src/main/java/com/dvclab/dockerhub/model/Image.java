@@ -7,10 +7,12 @@ import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.txt.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -24,7 +26,10 @@ public class Image extends ModelD {
 		GPU
 	}
 
-	@DatabaseField(dataType = DataType.STRING, width = 128)
+	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
+	public String uid;
+
+	@DatabaseField(dataType = DataType.STRING, width = 128, indexName = "n-f")
 	public String name;
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
@@ -33,7 +38,7 @@ public class Image extends ModelD {
 	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT", width = 16)
 	public List<Type> types = new ArrayList<>();
 
-	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
+	@DatabaseField(dataType = DataType.STRING, width = 256, indexName = "n-f")
 	public String framework;
 
 	public Image() {}
@@ -45,9 +50,20 @@ public class Image extends ModelD {
 	 * @param types
 	 */
 	public Image(String name, String framework, Type... types) {
-		this.id = name;
+
 		this.name = name;
 		this.types = Arrays.asList(types);
 		this.framework = framework;
+		this.genId();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public Image genId() {
+		id = StringUtil.md5(name + "::" + framework + "::"
+				+ this.types.stream().map(t->t.name()).collect(Collectors.joining(",")));
+		return this;
 	}
 }

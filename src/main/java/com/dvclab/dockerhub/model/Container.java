@@ -26,17 +26,17 @@ public class Container extends ModelD {
 	public String uid;
 
 	@DatabaseField(dataType = DataType.STRING, width = 64)
-	public int host_id;
+	public String host_id;
 
 	@DatabaseField(dataType = DataType.BOOLEAN)
 	public boolean user_host = false;
 
 	// CPU核数
-	@DatabaseField(dataType = DataType.INTEGER, width = 4, canBeNull = false)
+	@DatabaseField(dataType = DataType.FLOAT, width = 4, canBeNull = false)
 	public float cpus = 2;
 
 	// 内存数量，单位GiB
-	@DatabaseField(dataType = DataType.INTEGER, width = 4, canBeNull = false)
+	@DatabaseField(dataType = DataType.FLOAT, width = 4, canBeNull = false)
 	public float mem = 4;
 
 	// 使用GPU设备编号

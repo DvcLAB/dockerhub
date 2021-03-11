@@ -1,23 +1,22 @@
 package com.dvclab.dockerhub.route;
 
-import com.dvclab.dockerhub.auth.KeycloakAdapter;
-import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.cache.UserCache;
-import com.dvclab.dockerhub.model.*;
+import com.dvclab.dockerhub.model.Container;
+import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 import one.rewind.db.Daos;
-import one.rewind.util.FileUtil;
 import spark.Route;
 
 import java.util.List;
 
-import static com.dvclab.dockerhub.cache.ContainerCache.createDockerComposeConfig;
-
 public class ContainerRoute {
 
+	/**
+	 * 构建容器DockerCompose配置文件
+	 */
 	public static Route createContainerDockerComposeConfig = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
@@ -33,7 +32,8 @@ public class ContainerRoute {
 
 		try {
 			return Msg.success(
-					createDockerComposeConfig(uid, image_id, project_id, project_branch, dataset_id, cpus, mem, gpu)
+					DockerHubService.getInstance().containerFactory
+							.createDockerComposeConfig(uid, image_id, project_id, project_branch, dataset_id, cpus, mem, gpu)
 			);
 		}
 		catch (Exception e) {
@@ -43,6 +43,9 @@ public class ContainerRoute {
 		}
 	};
 
+	/**
+	 * 获取容器列表
+	 */
 	public static Route listContainers = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
@@ -53,23 +56,24 @@ public class ContainerRoute {
 		try {
 
 			Dao<Container, ?> dao = Daos.get(Container.class);
-			QueryBuilder<Container, ?> containerQueryBuilder = dao.queryBuilder();
-			Where<Container, ?> containerWhere = containerQueryBuilder.where();
+			QueryBuilder<Container, ?> qb = dao.queryBuilder()
+					.offset((page-1)*size).limit(size).orderBy("update_time", false);
+			long total = dao.queryBuilder().countOf();
 
 			// 管理员查询分支
 			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
-				containerWhere.like("id", query + "%")
+				qb.where().like("id", query + "%")
 						.or().like("uid", query + "%");
 			}
 			// 一般用户查询分支
 			else {
-				containerWhere.like("id", query + "%")
+				qb.where().like("id", query + "%")
 						.and().eq("uid", uid);
 			}
 
+			List<Container> list = qb.query();
 
-
-			return null;
+			return Msg.success(list, size, page, total);
 		}
 		catch (Exception e) {
 
@@ -77,7 +81,4 @@ public class ContainerRoute {
 			return Msg.failure(e);
 		}
 	};
-
-
-
 }

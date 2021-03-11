@@ -51,4 +51,6 @@ dev.conf
 test.conf
 prod.conf
 src/main/resources/conf/*.conf
-pk/
+keys/
+
+cacerts

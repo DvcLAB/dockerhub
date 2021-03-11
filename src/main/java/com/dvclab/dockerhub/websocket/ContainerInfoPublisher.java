@@ -1,5 +1,6 @@
 package com.dvclab.dockerhub.websocket;
 
+import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.model.Container;
 import com.dvclab.dockerhub.route.Routes;
@@ -33,7 +34,7 @@ public class ContainerInfoPublisher {
 
 		String host_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "host_id");
 
-		if(host_id != null && ContainerCache.containers.containsKey(host_id)) {
+		if(host_id != null && DockerHubService.getInstance().containerFactory.containers.containsKey(host_id)) {
 
 			Routes.logger.info(host_id);
 
