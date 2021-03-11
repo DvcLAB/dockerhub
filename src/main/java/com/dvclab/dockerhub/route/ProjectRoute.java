@@ -60,7 +60,7 @@ public class ProjectRoute {
 
 		try {
 
-			Image obj = Image.fromJSON(source, Image.class);
+			Project obj = Project.fromJSON(source, Project.class);
 			obj.genId();
 			obj.uid = uid;
 			if(obj.insert()) {
@@ -72,7 +72,7 @@ public class ProjectRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Create Image[{}] error, ", source, e);
+			Routes.logger.error("Create Project[{}] error, ", source, e);
 			return Msg.failure(e);
 		}
 	};
@@ -81,14 +81,14 @@ public class ProjectRoute {
 	/**
 	 * 获取镜像
 	 */
-	public static Route getDataset = (q, a) -> {
+	public static Route getProject = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
 
 		try {
 
-			Image obj = Image.getById(Image.class, id);
+			Project obj = Project.getById(Project.class, id);
 			if(obj != null) {
 				return Msg.success(obj);
 			}
@@ -98,7 +98,7 @@ public class ProjectRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Get Image[{}] error, ", id, e);
+			Routes.logger.error("Get Project[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};
@@ -106,7 +106,7 @@ public class ProjectRoute {
 	/**
 	 * 更新镜像
 	 */
-	public static Route updateDataset = (q, a) -> {
+	public static Route updateProject = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
@@ -114,7 +114,7 @@ public class ProjectRoute {
 
 		try {
 
-			Image obj = Image.fromJSON(source, Image.class);
+			Project obj = Project.fromJSON(source, Image.class);
 			obj.genId();
 
 			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
@@ -128,7 +128,7 @@ public class ProjectRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Update Dataset[{}] error, ", id, e);
+			Routes.logger.error("Update Project[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};
