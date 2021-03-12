@@ -2,19 +2,34 @@ package com.dvclab.dockerhub.util;
 
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Project;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.io.requester.basic.BasicRequester;
 import one.rewind.io.requester.proxy.Proxy;
 import one.rewind.io.requester.proxy.ProxyImpl;
 import one.rewind.io.requester.task.Task;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHeaders;
+import org.apache.http.auth.UsernamePasswordCredentials;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Map;
 
 public class ResourceInfoFetcher {
 
 	public static Proxy proxy = new ProxyImpl("10.0.0.11", 11111, null, null);
+
+	public static String docker_auth_service_addr = "registry.dvclab.com:61768";
+	public static String docker_auth_service_name = "Docker registry";
+	public static String docker_auth_admin = "root";
+	public static String docker_auth_admin_password = "hanwuji412";
 
 	/**
 	 *
@@ -62,5 +77,31 @@ public class ResourceInfoFetcher {
 		if(desc.length() == 0) throw new Exception("Readme file not exist");
 
 		return new Dataset(name, url, desc, cover_img_url);
+	}
+
+	/**
+	 *
+	 * @param scope
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public static String getDockerAuthToken(String scope) throws URISyntaxException, IOException {
+
+		String url = "https://" + docker_auth_service_addr + "/auth?service=" + URLEncoder.encode(docker_auth_service_name, StandardCharsets.UTF_8) + "&scope=" + scope;
+
+		UsernamePasswordCredentials credentials
+				= new UsernamePasswordCredentials("user1", "user1Pass");
+
+		String auth = docker_auth_admin + ":" + docker_auth_admin_password;
+		byte[] encodedAuth = Base64.encodeBase64(
+				auth.getBytes(StandardCharsets.ISO_8859_1));
+		String authHeader = "Basic " + new String(encodedAuth);
+
+		Task t = new Task(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, authHeader), null, null, null);
+		BasicRequester.req(t);
+
+		Map<String, String> map = new ObjectMapper().readValue(t.r.getText(), Map.class);
+		return map.get("access_token");
 	}
 }

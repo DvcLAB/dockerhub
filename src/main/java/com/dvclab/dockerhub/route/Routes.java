@@ -3,7 +3,6 @@ package com.dvclab.dockerhub.route;
 import com.dvclab.dockerhub.filter.Authenticator;
 import com.dvclab.dockerhub.serialization.JsonTransformer;
 import com.dvclab.dockerhub.serialization.Msg;
-import com.dvclab.dockerhub.util.GeoConnectionResolver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spark.Response;
@@ -44,7 +43,7 @@ public class Routes {
 
 		Authenticator authenticator = new Authenticator();
 
-		JsonTransformer jsonTransformer = new JsonTransformer();
+		JsonTransformer transformer = new JsonTransformer();
 
 		logger.info("Init routes ...");
 
@@ -113,5 +112,46 @@ public class Routes {
 		 * 404的处理
 		 */
 		notFound((q, a) -> new Msg(Msg.Code.NOT_FOUND, null, null).toJSON());
+
+		// 主机列表 TODO 未完成
+		path("/hosts", () -> {});
+
+		// 用户列表 TODO 未完成
+		path("/users", () -> {});
+
+		// 镜像
+		path("/images", () -> {
+			get("", ImageRoute.listImages, transformer);
+			post("/:id", ImageRoute.updateImage, transformer);
+			get("/:id", ImageRoute.getImage, transformer);
+			delete("/:id", ImageRoute.deleteImage, transformer);
+		});
+
+		// 项目
+		path("/projects", () -> {
+			get("_info", ProjectRoute.getInfo, transformer);
+			get("", ProjectRoute.listProjects, transformer);
+			put("", ProjectRoute.createProject, transformer);
+			get("/:id", ProjectRoute.getProject, transformer);
+			post("/:id", ProjectRoute.updateProject, transformer);
+			delete("/:id", ProjectRoute.deleteProject, transformer);
+		});
+
+		// 数据集
+		path("/datasets", () -> {
+			get("_info", DatasetRoute.getInfo, transformer);
+			get("", DatasetRoute.listDatasets, transformer);
+			put("", DatasetRoute.createDataset, transformer);
+			get("/:id", DatasetRoute.getDataset, transformer);
+			post("/:id", DatasetRoute.updateDataset, transformer);
+			delete("/:id", DatasetRoute.deleteDataset, transformer);
+		});
+
+		// 容器
+		path("/containers", () -> {
+			get("_docker_compose", ContainerRoute.createContainerDockerComposeConfig, transformer);
+			get("", ContainerRoute.listContainers, transformer);
+			get("/:id", ContainerRoute.getContainer, transformer);
+		});
 	}
 }

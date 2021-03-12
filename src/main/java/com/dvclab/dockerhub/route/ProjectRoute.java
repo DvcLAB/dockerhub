@@ -136,7 +136,7 @@ public class ProjectRoute {
 	/**
 	 *
 	 */
-	public static Route deleteDataset = (q, a) -> {
+	public static Route deleteProject = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
@@ -146,12 +146,12 @@ public class ProjectRoute {
 
 		try {
 
-			Dataset.deleteById(Dataset.class, id);
+			Project.deleteById(Project.class, id);
 			return Msg.success();
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Delete Dataset[{}] error, ", id, e);
+			Routes.logger.error("Delete Project[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};

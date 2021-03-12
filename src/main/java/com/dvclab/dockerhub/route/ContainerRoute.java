@@ -3,6 +3,7 @@ package com.dvclab.dockerhub.route;
 import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Container;
+import com.dvclab.dockerhub.model.Image;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.j256.ormlite.dao.Dao;
@@ -78,6 +79,32 @@ public class ContainerRoute {
 		catch (Exception e) {
 
 			Routes.logger.error("Unable create container, uid[{}], ", uid, e);
+			return Msg.failure(e);
+		}
+	};
+
+
+	/**
+	 * 获取镜像
+	 */
+	public static Route getContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+
+			Container obj = Container.getById(Container.class, id);
+			if(obj != null) {
+				return Msg.success(obj);
+			}
+			else {
+				return new Msg(Msg.Code.NOT_FOUND, null, null);
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Get Container[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};

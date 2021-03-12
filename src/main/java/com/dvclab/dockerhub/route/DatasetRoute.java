@@ -18,12 +18,12 @@ import java.util.List;
 /**
  * 数据集路由
  */
-public class DataSetRoute {
+public class DatasetRoute {
 
 	/**
 	 * 获取数据集列表
 	 */
-	public static Route listDataSets = (q, a) -> {
+	public static Route listDatasets = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 		String query = q.queryParamOrDefault("q", "");

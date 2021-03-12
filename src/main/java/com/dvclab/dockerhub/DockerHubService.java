@@ -1,12 +1,18 @@
 package com.dvclab.dockerhub;
 
+import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.service.ContainerFactory;
 import com.dvclab.dockerhub.service.ReverseProxyService;
+import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static spark.Spark.port;
+import static spark.Spark.webSocket;
 
+/**
+ *
+ */
 public class DockerHubService implements Runnable {
 
 	public static final Logger logger = LogManager.getLogger(DockerHubService.class);
@@ -36,8 +42,6 @@ public class DockerHubService implements Runnable {
 
 	public int port = 50000;
 
-	public boolean use_proxy = true;
-
 	/**
 	 *
 	 */
@@ -51,5 +55,19 @@ public class DockerHubService implements Runnable {
 	public void run() {
 
 		port(port);
+
+		webSocket("/containers", ContainerInfoPublisher.class);
+
+		Routes.init();
+
+	}
+
+	/**
+	 *
+	 * @param args
+	 */
+	public static void main(String[] args) throws Exception {
+
+		getInstance().run();
 	}
 }

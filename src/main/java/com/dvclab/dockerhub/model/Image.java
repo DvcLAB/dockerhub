@@ -29,7 +29,7 @@ public class Image extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
 	public String uid;
 
-	@DatabaseField(dataType = DataType.STRING, width = 128, indexName = "n-f")
+	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
@@ -38,23 +38,27 @@ public class Image extends ModelD {
 	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT", width = 16)
 	public List<Type> types = new ArrayList<>();
 
-	@DatabaseField(dataType = DataType.STRING, width = 256, indexName = "n-f")
-	public String framework;
+	@DatabaseField(dataType = DataType.STRING, width = 4096)
+	public String desc;
 
 	public Image() {}
 
 	/**
 	 *
 	 * @param name
-	 * @param framework
+	 * @param desc
 	 * @param types
 	 */
-	public Image(String name, String framework, Type... types) {
+	public Image(String name, String desc, Type... types) {
 
 		this.name = name;
 		this.types = Arrays.asList(types);
-		this.framework = framework;
+		this.desc = desc;
 		this.genId();
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	/**
@@ -62,8 +66,7 @@ public class Image extends ModelD {
 	 * @return
 	 */
 	public Image genId() {
-		id = StringUtil.md5(name + "::" + framework + "::"
-				+ this.types.stream().map(t->t.name()).collect(Collectors.joining(",")));
+		id = StringUtil.md5(name);
 		return this;
 	}
 }
