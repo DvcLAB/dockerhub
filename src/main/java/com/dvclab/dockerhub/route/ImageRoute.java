@@ -91,6 +91,47 @@ public class ImageRoute {
 		}
 	};
 
+	/**
+	 * 获取镜像tag列表
+	 */
+	public static Route listImageTags = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String name = q.params(":name");
+
+		/**
+		 * https://docs.docker.com/registry/spec/api/#catalog
+		 * https://github.com/distribution/distribution/blob/main/docs/spec/api.md
+		 */
+		String url = "https://" + docker_registry_addr + "/v2/" + name + "/tags/list";
+		String scope = "repository:" + name + ":pull";
+
+		try {
+
+			List<String> tags = new ArrayList<>();
+
+			// 代理请求
+			Task t = new Task(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), null, null, null);
+			BasicRequester.req(t);
+
+			// 解析docker_registry返回结果
+			JSONObject res = new JSONObject(t.r.getText());
+			JSONArray tags_ = res.getJSONArray("tags");
+
+			for(int i=0; i<tags_.length(); i++) {
+				tags.add(tags_.getString(i));
+			}
+
+			// 返回结果
+			return Msg.success(tags);
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("List Image error, uid[{}], ", uid, e);
+			return Msg.failure(e);
+		}
+	};
+
 
 	/**
 	 * 获取镜像

@@ -122,6 +122,7 @@ public class Routes {
 		// 镜像
 		path("/images", () -> {
 			get("", ImageRoute.listImages, transformer);
+			get("/:name/tags", ImageRoute.listImageTags, transformer);
 			post("/:id", ImageRoute.updateImage, transformer);
 			get("/:id", ImageRoute.getImage, transformer);
 			delete("/:id", ImageRoute.deleteImage, transformer);
