@@ -13,14 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class UserCache {
-
-	public static ScheduledExecutorService ses;
-
-	static {
-		ses = Executors.newScheduledThreadPool(1,
-				new ThreadFactoryBuilder().setNameFormat("UserCacheUpdater-%d").build());
-	}
+public class UserCache extends Caches {
 
 	public static Map<String, String> TOKEN_UID = new HashMap<>();
 	public static Map<String, User> USERS = new HashMap<>();

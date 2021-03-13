@@ -32,7 +32,7 @@ public class ResourceInfoFetcher {
 	public static String docker_auth_admin_password = "hanwuji412";
 
 	/**
-	 *
+	 * TODO 不能正常采集时 应抛出对应异常 阻止创建Project
 	 * @param url
 	 * @return
 	 * @throws URISyntaxException
@@ -55,7 +55,6 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dataset.conf";
 
-
 		return new Project(
 				name, url, desc, null,
 				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n"))
@@ -74,7 +73,7 @@ public class ResourceInfoFetcher {
 		String desc = BasicRequester.req(url + "/README.md", proxy);
 		String cover_img_url = url + "/.cover_img.png";
 
-		if(desc.length() == 0) throw new Exception("Readme file not exist");
+		if(desc == null || desc.length() == 0) throw new Exception("Readme file not exist");
 
 		return new Dataset(name, url, desc, cover_img_url);
 	}
@@ -89,9 +88,6 @@ public class ResourceInfoFetcher {
 	public static String getDockerAuthToken(String scope) throws URISyntaxException, IOException {
 
 		String url = "https://" + docker_auth_service_addr + "/auth?service=" + URLEncoder.encode(docker_auth_service_name, StandardCharsets.UTF_8) + "&scope=" + scope;
-
-		UsernamePasswordCredentials credentials
-				= new UsernamePasswordCredentials("user1", "user1Pass");
 
 		String auth = docker_auth_admin + ":" + docker_auth_admin_password;
 		byte[] encodedAuth = Base64.encodeBase64(

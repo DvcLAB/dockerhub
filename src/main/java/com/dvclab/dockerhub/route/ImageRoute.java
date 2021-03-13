@@ -1,5 +1,6 @@
 package com.dvclab.dockerhub.route;
 
+import com.dvclab.dockerhub.cache.ImageCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Image;
@@ -19,10 +20,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import spark.Route;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,8 +36,12 @@ public class ImageRoute {
 	public static Route listImages = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
+
+		// 上一页最后一个 repository name
 		String last = q.queryParamOrDefault("n", "");
+		// 返回结果最大数量
 		Long n = Long.parseLong(q.queryParamOrDefault("n", "10"));
+
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 
 		/**
@@ -54,7 +56,8 @@ public class ImageRoute {
 			List<String> repo_names = new ArrayList<>();
 
 			// 代理请求
-			Task t = new Task(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), null, null, null);
+			Task t = new Task(url, HttpMethod.GET,
+					Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), null, null, null);
 			BasicRequester.req(t);
 
 			// 解析docker_registry返回结果
@@ -121,6 +124,11 @@ public class ImageRoute {
 			for(int i=0; i<tags_.length(); i++) {
 				tags.add(tags_.getString(i));
 			}
+
+			// 同步标签信息到缓存
+			Optional.ofNullable(ImageCache.images.get(name)).ifPresent(image -> {
+				image.tags = tags;
+			});
 
 			// 返回结果
 			return Msg.success(tags);

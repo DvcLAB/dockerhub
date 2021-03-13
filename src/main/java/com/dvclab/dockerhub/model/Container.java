@@ -14,12 +14,14 @@ import java.util.List;
 public class Container extends ModelD {
 
 	public enum Status {
+		New,
 		Init,
 		Repo_Clone_Success,
 		Pip_Install_Success,
 		Dataset_Load_Success,
 		Jupyterlab_Start_Success,
-		Port_Forwarding_Success
+		Port_Forwarding_Success,
+		Failure
 	}
 
 	@DatabaseField(dataType = DataType.STRING, width = 64, canBeNull = false, indexName = "default")
@@ -28,6 +30,7 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String host_id;
 
+	// 是否时用户主机创建的容器
 	@DatabaseField(dataType = DataType.BOOLEAN)
 	public boolean user_host = false;
 
@@ -46,23 +49,29 @@ public class Container extends ModelD {
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> gpu_devices_product_names;
 
-	@DatabaseField(dataType = DataType.INTEGER, width = 5, canBeNull = false)
-	public int jupyter_port;
-
+	// 可访问的JupyterLab地址
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String jupyter_url;
 
+	// 跳板机公网地址
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String tunnel_wan_addr;
 
+	// 跳板机内网地址
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String tunnel_lan_addr;
 
+	// 跳板机内网地址映射端口号
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)
 	public int tunnel_port;
 
+	// docker_compose配置文件
+	@DatabaseField(dataType = DataType.STRING, columnDefinition = "TEXT")
+	public String docker_compose_config;
+
+	// 状态
 	@DatabaseField(dataType = DataType.ENUM_STRING, width = 32)
-	public Status status;
+	public Status status = Status.New;
 
 	@DatabaseField(dataType = DataType.FLOAT, canBeNull = false)
 	public float cpu_usage = 0;

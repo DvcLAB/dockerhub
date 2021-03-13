@@ -47,6 +47,7 @@ public class User extends ModelD {
 	 * @param init_password
 	 * @return
 	 */
+	@Deprecated
 	public Map<String, Object> genUserRepresentation(String init_password) {
 
 		Map<String, Object> rep = new HashMap<>();

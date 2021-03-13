@@ -12,7 +12,6 @@ import one.rewind.txt.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -31,6 +30,9 @@ public class Image extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
+
+	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT", width = 16)
+	public List<String> tags = new ArrayList<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url;

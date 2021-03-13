@@ -4,8 +4,6 @@ services:
     image:
       ${image_name}
     container_name: ${container_id}
-    ports:
-      - "${jupyter_port}:${jupyter_port}"
     privileged: true
     tty: true
     environment:
@@ -16,6 +14,8 @@ services:
       - project_git_url=${project_git_url}
       - project_branch=${project_branch}
       - project_name=${project_name}
+
+      ${datasets}
 
       - pypi_repo=https://pypi.tuna.tsinghua.edu.cn/simple
 

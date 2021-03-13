@@ -24,8 +24,8 @@ public class ContainerRoute {
 
 		String image_id = q.queryParams("image_id");
 		String project_id = q.queryParams("project_id");
-		String project_branch = q.queryParams("project_id");
-		String dataset_id = q.queryParams("dataset_id");
+		String project_branch = q.queryParams("project_branch");
+		String[] dataset_urls = q.queryParamsValues("dataset_url");
 
 		float cpus = Float.parseFloat(q.queryParamOrDefault("cpus", "2"));
 		float mem = Float.parseFloat(q.queryParamOrDefault("mem", "4"));
@@ -34,7 +34,7 @@ public class ContainerRoute {
 		try {
 			return Msg.success(
 					DockerHubService.getInstance().containerFactory
-							.createDockerComposeConfig(uid, image_id, project_id, project_branch, dataset_id, cpus, mem, gpu)
+							.createDockerComposeConfig(uid, image_id, project_id, project_branch, dataset_urls, cpus, mem, gpu)
 			);
 		}
 		catch (Exception e) {
@@ -85,7 +85,7 @@ public class ContainerRoute {
 
 
 	/**
-	 * 获取镜像
+	 * 获取容器详情
 	 */
 	public static Route getContainer = (q, a) -> {
 

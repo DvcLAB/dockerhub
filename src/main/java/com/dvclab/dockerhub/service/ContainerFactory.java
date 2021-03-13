@@ -13,7 +13,11 @@ import one.rewind.util.FileUtil;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ *
+ */
 public class ContainerFactory {
 
 	public Map<String, Container> containers = new HashMap<>();
@@ -25,7 +29,6 @@ public class ContainerFactory {
 	public String frp_server_lan_addr = "127.0.0.1";
 
 	String tpl = FileUtil.readFileByLines("tpl/jupyterlab-inst.yaml");
-	int jupyter_port = 8898;
 
 	public String kafka_db_name = "dvclab_kafka";
 	public String kafka_server_addr = KafkaClient.getInstance(kafka_db_name).server_addr;
@@ -43,7 +46,7 @@ public class ContainerFactory {
 	public void init() throws DBInitException, SQLException {
 
 		// A 初始化容器端口池
-		for(int i = 53001; i < 54000; i++) {
+		for(int i = 53001; i < 56000; i++) {
 			tunnel_ports.add(i);
 		}
 
@@ -65,17 +68,18 @@ public class ContainerFactory {
 	 * 外部创建容器
 	 * @param uid
 	 */
-	public Container createContainer(String uid, float cpus, float mem, int jupyter_port, String tunnel_wan_addr, String tunnel_lan_addr)
+	public Container createContainer(String uid, float cpus, float mem, String tunnel_wan_addr, String tunnel_lan_addr)
 			throws DBInitException, SQLException {
 
 		Random r = new Random();
+		// 分配容器跳板机内网端口
+		// TODO tunnel_ports 应与 tunnel_lan_addr 关联
 		int tunnel_port = tunnel_ports.remove(r.nextInt(tunnel_ports.size()));
 
 		Container container = new Container();
 		container.uid = uid;
 		container.cpus = cpus;
 		container.mem = mem;
-		container.jupyter_port = jupyter_port;
 		container.tunnel_wan_addr = tunnel_wan_addr;
 		container.tunnel_lan_addr = tunnel_lan_addr;
 		container.tunnel_port = tunnel_port;
@@ -88,23 +92,42 @@ public class ContainerFactory {
 		return container;
 	}
 
+	/**
+	 *
+	 * @param container
+	 */
+	public void removeContainer(Container container) throws DBInitException, SQLException {
+		DockerHubService.getInstance().reverseProxyMgr.removeProxyPass(container);
+		containers.remove(container.id);
+		Container.deleteById(Container.class, container.id);
+	}
 
+	/**
+	 *
+	 * @param uid
+	 * @param image_id
+	 * @param project_id
+	 * @param project_branch
+	 * @param dataset_urls
+	 * @param cpus
+	 * @param mem
+	 * @param gpu
+	 * @return
+	 * @throws DBInitException
+	 * @throws SQLException
+	 */
 	public String createDockerComposeConfig(
-			String uid, String image_id, String project_id, String project_branch, String dataset_id, float cpus, float mem, boolean gpu)
+			String uid, String image_id, String project_id, String project_branch, String[] dataset_urls, float cpus, float mem, boolean gpu)
 			throws DBInitException, SQLException
 	{
 
 		Image image = Image.getById(Image.class, image_id);
 		Project project = Project.getById(Project.class, project_id);
-		Dataset dataset = Dataset.getById(Dataset.class, dataset_id);
 
-		Container container = createContainer(uid, cpus, mem, jupyter_port,
-				frp_server_addr,
-				frp_server_lan_addr);
+		Container container = createContainer(uid, cpus, mem, frp_server_addr, frp_server_lan_addr);
 
 		String docker_compose_config = tpl.replaceAll("\\$\\{image_name\\}", image.name)
 				.replaceAll("\\$\\{container_id\\}", container.id)
-				.replaceAll("\\$\\{jupyter_port\\}", String.valueOf(jupyter_port))
 				.replaceAll("\\$\\{project_git_url\\}", project.url)
 				.replaceAll("\\$\\{project_branch\\}", project_branch)
 				.replaceAll("\\$\\{project_name\\}", project.name)
@@ -122,10 +145,17 @@ public class ContainerFactory {
 				.replaceAll("\\$\\{cpus\\}", String.valueOf(container.cpus))
 				.replaceAll("\\$\\{mem\\}", String.valueOf(container.mem));
 
+		if(dataset_urls != null && dataset_urls.length > 0) {
+			docker_compose_config = docker_compose_config.replaceAll("\\$\\{mem\\}",
+					"- datasets=" + Arrays.stream(dataset_urls).collect(Collectors.joining(",")));
+		}
+
 		if(gpu) {
 			docker_compose_config = docker_compose_config
 					.replaceAll("\\$\\{runtime\\}", "runtime: nvidia");
 		}
+
+		container.docker_compose_config = docker_compose_config;
 
 		return docker_compose_config;
 	}
@@ -137,10 +167,11 @@ public class ContainerFactory {
 	public KafkaClient.ReceiveCallback<ServiceMsg> getContainerMsgCallback() {
 		return (id, msg, addr) -> {
 
-			Map<String, ?> data = ((ServiceMsg) msg).data;
+			Map<String, ?> data = msg.data;
 			String container_id = (String) data.get("container_id");
 
 			try {
+
 				Container container = Container.getById(Container.class, container_id);
 				container.status = Container.Status.valueOf((String) data.get("event"));
 
@@ -149,8 +180,13 @@ public class ContainerFactory {
 					case Init: {
 
 						String dataMsg = (String) data.get("msg");
-						Host host = new Host(container.uid, dataMsg);
-						host.upsert();
+
+						// 用户自己主机运行容器场景
+						if(container.host_id == null) {
+							Host host = new Host(container.uid, dataMsg);
+							host.upsert();
+							container.host_id = host.id;
+						}
 
 						break;
 					}
