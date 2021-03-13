@@ -8,6 +8,7 @@ import one.rewind.db.annotation.DBName;
 import one.rewind.io.docker.model.DockerHost;
 import one.rewind.io.ssh.SshHost;
 import one.rewind.txt.StringUtil;
+import one.rewind.util.FileUtil;
 
 /**
  *
@@ -22,8 +23,16 @@ public class Host extends DockerHost {
 	@DatabaseField(dataType = DataType.STRING, width = 64, indexName = "uid-idx")
 	public String uid;
 
+	public User user;
+
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean user_host = false;
+
+	@DatabaseField(dataType = DataType.INTEGER, canBeNull = false)
+	public int node_exporter_port = 9100;
+
+	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
+	public boolean ssh_session = false;
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String fingerprint;
@@ -49,30 +58,53 @@ public class Host extends DockerHost {
 	 *
 	 * @param ip
 	 * @param port
+	 * @param node_exporter_port
 	 * @param username
+	 * @param private_key
+	 * @param gpu_enabled
+	 * @throws JSchException
 	 */
-	public Host(String ip, int port, String username) throws JSchException {
-		super(ip, port, username);
-		this.id = StringUtil.md5(ip + port + username);
+	public Host(String ip, int port, int node_exporter_port, String username, String private_key, boolean gpu_enabled) throws JSchException {
+		super(ip, port, username, private_key);
+		this.genId();
+		this.node_exporter_port = node_exporter_port;
+		this.gpu_enabled = gpu_enabled;
+		this.ssh_session = true;
+
+		this.container_num.set(0);
+		this.runNodeExporter();
 	}
 
 	/**
 	 *
 	 * @return
-	 * @throws JSchException
-	 * @throws IllegalAccessException
 	 */
-	public Host init() throws JSchException, IllegalAccessException {
-
-		if(user_host) throw new IllegalAccessException();
-
-		this.container_num.set(0);
-
-		if (sshHost == null) {
-			sshHost = new SshHost(ip, port, username, PK);
-			sshHost.connect();
-		}
-
+	public Host genId() {
+		this.id = StringUtil.md5(ip + port + username);
 		return this;
+	}
+
+	/**
+	 *
+	 */
+	public void connectSshHost() {
+		this.sshHost = new SshHost(ip, port, username, this.private_key);
+		this.ssh_session = true;
+	}
+
+	/**
+	 *
+	 */
+	public void disconnectSshHost() {
+		this.sshHost.close();
+		this.ssh_session = false;
+	}
+
+	/**
+	 *
+	 */
+	public void runNodeExporter() {
+		String cmd = FileUtil.readFileByLines("tpl/docker-run-node-exporter.sh");
+		this.exec(cmd);
 	}
 }

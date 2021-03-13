@@ -1,5 +1,8 @@
 package com.dvclab.dockerhub;
 
+import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.cache.ImageCache;
+import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.service.ContainerFactory;
 import com.dvclab.dockerhub.service.ReverseProxyService;
@@ -54,11 +57,19 @@ public class DockerHubService implements Runnable {
 	@Override
 	public void run() {
 
-		port(port);
+		try {
+			ContainerCache.init();
+			ImageCache.init();
 
-		webSocket("/containers", ContainerInfoPublisher.class);
+			port(port);
 
-		Routes.init();
+			webSocket("/containers", ContainerInfoPublisher.class);
+
+			Routes.init();
+		}
+		catch (Exception e) {
+			logger.error("INIT Failed, ", e);
+		}
 
 	}
 

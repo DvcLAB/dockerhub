@@ -1,11 +1,14 @@
 package com.dvclab.dockerhub.route;
 
 import com.dvclab.dockerhub.DockerHubService;
+import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Container;
+import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Image;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
+import com.dvclab.dockerhub.service.ContainerFactory;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
@@ -105,6 +108,30 @@ public class ContainerRoute {
 		catch (Exception e) {
 
 			Routes.logger.error("Get Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 删除容器
+	 */
+	public static Route deleteContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+
+			// 只有管理员才能删除记录
+			if(! ContainerCache.containers.get(id).uid.equals(uid))
+				return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+
+			Dataset.deleteById(Dataset.class, id);
+			return Msg.success();
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Delete Container[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};

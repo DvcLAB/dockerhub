@@ -27,6 +27,8 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64, canBeNull = false, indexName = "default")
 	public String uid;
 
+	public User user;
+
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String host_id;
 

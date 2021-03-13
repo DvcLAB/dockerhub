@@ -34,5 +34,4 @@ public class ImageCache extends Caches{
 			Image.batchUpsert(new ArrayList(images.values()));
 		}, update_interval, TimeUnit.SECONDS);
 	}
-
 }

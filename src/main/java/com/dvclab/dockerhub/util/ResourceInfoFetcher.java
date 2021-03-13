@@ -19,8 +19,12 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ResourceInfoFetcher {
 
@@ -55,8 +59,18 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dataset.conf";
 
+		List<String> branches = new ArrayList<>();
+		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
+		String branches_src = BasicRequester.req(branches_url, proxy);
+		Pattern p = Pattern.compile("(?<=branch=\").+?(?=\")");
+		Matcher m = p.matcher(branches_src);
+		if(m.find()) {
+			branches.add(m.group());
+		}
+
 		return new Project(
 				name, url, desc, null,
+				branches,
 				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n"))
 		);
 	}

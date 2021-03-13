@@ -20,6 +20,8 @@ public class Dataset extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
 	public String uid;
 
+	public User user;
+
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 

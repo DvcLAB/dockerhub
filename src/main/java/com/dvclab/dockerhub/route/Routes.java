@@ -119,6 +119,15 @@ public class Routes {
 		// 用户列表 TODO 未完成
 		path("/users", () -> {});
 
+		// 主机
+		path("/hosts", () -> {
+			get("", HostRoute.listHosts, transformer);
+			put("", HostRoute.createHost, transformer);
+			get("/:id", HostRoute.getHost, transformer);
+			post("/:id", HostRoute.updateHost, transformer);
+			delete("/:id", HostRoute.deleteHost, transformer);
+		});
+
 		// 镜像
 		path("/images", () -> {
 			get("", ImageRoute.listImages, transformer);
@@ -153,6 +162,7 @@ public class Routes {
 			get("_docker_compose", ContainerRoute.createContainerDockerComposeConfig, transformer);
 			get("", ContainerRoute.listContainers, transformer);
 			get("/:id", ContainerRoute.getContainer, transformer);
+			delete("/:id", ContainerRoute.deleteContainer, transformer);
 		});
 	}
 }

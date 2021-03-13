@@ -21,6 +21,11 @@ import java.util.stream.Collectors;
 @DatabaseTable(tableName = "projects")
 public class Project extends ModelD {
 
+	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
+	public String uid;
+
+	public User user;
+
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 
@@ -29,9 +34,6 @@ public class Project extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url;
-
-	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
-	public String uid;
 
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
@@ -52,12 +54,13 @@ public class Project extends ModelD {
 	 * @param url
 	 * @param desc
 	 */
-	public Project(String name, String url, String desc, String cover_img_url, List<String> dataset_urls) throws DBInitException, SQLException {
+	public Project(String name, String url, String desc, String cover_img_url, List<String> branches, List<String> dataset_urls) throws DBInitException, SQLException {
 
 		this.name = name;
 		this.url = url;
 		this.desc = desc;
 		this.cover_img_url = cover_img_url;
+		this.branches = branches;
 		this.genId();
 
 		if(! dataset_urls.isEmpty()) {

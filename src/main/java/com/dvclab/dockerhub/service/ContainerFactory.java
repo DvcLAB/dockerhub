@@ -2,6 +2,7 @@ package com.dvclab.dockerhub.service;
 
 import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.auth.KeycloakAdapter;
+import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.model.*;
 import com.dvclab.dockerhub.serialization.ServiceMsg;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
@@ -20,9 +21,9 @@ import java.util.stream.Collectors;
  */
 public class ContainerFactory {
 
-	public Map<String, Container> containers = new HashMap<>();
 
-	private List<Integer> tunnel_ports = new ArrayList<>();
+
+
 
 	public String frp_server_addr = "j.dvclab.com";
 	public int frp_server_port = 53000;
@@ -34,33 +35,12 @@ public class ContainerFactory {
 	public String kafka_server_addr = KafkaClient.getInstance(kafka_db_name).server_addr;
 	public String container_event_topic_name = "Container_Events";
 
+	/**
+	 *
+	 */
 	public ContainerFactory() {
 
-	}
-
-	/**
-	 * 全部容器容器初始化
-	 * @throws DBInitException
-	 * @throws SQLException
-	 */
-	public void init() throws DBInitException, SQLException {
-
-		// A 初始化容器端口池
-		for(int i = 53001; i < 56000; i++) {
-			tunnel_ports.add(i);
-		}
-
-		// B 初始化容器
-		Container.getAll(Container.class).forEach(c -> {
-			if(c.user_host) {
-				tunnel_ports.remove((Integer) c.tunnel_port);
-				DockerHubService.getInstance().reverseProxyMgr.setupProxyPass(c);
-			}
-
-			containers.put(c.id, c);
-		});
-
-		// C 添加消息监听，向前端发送状态更新消息
+		// 添加消息监听，向前端发送状态更新消息
 		KafkaClient.getInstance(kafka_db_name).addConsumer(container_event_topic_name, 2, getContainerMsgCallback());
 	}
 
@@ -68,13 +48,13 @@ public class ContainerFactory {
 	 * 外部创建容器
 	 * @param uid
 	 */
-	public Container createContainer(String uid, float cpus, float mem, String tunnel_wan_addr, String tunnel_lan_addr)
+	public synchronized Container createContainer(String uid, float cpus, float mem, String tunnel_wan_addr, String tunnel_lan_addr)
 			throws DBInitException, SQLException {
 
 		Random r = new Random();
 		// 分配容器跳板机内网端口
 		// TODO tunnel_ports 应与 tunnel_lan_addr 关联
-		int tunnel_port = tunnel_ports.remove(r.nextInt(tunnel_ports.size()));
+		int tunnel_port = ContainerCache.tunnel_ports.remove(r.nextInt(ContainerCache.tunnel_ports.size()));
 
 		Container container = new Container();
 		container.uid = uid;
@@ -98,7 +78,7 @@ public class ContainerFactory {
 	 */
 	public void removeContainer(Container container) throws DBInitException, SQLException {
 		DockerHubService.getInstance().reverseProxyMgr.removeProxyPass(container);
-		containers.remove(container.id);
+		ContainerCache.containers.remove(container.id);
 		Container.deleteById(Container.class, container.id);
 	}
 

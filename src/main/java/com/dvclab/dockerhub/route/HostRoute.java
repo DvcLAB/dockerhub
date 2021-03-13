@@ -1,0 +1,157 @@
+package com.dvclab.dockerhub.route;
+
+import com.dvclab.dockerhub.cache.HostCache;
+import com.dvclab.dockerhub.cache.UserCache;
+import com.dvclab.dockerhub.model.Dataset;
+import com.dvclab.dockerhub.model.Host;
+import com.dvclab.dockerhub.model.User;
+import com.dvclab.dockerhub.serialization.Msg;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import one.rewind.db.Daos;
+import spark.Route;
+
+import java.util.List;
+
+public class HostRoute {
+
+	/**
+	 * 获取主机列表
+	 */
+	public static Route listHosts = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String query = q.queryParamOrDefault("q", "");
+		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
+		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
+
+		try {
+
+			Dao<Host, ?> dao = Daos.get(Host.class);
+			QueryBuilder<Host, ?> qb = dao.queryBuilder()
+					.offset((page-1)*size).limit(size).orderBy("update_time", false);
+			long total = dao.queryBuilder().countOf();
+
+			qb.where().like("id", query + "%")
+					.or().like("ip", query + "%");
+
+			List<Host> list = qb.query();
+
+			return Msg.success(list, size, page, total);
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("List Host error, uid[{}], ", uid, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 创建数据集
+	 */
+	public static Route createHost = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String source = q.body();
+
+		try {
+
+			Host obj = Dataset.fromJSON(source, Host.class);
+			obj.genId();
+			obj.uid = uid;
+			if(obj.insert()) {
+				HostCache.addHost(obj);
+				return Msg.success();
+			}
+			else {
+				return Msg.failure();
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Create Host[{}] error, ", source, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 获取主机
+	 */
+	public static Route getHost = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+
+			Host obj = Host.getById(Host.class, id);
+			if(obj != null) {
+				return Msg.success(obj);
+			}
+			else {
+				return new Msg(Msg.Code.NOT_FOUND, null, null);
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Get Host[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 更新主机
+	 * Note: ip port username 不可更改
+	 */
+	public static Route updateHost = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+		String source = q.body();
+
+		try {
+
+			Host obj = Host.fromJSON(source, Host.class);
+			obj.genId();
+
+			if(!obj.id.equals(id)) throw new Exception("Host ip/port/username can not be changed");
+
+			if(obj.update()) {
+				return Msg.success(obj);
+			}
+			else {
+				return Msg.failure();
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Update Host[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 *
+	 */
+	public static Route deleteHost = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+			// 用户只能删除自己的Host
+			if(! HostCache.hosts.get(id).uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+
+			Dataset.deleteById(Dataset.class, id);
+			HostCache.hosts.remove(id).disconnectSshHost();
+
+			return Msg.success();
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Delete Host[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+}
