@@ -5,10 +5,15 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.annotation.DBName;
+import one.rewind.db.exception.DBInitException;
 import one.rewind.io.docker.model.DockerHost;
 import one.rewind.io.ssh.SshHost;
 import one.rewind.txt.StringUtil;
 import one.rewind.util.FileUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  *
@@ -106,5 +111,46 @@ public class Host extends DockerHost {
 	public void runNodeExporter() {
 		String cmd = FileUtil.readFileByLines("tpl/docker-run-node-exporter.sh");
 		this.exec(cmd);
+	}
+
+	/**
+	 * 创建容器
+	 * @param container
+	 * @param conf
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws DBInitException
+	 * @throws SQLException
+	 */
+	public void createContainer(Container container, String conf) throws IOException, JSchException, DBInitException, SQLException {
+
+		container.host_id = this.id;
+
+		// 复制配置文件
+		String name = "jupyterlab-" + container.id + ".yml";
+		FileUtil.writeBytesToFile(conf.getBytes(), name);
+		sshHost.copyLocalToRemote(name, "~"+name);
+
+		exec("docker-compose -f " + name + " up");
+		// exec("rm " + name);
+		container_num.incrementAndGet();
+
+		new File(name).delete();
+
+		container.update();
+		this.update();
+	}
+
+	/**
+	 * 删除容器
+	 * @param container
+	 */
+	public void removeContainer(Container container) throws DBInitException, SQLException {
+		String name = "jupyterlab-" + container.id + ".yml";
+		exec("docker-compose -f " + name + " up");
+		exec("rm " + name);
+
+		container_num.decrementAndGet();
+		this.update();
 	}
 }

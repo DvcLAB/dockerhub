@@ -21,7 +21,8 @@ public class Container extends ModelD {
 		Dataset_Load_Success,
 		Jupyterlab_Start_Success,
 		Port_Forwarding_Success,
-		Failure
+		Failure,
+		Deleted
 	}
 
 	@DatabaseField(dataType = DataType.STRING, width = 64, canBeNull = false, indexName = "default")

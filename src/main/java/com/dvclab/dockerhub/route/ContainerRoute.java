@@ -9,6 +9,7 @@ import com.dvclab.dockerhub.model.Image;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.service.ContainerFactory;
+import com.dvclab.dockerhub.service.ReverseProxyService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
@@ -72,7 +73,7 @@ public class ContainerRoute {
 			// 一般用户查询分支
 			else {
 				qb.where().like("id", query + "%")
-						.and().eq("uid", uid);
+						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted.name());
 			}
 
 			List<Container> list = qb.query();
@@ -122,11 +123,13 @@ public class ContainerRoute {
 
 		try {
 
-			// 只有管理员才能删除记录
-			if(! ContainerCache.containers.get(id).uid.equals(uid))
-				return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			Container container = ContainerCache.containers.get(id);
 
-			Dataset.deleteById(Dataset.class, id);
+			// 用户删除自己的容器
+			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+
+			DockerHubService.getInstance().containerFactory.removeContainer(container);
+
 			return Msg.success();
 		}
 		catch (Exception e) {

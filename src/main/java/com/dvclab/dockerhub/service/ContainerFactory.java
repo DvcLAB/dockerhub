@@ -79,7 +79,8 @@ public class ContainerFactory {
 	public void removeContainer(Container container) throws DBInitException, SQLException {
 		DockerHubService.getInstance().reverseProxyMgr.removeProxyPass(container);
 		ContainerCache.containers.remove(container.id);
-		Container.deleteById(Container.class, container.id);
+		container.status = Container.Status.Deleted;
+		container.update();
 	}
 
 	/**
