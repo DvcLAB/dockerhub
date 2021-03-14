@@ -14,6 +14,8 @@ import spark.Route;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 数据集路由
@@ -41,6 +43,10 @@ public class DatasetRoute {
 					.or().like("name", query + "%");
 
 			List<Dataset> list = qb.query();
+
+			// 返回结果补全 用户信息
+			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
+			list.stream().forEach(c -> c.user = users.get(c.uid));
 
 			return Msg.success(list, size, page, total);
 		}
@@ -90,6 +96,10 @@ public class DatasetRoute {
 
 			Dataset ds = Dataset.getById(Dataset.class, id);
 			if(ds != null) {
+
+				// 补全数据集用户信息
+				ds.user = User.getById(User.class, ds.uid);
+
 				return Msg.success(ds);
 			}
 			else {

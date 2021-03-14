@@ -15,6 +15,8 @@ import spark.Route;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProjectRoute {
 
@@ -41,6 +43,10 @@ public class ProjectRoute {
 
 			List<Project> list = qb.query();
 
+			// 返回结果补全 用户信息
+			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
+			list.stream().forEach(c -> c.user = users.get(c.uid));
+
 			return Msg.success(list, size, page, total);
 		}
 		catch (Exception e) {
@@ -64,6 +70,9 @@ public class ProjectRoute {
 			obj.genId();
 			obj.uid = uid;
 			if(obj.insert()) {
+
+				// 补全用户信息
+				obj.user = User.getById(User.class, obj.uid);
 				return Msg.success();
 			}
 			else {

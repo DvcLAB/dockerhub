@@ -113,11 +113,10 @@ public class Routes {
 		 */
 		notFound((q, a) -> new Msg(Msg.Code.NOT_FOUND, null, null).toJSON());
 
-		// 主机列表 TODO 未完成
-		path("/hosts", () -> {});
-
-		// 用户列表 TODO 未完成
-		path("/users", () -> {});
+		// 用户列表
+		path("/users", () -> {
+			get("", UserRoute.listUsers, transformer);
+		});
 
 		// 主机
 		path("/hosts", () -> {
@@ -159,9 +158,10 @@ public class Routes {
 
 		// 容器
 		path("/containers", () -> {
-			get("_docker_compose", ContainerRoute.createContainerDockerComposeConfig, transformer);
+			put("", ContainerRoute.createContainer, transformer);
 			get("", ContainerRoute.listContainers, transformer);
 			get("/:id", ContainerRoute.getContainer, transformer);
+			post("/:id/run", ContainerRoute.runContainer, transformer);
 			delete("/:id", ContainerRoute.deleteContainer, transformer);
 		});
 	}

@@ -1,7 +1,6 @@
 package com.dvclab.dockerhub.cache;
 
 import com.dvclab.dockerhub.model.User;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.exception.ModelException;
 
@@ -9,10 +8,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ *
+ */
 public class UserCache extends Caches {
 
 	public static Map<String, String> TOKEN_UID = new HashMap<>();

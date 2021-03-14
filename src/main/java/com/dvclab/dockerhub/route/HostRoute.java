@@ -12,6 +12,8 @@ import one.rewind.db.Daos;
 import spark.Route;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HostRoute {
 
@@ -36,6 +38,10 @@ public class HostRoute {
 					.or().like("ip", query + "%");
 
 			List<Host> list = qb.query();
+
+			// 返回结果补全 用户信息
+			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
+			list.stream().forEach(c -> c.user = users.get(c.uid));
 
 			return Msg.success(list, size, page, total);
 		}
@@ -86,6 +92,9 @@ public class HostRoute {
 
 			Host obj = Host.getById(Host.class, id);
 			if(obj != null) {
+
+				// 补全用户信息
+				obj.user = User.getById(User.class, obj.uid);
 				return Msg.success(obj);
 			}
 			else {

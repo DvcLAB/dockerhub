@@ -1,14 +1,20 @@
 package com.dvclab.dockerhub.model;
 
 import com.dvclab.dockerhub.serialization.EnumListPersister;
-import com.google.common.collect.ImmutableMap;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
+import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 
-import java.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @DBName("dockerhub")
 @DatabaseTable(tableName = "users")
@@ -41,6 +47,17 @@ public class User extends ModelD {
 	public int container_num = 0;
 
 	public User() {}
+
+	/**
+	 * 根据用户id列表获取用户列表
+	 * @return
+	 */
+	public static Map<String, User> getUsers(List<String> uids) throws DBInitException, SQLException {
+
+		return Daos.get(User.class).queryBuilder()
+				.where().in("id", uids).query()
+				.stream().collect(Collectors.toMap(User::getId, user -> user));
+	}
 
 	/**
 	 *

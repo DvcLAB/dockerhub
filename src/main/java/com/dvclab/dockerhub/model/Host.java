@@ -116,19 +116,18 @@ public class Host extends DockerHost {
 	/**
 	 * 创建容器
 	 * @param container
-	 * @param conf
 	 * @throws IOException
 	 * @throws JSchException
 	 * @throws DBInitException
 	 * @throws SQLException
 	 */
-	public void createContainer(Container container, String conf) throws IOException, JSchException, DBInitException, SQLException {
+	public void runContainer(Container container) throws IOException, JSchException, DBInitException, SQLException {
 
 		container.host_id = this.id;
 
 		// 复制配置文件
 		String name = "jupyterlab-" + container.id + ".yml";
-		FileUtil.writeBytesToFile(conf.getBytes(), name);
+		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
 		sshHost.copyLocalToRemote(name, "~"+name);
 
 		exec("docker-compose -f " + name + " up");
@@ -146,6 +145,7 @@ public class Host extends DockerHost {
 	 * @param container
 	 */
 	public void removeContainer(Container container) throws DBInitException, SQLException {
+
 		String name = "jupyterlab-" + container.id + ".yml";
 		exec("docker-compose -f " + name + " up");
 		exec("rm " + name);

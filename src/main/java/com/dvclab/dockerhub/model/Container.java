@@ -56,13 +56,9 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String jupyter_url;
 
-	// 跳板机公网地址
-	@DatabaseField(dataType = DataType.STRING, width = 1024)
-	public String tunnel_wan_addr;
-
-	// 跳板机内网地址
-	@DatabaseField(dataType = DataType.STRING, width = 1024)
-	public String tunnel_lan_addr;
+	// 跳板机id
+	@DatabaseField(dataType = DataType.STRING, width = 64)
+	public String tunnel_id;
 
 	// 跳板机内网地址映射端口号
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)

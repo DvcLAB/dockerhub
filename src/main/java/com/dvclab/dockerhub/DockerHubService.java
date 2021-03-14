@@ -2,10 +2,8 @@ package com.dvclab.dockerhub;
 
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.ImageCache;
-import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.route.Routes;
-import com.dvclab.dockerhub.service.ContainerFactory;
-import com.dvclab.dockerhub.service.ReverseProxyService;
+import com.dvclab.dockerhub.service.ContainerService;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,9 +36,6 @@ public class DockerHubService implements Runnable {
 		return instance;
 	}
 
-	public ContainerFactory containerFactory;
-	public ReverseProxyService reverseProxyMgr;
-
 	public long publish_ts = System.currentTimeMillis();
 
 	public int port = 50000;
@@ -50,8 +45,6 @@ public class DockerHubService implements Runnable {
 	 */
 	private DockerHubService() {
 
-		containerFactory = new ContainerFactory();
-		reverseProxyMgr = new ReverseProxyService();
 	}
 
 	@Override

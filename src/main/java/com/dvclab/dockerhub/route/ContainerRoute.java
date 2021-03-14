@@ -2,27 +2,31 @@ package com.dvclab.dockerhub.route;
 
 import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Container;
-import com.dvclab.dockerhub.model.Dataset;
-import com.dvclab.dockerhub.model.Image;
+import com.dvclab.dockerhub.model.Host;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
-import com.dvclab.dockerhub.service.ContainerFactory;
-import com.dvclab.dockerhub.service.ReverseProxyService;
+import com.dvclab.dockerhub.service.ContainerService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
 import spark.Route;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+/**
+ *
+ */
 public class ContainerRoute {
 
 	/**
 	 * 构建容器DockerCompose配置文件
 	 */
-	public static Route createContainerDockerComposeConfig = (q, a) -> {
+	public static Route createContainer = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 
@@ -37,7 +41,7 @@ public class ContainerRoute {
 
 		try {
 			return Msg.success(
-					DockerHubService.getInstance().containerFactory
+					ContainerService.getInstance()
 							.createDockerComposeConfig(uid, image_id, project_id, project_branch, dataset_urls, cpus, mem, gpu)
 			);
 		}
@@ -63,6 +67,7 @@ public class ContainerRoute {
 			Dao<Container, ?> dao = Daos.get(Container.class);
 			QueryBuilder<Container, ?> qb = dao.queryBuilder()
 					.offset((page-1)*size).limit(size).orderBy("update_time", false);
+
 			long total = dao.queryBuilder().countOf();
 
 			// 管理员查询分支
@@ -76,7 +81,12 @@ public class ContainerRoute {
 						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted.name());
 			}
 
+
 			List<Container> list = qb.query();
+
+			// 返回结果补全 用户信息
+			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
+			list.stream().forEach(c -> c.user = users.get(c.uid));
 
 			return Msg.success(list, size, page, total);
 		}
@@ -87,6 +97,46 @@ public class ContainerRoute {
 		}
 	};
 
+	/**
+	 *
+	 */
+	public static Route runContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		boolean gpu_enabled = Boolean.parseBoolean(q.queryParamOrDefault("gpu_enabled", "false"));
+
+		// TODO 判定用户是否有权限使用该Host
+		// TODO 判定用户有权限操作 container
+		String host_id = q.queryParamOrDefault("host_id", "");
+
+		try {
+
+			Container container = Container.getById(Container.class, id);
+			Host host = HostCache.hosts.get(host_id);
+
+			if(host == null) {
+				host = HostCache.getHost(gpu_enabled);
+			}
+
+			if(container != null) {
+
+				host.runContainer(container);
+				container.user_host = false;
+
+				return Msg.success();
+			}
+			else {
+				return new Msg(Msg.Code.NOT_FOUND, null, null);
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Get Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
 
 	/**
 	 * 获取容器详情
@@ -99,7 +149,11 @@ public class ContainerRoute {
 		try {
 
 			Container obj = Container.getById(Container.class, id);
+
 			if(obj != null) {
+
+				// 补全容器用户信息
+				obj.user = User.getById(User.class, obj.uid);
 				return Msg.success(obj);
 			}
 			else {
@@ -125,10 +179,15 @@ public class ContainerRoute {
 
 			Container container = ContainerCache.containers.get(id);
 
-			// 用户删除自己的容器
+			// 权限：用户删除自己的容器
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			DockerHubService.getInstance().containerFactory.removeContainer(container);
+			// Host remove container
+			if(!container.user_host) {
+				HostCache.hosts.get(container.host_id).removeContainer(container);
+			}
+
+			ContainerService.getInstance().removeContainer(container);
 
 			return Msg.success();
 		}
