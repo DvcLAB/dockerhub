@@ -3,20 +3,20 @@ package com.dvclab.dockerhub.util;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Project;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.io.requester.basic.BasicRequester;
 import one.rewind.io.requester.proxy.Proxy;
 import one.rewind.io.requester.proxy.ProxyImpl;
 import one.rewind.io.requester.task.Task;
+import one.rewind.util.Configs;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
-import org.apache.http.auth.UsernamePasswordCredentials;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,14 +26,35 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 远端信息请求器
+ */
 public class ResourceInfoFetcher {
 
-	public static Proxy proxy = new ProxyImpl("10.0.0.11", 11111, null, null);
+	private static String proxy_host;
+	private static int proxy_port;
 
-	public static String docker_auth_service_addr = "registry.dvclab.com:61768";
-	public static String docker_auth_service_name = "Docker registry";
-	public static String docker_auth_admin = "root";
-	public static String docker_auth_admin_password = "hanwuji412";
+	// 用户获取Github相关信息
+	private static Proxy proxy;
+
+	public static String docker_auth_service_addr;
+	public static String docker_auth_service_name;
+	public static String docker_auth_admin;
+	public static String docker_auth_admin_password;
+
+	static {
+
+		Config config = Configs.getConfig(ResourceInfoFetcher.class);
+		proxy_host = config.getString("proxy_host");
+		proxy_port = config.getInt("proxy_port");
+
+		docker_auth_service_addr = config.getString("docker_auth_service_addr");
+		docker_auth_service_name = config.getString("docker_auth_service_name");
+		docker_auth_admin = config.getString("docker_auth_admin");
+		docker_auth_admin_password = config.getString("docker_auth_admin_password");
+
+		proxy = new ProxyImpl(proxy_host, proxy_port, null, null);
+	}
 
 	/**
 	 * TODO 不能正常采集时 应抛出对应异常 阻止创建Project
@@ -41,7 +62,7 @@ public class ResourceInfoFetcher {
 	 * @return
 	 * @throws URISyntaxException
 	 */
-	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException {
+	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException {
 
 		Task t1 = new Task(url);
 		BasicRequester.req(t1, proxy);
@@ -68,6 +89,9 @@ public class ResourceInfoFetcher {
 			branches.add(m.group());
 		}
 
+		if(name.isEmpty()) throw new IOException("Can not retrieve project name");
+		if(branches.size() == 0) throw new IOException("Can not retrieve project branches");
+
 		return new Project(
 				name, url, desc, null,
 				branches,
@@ -84,7 +108,7 @@ public class ResourceInfoFetcher {
 
 		url = url.replaceAll("/?$", "");
 		String name = url.replaceAll("^.+/", "");
-		String desc = BasicRequester.req(url + "/README.md", proxy);
+		String desc = BasicRequester.req(url + "/README.md");
 		String cover_img_url = url + "/.cover_img.png";
 
 		if(desc == null || desc.length() == 0) throw new Exception("Readme file not exist");

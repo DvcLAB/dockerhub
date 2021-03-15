@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ResourceInfoFetcherTest {
 
 	@Test
-	public void getProjectInfo() throws URISyntaxException, DBInitException, SQLException {
+	public void getProjectInfo() throws URISyntaxException, DBInitException, SQLException, IOException {
 
 		System.err.println(ResourceInfoFetcher.getProjectInfo("https://github.com/DvcLAB/CNN"));
 	}
