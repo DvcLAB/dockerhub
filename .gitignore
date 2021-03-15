@@ -52,5 +52,5 @@ test.conf
 prod.conf
 src/main/resources/conf/*.conf
 keys/
-
+/conf
 cacerts

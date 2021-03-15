@@ -82,7 +82,7 @@ public class User extends ModelD {
 						"type", "password",
 						"value", init_password,
 						"temporary", true
-					) // TODO 初始密码设定方式需要修改
+					)
 				)
 			);
 		}

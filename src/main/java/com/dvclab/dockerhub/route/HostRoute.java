@@ -61,7 +61,7 @@ public class HostRoute {
 		String source = q.body();
 
 		try {
-
+            // TODO 私钥不应通过互联网传输
 			Host obj = Dataset.fromJSON(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
