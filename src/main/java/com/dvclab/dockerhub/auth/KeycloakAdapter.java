@@ -110,10 +110,10 @@ public class KeycloakAdapter {
 			u.roles.add(User.Role.valueOf(roleNode.asText()));
 		}
 
-		u.username = ""; // TODO 更新该字段
-		u.email = ""; // TODO 更新该字段
-		u.avatar_url = ""; // TODO 更新该字段
-		u.enabled = true; // TODO 更新该字段
+		u.username = node.get("username").asText();
+		u.email = node.get("email").asText();
+		u.avatar_url = node.get("avatar_url").asText();
+		u.enabled = node.get("enabled").asBoolean();
 
 		return new ImmutablePair<>(u, exp);
 	}
@@ -148,7 +148,6 @@ public class KeycloakAdapter {
 			admin_url_template = admin_config.getString("admin_url_template");
 			admin_body_template = admin_config.getString("admin_body_template");
 
-			// TODO 未验证
 			for(Config c : admin_config.getConfigList("roles")) {
 				roles.put(c.getString("name"), c.getString("name"));
 			}
