@@ -22,8 +22,8 @@ public class HostCache {
 	 * @param host
 	 */
 	public static void addHost(Host host) {
-		host.private_key = null;
 		host.connectSshHost();
+//		host.private_key = null;
 		hosts.put(host.id, host);
 	}
 

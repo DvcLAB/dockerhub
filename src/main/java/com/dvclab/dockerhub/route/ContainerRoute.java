@@ -107,14 +107,18 @@ public class ContainerRoute {
 
 		boolean gpu_enabled = Boolean.parseBoolean(q.queryParamOrDefault("gpu_enabled", "false"));
 
-		// TODO 判定用户是否有权限使用该Host
-		// TODO 判定用户有权限操作 container
 		String host_id = q.queryParamOrDefault("host_id", "");
 
 		try {
 
 			Container container = Container.getById(Container.class, id);
+			// TODO 判断用户是否有权限使用 Container  待验证
+			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+
 			Host host = HostCache.hosts.get(host_id);
+
+			// TODO 判断用户是否有权限操作该Host  待验证
+			// if(! host.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			if(host == null) {
 				host = HostCache.getHost(gpu_enabled);
