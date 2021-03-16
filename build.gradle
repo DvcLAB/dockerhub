@@ -10,7 +10,7 @@ version '1.0.0'
 
 sourceCompatibility = 1.11
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-mainClassName=""
+mainClassName="com.dvclab.dockerhub.DockerHubService"
 applicationDefaultJvmArgs = [
         "-Xms200m",
         "-Xmx4000m",
@@ -38,6 +38,18 @@ repositories {
 
 task copyFiles(){
     copy {
+        from fileTree('conf')
+        into 'src/main/dist/conf'
+    }
+    copy {
+        from fileTree('keys')
+        into 'src/main/dist/keys'
+    }
+    copy {
+        from fileTree('tpl')
+        into 'src/main/dist/tpl'
+    }
+    copy {
         from fileTree('src/main/resources')
         into 'src/main/dist'
     }
@@ -50,8 +62,7 @@ task copyFiles(){
 jar.dependsOn copyFiles
 
 dependencies {
-    compile 'one.rewind:raw-data:2.0.9.8'
-
+    compile 'one.rewind:raw-data:2.0.9.11'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

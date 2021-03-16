@@ -41,8 +41,10 @@ public class HostRoute {
 
 			// 返回结果补全 用户信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
-			list.stream().forEach(c -> c.user = users.get(c.uid));
-			list.stream().forEach(h -> h.private_key = null);
+			list.stream().forEach(c -> {
+				c.user = users.get(c.uid);
+				c.private_key = null;
+			});
 			return Msg.success(list, size, page, total);
 		}
 		catch (Exception e) {
@@ -61,7 +63,6 @@ public class HostRoute {
 		String source = q.body();
 
 		try {
-            // TODO 私钥不应通过互联网传输
 			Host obj = Dataset.fromJSON(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
@@ -127,7 +128,6 @@ public class HostRoute {
 			if(!obj.id.equals(id)) throw new Exception("Host ip/port/username can not be changed");
 
 			if(obj.update()) {
-				obj.private_key = null;
 				return Msg.success(obj);
 			}
 			else {

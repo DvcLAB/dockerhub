@@ -1,6 +1,7 @@
 package com.dvclab.dockerhub;
 
 import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.ImageCache;
 import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.service.ContainerService;
@@ -53,6 +54,7 @@ public class DockerHubService implements Runnable {
 		try {
 			ContainerCache.init();
 			ImageCache.init();
+			HostCache.init();
 
 			port(port);
 

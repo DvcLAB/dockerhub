@@ -23,7 +23,6 @@ public class HostCache {
 	 */
 	public static void addHost(Host host) {
 		host.connectSshHost();
-//		host.private_key = null;
 		hosts.put(host.id, host);
 	}
 

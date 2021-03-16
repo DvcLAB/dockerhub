@@ -65,7 +65,6 @@ public class Host extends DockerHost {
 	 * @param port
 	 * @param node_exporter_port
 	 * @param username
-	 * @param private_key
 	 * @param gpu_enabled
 	 * @throws JSchException
 	 */

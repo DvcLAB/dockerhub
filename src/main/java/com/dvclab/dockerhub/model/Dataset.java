@@ -7,6 +7,7 @@ import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
+import one.rewind.db.persister.JSONableListPersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
@@ -33,6 +34,9 @@ public class Dataset extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
+
+	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	public String tags;
 
 	public Dataset() {}
 
