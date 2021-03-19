@@ -78,7 +78,7 @@ public class ContainerRoute {
 			// 一般用户查询分支
 			else {
 				qb.where().like("id", query + "%")
-						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted.name());
+						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted); // 使用Enum，而不是对应的字符串
 			}
 
 

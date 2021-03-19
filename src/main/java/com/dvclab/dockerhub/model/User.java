@@ -54,6 +54,10 @@ public class User extends ModelD {
 	 */
 	public static Map<String, User> getUsers(List<String> uids) throws DBInitException, SQLException {
 
+	    if(uids.size() == 0) {
+		    return new HashMap<>();
+		}
+
 		return Daos.get(User.class).queryBuilder()
 				.where().in("id", uids).query()
 				.stream().collect(Collectors.toMap(User::getId, user -> user));
