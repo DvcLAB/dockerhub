@@ -78,5 +78,8 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.FLOAT, canBeNull = false)
 	public float mem_usage = 0;
 
+	@DatabaseField(dataType = DataType.STRING, width = 64)
+	public String container_name;
+
 	public Container(){}
 }

@@ -112,6 +112,7 @@ public class ContainerService {
 		container.mem = mem;
 		container.tunnel_id = tunnel_port.getLeft().id;
 		container.tunnel_port = tunnel_port.getRight();
+		container.container_name = container.id;
 
 		container.id = StringUtil.md5(uid + "::" + tunnel.wan_addr + "::" + tunnel_port + "::" + System.currentTimeMillis());
 		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;

@@ -29,6 +29,9 @@ public class Project extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 
+	@DatabaseField(dataType = DataType.STRING, width = 128)
+	public String framework;
+
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String url;
 

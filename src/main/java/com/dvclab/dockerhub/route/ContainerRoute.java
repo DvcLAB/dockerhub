@@ -117,7 +117,7 @@ public class ContainerRoute {
 
 			Host host = HostCache.hosts.get(host_id);
 
-			// TODO 判断用户是否有权限操作该Host  待验证
+			// TODO 判断用户是否有权限操作该Host
 			// if(! host.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			if(host == null) {
