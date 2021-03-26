@@ -123,7 +123,7 @@ public class ProjectRoute {
 
 		try {
 
-			Project obj = Project.fromJSON(source, Image.class);
+			Project obj = Project.fromJSON(source, Project.class);
 			obj.genId();
 
 			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");

@@ -11,6 +11,7 @@ import one.rewind.db.persister.JSONableListPersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class Dataset extends ModelD {
 	public String desc;
 
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
-	public String tags;
+	public List<String> tags = new ArrayList<>();
 
 	public Dataset() {}
 
