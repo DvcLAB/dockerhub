@@ -30,8 +30,8 @@ public class ImageCache extends Caches{
 		});
 
 		// 定期批量保存回数据库
-		ses.schedule(() -> {
-			Image.batchUpsert(new ArrayList(images.values()));
-		}, update_interval, TimeUnit.SECONDS);
+		ses.scheduleWithFixedDelay(() -> {
+			Image.batchUpsert(new ArrayList(images.values()), "UPDATE tags = VALUES(tags)");
+		}, update_interval, update_interval, TimeUnit.SECONDS);
 	}
 }
