@@ -38,7 +38,7 @@ public class ImageRoute {
 		String uid = q.session().attribute("uid");
 
 		// 上一页最后一个 repository name
-		String last = q.queryParamOrDefault("n", "");
+		String last = q.queryParamOrDefault("last", "");
 		// 返回结果最大数量
 		Long n = Long.parseLong(q.queryParamOrDefault("n", "10"));
 
@@ -81,6 +81,11 @@ public class ImageRoute {
 			// 合并结果，并排序
 			images.addAll(new_images);
 			images.sort(Comparator.comparing(Image::getName));
+
+			// 补全用户信息
+			Map<String, User> users = User.getUsers(images.stream().filter(i -> i.uid != null).map(i -> i.uid)
+					.collect(Collectors.toList()));
+			images.stream().forEach(i -> i.user = users.get(i.uid));
 
 			long total = dao.queryBuilder().countOf();
 
@@ -152,6 +157,10 @@ public class ImageRoute {
 		try {
 
 			Image obj = Image.getById(Image.class, id);
+
+			// 返回结果补全 用户信息
+			obj.user = User.getById(User.class, obj.uid);
+
 			if(obj != null) {
 				return Msg.success(obj);
 			}
@@ -167,7 +176,7 @@ public class ImageRoute {
 	};
 
 	/**
-	 * 更新镜像
+	 * 更新镜像，用户认领镜像
 	 */
 	public static Route updateImage = (q, a) -> {
 
@@ -180,8 +189,11 @@ public class ImageRoute {
 			Image obj = Image.fromJSON(source, Image.class);
 			obj.genId();
 
-			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
+			// 认领镜像用户
+			obj.uid = uid;
+			obj.user = UserCache.USERS.get(uid);
 
+			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
 			if(obj.update()) {
 				return Msg.success(obj);
 			}
