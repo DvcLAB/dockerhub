@@ -179,7 +179,7 @@ public class DatasetRoute {
 		url = URLDecoder.decode(url, StandardCharsets.UTF_8);
 
 		try {
-			return ResourceInfoFetcher.getDatasetInfo(url);
+			return Msg.success(ResourceInfoFetcher.getDatasetInfo(url));
 		}
 		catch (Exception e) {
 			Routes.logger.error("Unable get Dataset info, url[{}], ", url, e);

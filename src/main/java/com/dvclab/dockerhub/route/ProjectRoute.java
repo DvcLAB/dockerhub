@@ -57,7 +57,7 @@ public class ProjectRoute {
 	};
 
 	/**
-	 * 创建镜像
+	 * 创建项目
 	 */
 	public static Route createProject = (q, a) -> {
 
@@ -88,7 +88,7 @@ public class ProjectRoute {
 
 
 	/**
-	 * 获取镜像
+	 * 获取项目
 	 */
 	public static Route getProject = (q, a) -> {
 
@@ -113,7 +113,7 @@ public class ProjectRoute {
 	};
 
 	/**
-	 * 更新镜像
+	 * 更新项目
 	 */
 	public static Route updateProject = (q, a) -> {
 
@@ -177,7 +177,7 @@ public class ProjectRoute {
 		url = URLDecoder.decode(url, StandardCharsets.UTF_8);
 
 		try {
-			return ResourceInfoFetcher.getProjectInfo(url);
+			return Msg.success(ResourceInfoFetcher.getProjectInfo(url));
 		}
 		catch (Exception e) {
 			Routes.logger.error("Unable get Project info, url[{}], ", url, e);
