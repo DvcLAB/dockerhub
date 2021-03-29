@@ -39,4 +39,4 @@ jobs:
         key: ${{ secrets.SSHKEY }}
         port: ${{ secrets.PORT }}
         script:
-          cd /opt/dockerhub-1.0.0/ && jps |grep DockerHubService | awk '{print $1}' | xargs kill -9 && nohup bin/dockerhub &
+          cd /opt/dockerhub-1.0.0/ && jps |grep DockerHubService | awk '{print $1}' | xargs kill -9 && nohup bin/dockerhub >/dev/null 2>&1 &
