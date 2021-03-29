@@ -58,7 +58,7 @@ public class DockerHubService implements Runnable {
 
 			port(port);
 
-			webSocket("/containers", ContainerInfoPublisher.class);
+			webSocket("/_containers", ContainerInfoPublisher.class);
 
 			Routes.init();
 		}
