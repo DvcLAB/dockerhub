@@ -22,7 +22,8 @@ public class Container extends ModelD {
 		Jupyterlab_Start_Success,
 		Port_Forwarding_Success,
 		Failure,
-		Deleted
+		Deleted,
+		Keep_Alive
 	}
 
 	@DatabaseField(dataType = DataType.STRING, width = 64, canBeNull = false, indexName = "default")

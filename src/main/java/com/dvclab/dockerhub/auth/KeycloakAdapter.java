@@ -46,8 +46,8 @@ public class KeycloakAdapter {
 	public String frontend_client_id = "test";
 	public String frontend_client_secret = "71034e0a-50f5-4795-b961-e28f206e8f82";
 
-	private String client_id = "test";
-	private String client_secret = "71034e0a-50f5-4795-b961-e28f206e8f82";
+	public String client_id = "test";
+	public String client_secret = "71034e0a-50f5-4795-b961-e28f206e8f82";
 
 	private String verify_url_template = "%s/auth/realms/%s/protocol/openid-connect/token/introspect";
 	private String verify_url;
