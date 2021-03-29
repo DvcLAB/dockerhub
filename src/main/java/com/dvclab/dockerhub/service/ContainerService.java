@@ -9,14 +9,18 @@ import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.exception.ModelException;
 import one.rewind.db.kafka.KafkaClient;
+import one.rewind.db.kafka.msg.MsgStringSerializer;
 import one.rewind.txt.StringUtil;
 import one.rewind.util.FileUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +36,7 @@ public class ContainerService {
 	 * 单例模式
 	 * @return
 	 */
-	public static ContainerService getInstance() throws DBInitException, SQLException {
+	public static ContainerService getInstance() throws DBInitException, SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 
 		if (instance == null) {
 			synchronized (ContainerService.class) {
@@ -53,10 +57,14 @@ public class ContainerService {
 	/**
 	 *
 	 */
-	public ContainerService() {
+	public ContainerService() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
 		// 添加消息监听，向前端发送状态更新消息
-		KafkaClient.getInstance(kafka_db_name).addConsumer(container_event_topic_name, 2, getContainerMsgCallback());
+		KafkaClient.getInstance(kafka_db_name).setSerializers(
+				MsgStringSerializer.class,
+				MsgStringSerializer.class,
+				ServiceMsg.class.getName()
+		).addConsumer(container_event_topic_name, 2, getContainerMsgCallback());
 	}
 
 	/**
@@ -116,6 +124,8 @@ public class ContainerService {
 
 		container.id = StringUtil.md5(uid + "::" + tunnel.wan_addr + "::" + tunnel_port + "::" + System.currentTimeMillis());
 		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;
+		String service_path = "/users/" + container.uid + "/containers/" + container.id;
+		container.user_host = true;
 
 		// 创建配置文件
 		container.docker_compose_config = tpl.replaceAll("\\$\\{image_name\\}", image.name)
@@ -126,28 +136,36 @@ public class ContainerService {
 				.replaceAll("\\$\\{uid\\}", uid)
 				.replaceAll("\\$\\{keycloak_server_addr\\}", KeycloakAdapter.getInstance().host)
 				.replaceAll("\\$\\{keycloak_realm\\}", KeycloakAdapter.getInstance().realm)
-				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_id)
-				.replaceAll("\\$\\{client_secret\\}", KeycloakAdapter.getInstance().frontend_client_secret)
+				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().client_id)
+				.replaceAll("\\$\\{client_secret\\}", KeycloakAdapter.getInstance().client_secret)
 				.replaceAll("\\$\\{container_login_url\\}", container.jupyter_url + "/login")
+				.replaceAll("\\$\\{service_addr\\}", service_path)
 				.replaceAll("\\$\\{kafka_server\\}", kafka_server_addr)
 				.replaceAll("\\$\\{kafka_topic\\}", container_event_topic_name)
 				.replaceAll("\\$\\{frp_server_addr\\}", tunnel.wan_addr)
+				.replaceAll("\\$\\{jupyter_port\\}", "8988")
 				.replaceAll("\\$\\{frp_server_port\\}", String.valueOf(tunnel.wan_port))
 				.replaceAll("\\$\\{frp_remote_port\\}", String.valueOf(container.tunnel_port))
 				.replaceAll("\\$\\{cpus\\}", String.valueOf(container.cpus))
-				.replaceAll("\\$\\{mem\\}", String.valueOf(container.mem));
+				.replaceAll("\\$\\{mem\\}", String.valueOf(Math.round(container.mem)));
 
 		if(dataset_urls != null && dataset_urls.length > 0) {
-			container.docker_compose_config = container.docker_compose_config.replaceAll("\\$\\{mem\\}",
+			container.docker_compose_config = container.docker_compose_config.replaceAll("\\$\\{datasets\\}",
 					"- datasets=" + Arrays.stream(dataset_urls).collect(Collectors.joining(",")));
 		}
 
 		if(gpu) {
 			container.docker_compose_config = container.docker_compose_config
 					.replaceAll("\\$\\{runtime\\}", "runtime: nvidia");
+		} else {
+			container.docker_compose_config = container.docker_compose_config
+					.replaceAll("\\$\\{runtime\\}", "");
 		}
 
 		container.insert();
+		ContainerCache.containers.put(container.id, container);
+		// TODO 待验证
+		ReverseProxyService.getInstance().setupProxyPass(container);
 
 		return container;
 	}

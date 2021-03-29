@@ -2,7 +2,7 @@ version: "3.8"
 services:
   jupyterlab:
     image:
-      ${image_name}
+        registry.dvclab.com/${image_name}
     container_name: ${container_id}
     privileged: true
     tty: true
@@ -11,7 +11,7 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
       - container_id=${container_id}
 
-      - project_git_url=${project_git_url}
+      - project_git_url=${project_git_url}.git
       - project_branch=${project_branch}
       - project_name=${project_name}
 
@@ -26,16 +26,18 @@ services:
       - client_secret=${client_secret}
       - scope=openid+email
       - redirect_url=${container_login_url}
+      - service_addr=${service_addr}
+
 
       - kafka_server=${kafka_server}
       - kafka_topic=${kafka_topic}
 
       - frp_type = tcp
-      - frp_local_ip = 127.0.0.1
-      - frp_local_port = ${jupyter_port}
-      - frp_server_addr = ${frp_server_addr}
-      - frp_server_port = ${frp_server_port}
-      - frp_remote_port = ${frp_remote_port}
+      - frp_local_ip=127.0.0.1
+      - frp_local_port=${jupyter_port}
+      - frp_server_addr=${frp_server_addr}
+      - frp_server_port=${frp_server_port}
+      - frp_remote_port=${frp_remote_port}
 
       - CPU=${cpus}
       - MEM=${mem}
