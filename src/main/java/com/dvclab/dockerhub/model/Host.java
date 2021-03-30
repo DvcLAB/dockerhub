@@ -154,7 +154,7 @@ public class Host extends DockerHost {
 	public void removeContainer(Container container) throws DBInitException, SQLException {
 
 		String name = "jupyterlab-" + container.id + ".yml";
-		exec("docker-compose -f " + name + " up");
+		exec("docker-compose -f " + name + " down -v");
 		exec("rm " + name);
 
 		container_num.decrementAndGet();
