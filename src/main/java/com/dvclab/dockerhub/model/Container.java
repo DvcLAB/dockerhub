@@ -23,7 +23,7 @@ public class Container extends ModelD {
 		Port_Forwarding_Success,
 		Failure,
 		Deleted,
-		Keep_Alive
+		Running
 	}
 
 	@DatabaseField(dataType = DataType.STRING, width = 64, canBeNull = false, indexName = "default")

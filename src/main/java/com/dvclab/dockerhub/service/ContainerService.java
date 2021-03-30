@@ -64,7 +64,7 @@ public class ContainerService {
 				MsgStringSerializer.class,
 				MsgStringSerializer.class,
 				ServiceMsg.class.getName()
-		).addConsumer(container_event_topic_name, 2, getContainerMsgCallback());
+		).addConsumer(container_event_topic_name, 2, KafkaClient.OffsetPolicy.latest, getContainerMsgCallback()); // OffsetPolicy.latest不接受旧消息
 	}
 
 	/**
@@ -183,7 +183,12 @@ public class ContainerService {
 			try {
 
 				Container container = Container.getById(Container.class, container_id);
-				container.status = Container.Status.valueOf((String) data.get("event"));
+				// 过滤Deleted状态容器的消息
+				if(container.status == Container.Status.Deleted) return;
+
+				if(data.get("event").equals("Keep_Alive")) {
+					container.status = Container.Status.Running;
+				} else container.status = Container.Status.valueOf((String) data.get("event"));
 
 				switch (container.status) {
 					// 用户创建容器的第一个消息，创建host记录

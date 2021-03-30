@@ -39,12 +39,9 @@ build/
 tmp/
 *.iml
 out/
-gradle.properties
 colorHue.png
 
-gradlew
 gradlew.bat
-gradle/
 /www/
 
 dev.conf
@@ -54,3 +51,4 @@ src/main/resources/conf/*.conf
 keys/
 conf/
 cacerts
+!gradle/wrapper/gradle-wrapper.jar
