@@ -1,6 +1,7 @@
 package com.dvclab.dockerhub.cache;
 
 import com.dvclab.dockerhub.model.Host;
+import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 
 import java.sql.SQLException;
@@ -13,15 +14,17 @@ public class HostCache {
 
 	public static Map<String, Host> hosts = new HashMap<>();
 
-	public static void init() throws DBInitException, SQLException {
-		Host.getAll(Host.class).forEach(HostCache::addHost);
+	public static void init() throws DBInitException, SQLException, JSchException {
+		for (Host host : Host.getAll(Host.class)) {
+			addHost(host);
+		}
 	}
 
 	/**
 	 *
 	 * @param host
 	 */
-	public static void addHost(Host host) {
+	public static void addHost(Host host) throws JSchException {
 		host.connectSshHost();
 		hosts.put(host.id, host);
 	}

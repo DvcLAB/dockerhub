@@ -63,7 +63,7 @@ public class HostRoute {
 		String source = q.body();
 
 		try {
-			Host obj = Dataset.fromJSON(source, Host.class);
+			Host obj = Host.fromJSON(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
 			if(obj.insert()) {

@@ -1,5 +1,7 @@
 package com.dvclab.dockerhub.model;
 
+import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.service.ReverseProxyService;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -91,8 +93,9 @@ public class Host extends DockerHost {
 	/**
 	 *
 	 */
-	public void connectSshHost() {
-		this.sshHost = new SshHost(ip, port, username, this.private_key);
+	public void connectSshHost() throws JSchException {
+		this.sshHost = new SshHost(ip, port, username, this.private_key.getBytes());
+		this.sshHost.connect();
 		this.ssh_session = true;
 	}
 
@@ -123,17 +126,22 @@ public class Host extends DockerHost {
 	public void runContainer(Container container) throws IOException, JSchException, DBInitException, SQLException {
 
 		container.host_id = this.id;
+		container.user_host = false;
 
 		// 复制配置文件
 		String name = "jupyterlab-" + container.id + ".yml";
 		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
-		sshHost.copyLocalToRemote(name, "~"+name);
+		sshHost.copyLocalToRemote(name, name);
 
 		exec("docker-compose -f " + name + " up");
 		// exec("rm " + name);
 		container_num.incrementAndGet();
 
 		new File(name).delete();
+
+		// 同步缓存
+		ContainerCache.containers.get(container.id).host_id = this.id;
+		ContainerCache.containers.get(container.id).user_host = false;
 
 		container.update();
 		this.update();

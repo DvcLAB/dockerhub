@@ -127,7 +127,6 @@ public class ContainerRoute {
 			if(container != null) {
 
 				host.runContainer(container);
-				container.user_host = false;
 
 				return Msg.success();
 			}
@@ -137,7 +136,7 @@ public class ContainerRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Get Container[{}] error, ", id, e);
+			Routes.logger.error("Run Container[{}] error, ", id, e);
 			return Msg.failure(e);
 		}
 	};
