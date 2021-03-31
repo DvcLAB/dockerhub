@@ -13,6 +13,10 @@ public class Routes {
 
 	public static final Logger logger = LogManager.getLogger(Routes.class.getName());
 
+	public static String NoAuthRoutes = String.join("|",
+			"/containers/.*/users/.*/assign"
+	);
+
 	/**
 	 *
 	 * @param a
@@ -75,8 +79,7 @@ public class Routes {
 			q.session().attribute("begin_ts", System.currentTimeMillis());
 
 			// 登录验证
-			if( !q.requestMethod().equals("OPTIONS") ) {
-
+			if(!q.pathInfo().toLowerCase().matches(NoAuthRoutes) && !q.requestMethod().equals("OPTIONS") ) {
 				try {
 					authenticator.handle(q, a);
 				}
@@ -163,7 +166,7 @@ public class Routes {
 			get("/:id", ContainerRoute.getContainer, transformer);
 			post("/:id/run", ContainerRoute.runContainer, transformer);
 			delete("/:id", ContainerRoute.deleteContainer, transformer);
-			get("/:id/assign", ContainerRoute.getContainerProxyInfo, transformer);
+			get("/:id/users/:uid/assign", ContainerRoute.getContainerProxyInfo, transformer);
 		});
 	}
 }

@@ -208,7 +208,7 @@ public class ContainerRoute {
 	 */
 	public static Route getContainerProxyInfo = (q, a) -> {
 
-		String uid = q.session().attribute("uid");
+		String uid = q.params("uid");
 		String id = q.params(":id");
 
 		String frp_local_ip = "127.0.0.1";
@@ -218,16 +218,19 @@ public class ContainerRoute {
 		try {
 
 			Container container = ContainerCache.containers.get(id);
-			Tunnel t = ReverseProxyService.getInstance().tunnels.get(container.tunnel_id);
+
+
+			if(container == null || container.status == Container.Status.Deleted)
+				return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			// 权限：用户只能获取自己容器的信息
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
-			// 已经删除的容器 返回404
-			if(container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			//  仍未分配端口
+			if(container.tunnel_id == null) return new Msg(Msg.Code.BAD_REQUEST, null, null);
 
-			ContainerService.AssignInfo assignInfo = new ContainerService.AssignInfo();
-
-			assignInfo.withFrp_local_ip(frp_local_ip)
+			Tunnel t = ReverseProxyService.getInstance().tunnels.get(container.tunnel_id);
+			ContainerService.AssignInfo assignInfo = new ContainerService.AssignInfo()
+					.withFrp_local_ip(frp_local_ip)
 					.withFrp_server_addr(t.wan_addr)
 					.withFrp_type(frp_type)
 					.withFrp_local_port(frp_local_port)

@@ -19,8 +19,7 @@ public class ContainerCache {
 
 		// 初始化容器
 		for(Container c : Container.getAll(Container.class)) {
-			// TODO 重启后直接添加映射？状态验证
-			if(c.user_host && c.status != Container.Status.Deleted) {
+			if(c.user_host && c.status != Container.Status.Deleted && c.status != Container.Status.New) {
 				ReverseProxyService.getInstance().available_ports.get(c.tunnel_id).remove(Integer.valueOf(c.tunnel_port));
 				ReverseProxyService.getInstance().setupProxyPass(c);
 			}
