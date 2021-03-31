@@ -222,6 +222,7 @@ public class ContainerService {
 				switch (container.status) {
 					// 用户创建容器的第一个消息，创建host记录
 					case Init: {
+						assignPort(container);
 						break;
 					}
 					case Repo_Clone_Success: {
@@ -234,7 +235,6 @@ public class ContainerService {
 						break;
 					}
 					case Jupyterlab_Start_Success: {
-						assignPort(container);
 						break;
 					}
 					case Port_Forwarding_Success: {
