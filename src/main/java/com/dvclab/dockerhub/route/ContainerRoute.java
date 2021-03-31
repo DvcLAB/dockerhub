@@ -6,9 +6,11 @@ import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Container;
 import com.dvclab.dockerhub.model.Host;
+import com.dvclab.dockerhub.model.Tunnel;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.service.ContainerService;
+import com.dvclab.dockerhub.service.ReverseProxyService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
@@ -197,6 +199,46 @@ public class ContainerRoute {
 		catch (Exception e) {
 
 			Routes.logger.error("Delete Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 获取容器的映射信息
+	 */
+	public static Route getContainerProxyInfo = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		String frp_local_ip = "127.0.0.1";
+		String frp_type = "tcp";
+		Integer frp_local_port = 8988;
+
+		try {
+
+			Container container = ContainerCache.containers.get(id);
+			Tunnel t = ReverseProxyService.getInstance().tunnels.get(container.tunnel_id);
+
+			// 权限：用户只能获取自己容器的信息
+			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			// 已经删除的容器 返回404
+			if(container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
+
+			ContainerService.AssignInfo assignInfo = new ContainerService.AssignInfo();
+
+			assignInfo.withFrp_local_ip(frp_local_ip)
+					.withFrp_server_addr(t.wan_addr)
+					.withFrp_type(frp_type)
+					.withFrp_local_port(frp_local_port)
+					.withFrp_remote_port(container.tunnel_port)
+					.withFrp_server_port(t.wan_port);
+
+			return Msg.success(assignInfo);
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Get Container[{}] Assign Info error, ", id, e);
 			return Msg.failure(e);
 		}
 	};

@@ -163,6 +163,7 @@ public class Routes {
 			get("/:id", ContainerRoute.getContainer, transformer);
 			post("/:id/run", ContainerRoute.runContainer, transformer);
 			delete("/:id", ContainerRoute.deleteContainer, transformer);
+			get("/:id/assign", ContainerRoute.getContainerProxyInfo, transformer);
 		});
 	}
 }

@@ -54,6 +54,48 @@ public class ContainerService {
 	public String kafka_server_addr = KafkaClient.getInstance(kafka_db_name).server_addr;
 	public String container_event_topic_name = "Container_Events";
 
+	public static class AssignInfo {
+
+		public String frp_type;
+		public String frp_local_ip;
+		public Integer frp_local_port;
+		public String frp_server_addr;
+		public Integer frp_server_port;
+		public Integer frp_remote_port;
+
+		public AssignInfo() {}
+
+		public AssignInfo withFrp_type(String frp_type) {
+			this.frp_type = frp_type;
+			return this;
+		}
+
+		public AssignInfo withFrp_local_ip(String frp_local_ip) {
+			this.frp_local_ip = frp_local_ip;
+			return this;
+		}
+
+		public AssignInfo withFrp_local_port(Integer frp_local_port) {
+			this.frp_local_port = frp_local_port;
+			return this;
+		}
+
+		public AssignInfo withFrp_server_addr(String frp_server_addr) {
+			this.frp_server_addr = frp_server_addr;
+			return this;
+		}
+
+		public AssignInfo withFrp_server_port(Integer frp_server_port) {
+			this.frp_server_port = frp_server_port;
+			return this;
+		}
+
+		public AssignInfo withFrp_remote_port(Integer frp_remote_port) {
+			this.frp_remote_port = frp_remote_port;
+			return this;
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -109,21 +151,14 @@ public class ContainerService {
 		Image image = Image.getById(Image.class, image_id);
 		Project project = Project.getById(Project.class, project_id);
 
-		// 分配容器跳板机内网端口
-		Pair<Tunnel, Integer> tunnel_port = ReverseProxyService.getInstance().selectTunnelPort();
-		Tunnel tunnel = tunnel_port.getLeft();
-
 		// 创建容器对象
 		Container container = new Container();
 		container.uid = uid;
 		container.cpus = cpus;
 		container.mem = mem;
-		container.tunnel_id = tunnel_port.getLeft().id;
-		container.tunnel_port = tunnel_port.getRight();
+		// TODO 容器ID的生成方法需要更新
+		container.id = StringUtil.md5(uid + "::" + System.currentTimeMillis());
 		container.container_name = container.id;
-
-		container.id = StringUtil.md5(uid + "::" + tunnel.wan_addr + "::" + tunnel_port + "::" + System.currentTimeMillis());
-		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;
 		String service_path = "/users/" + container.uid + "/containers/" + container.id;
 		container.user_host = true;
 
@@ -138,14 +173,10 @@ public class ContainerService {
 				.replaceAll("\\$\\{keycloak_realm\\}", KeycloakAdapter.getInstance().realm)
 				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().client_id)
 				.replaceAll("\\$\\{client_secret\\}", KeycloakAdapter.getInstance().client_secret)
-				.replaceAll("\\$\\{container_login_url\\}", container.jupyter_url + "/login")
 				.replaceAll("\\$\\{service_addr\\}", service_path)
 				.replaceAll("\\$\\{kafka_server\\}", kafka_server_addr)
 				.replaceAll("\\$\\{kafka_topic\\}", container_event_topic_name)
-				.replaceAll("\\$\\{frp_server_addr\\}", tunnel.wan_addr)
 				.replaceAll("\\$\\{jupyter_port\\}", "8988")
-				.replaceAll("\\$\\{frp_server_port\\}", String.valueOf(tunnel.wan_port))
-				.replaceAll("\\$\\{frp_remote_port\\}", String.valueOf(container.tunnel_port))
 				.replaceAll("\\$\\{cpus\\}", String.valueOf(container.cpus))
 				.replaceAll("\\$\\{mem\\}", String.valueOf(Math.round(container.mem)));
 
@@ -164,8 +195,6 @@ public class ContainerService {
 
 		container.insert();
 		ContainerCache.containers.put(container.id, container);
-		// TODO 待验证
-		ReverseProxyService.getInstance().setupProxyPass(container);
 
 		return container;
 	}
@@ -205,6 +234,7 @@ public class ContainerService {
 						break;
 					}
 					case Jupyterlab_Start_Success: {
+						assignPort(container);
 						break;
 					}
 					case Port_Forwarding_Success: {
@@ -215,6 +245,8 @@ public class ContainerService {
 				}
 
 				container.update();
+				// 缓存更新
+				ContainerCache.containers.put(container.id, container);
 				ContainerInfoPublisher.broadcast(container_id, container);
 
 			}
@@ -222,5 +254,22 @@ public class ContainerService {
 				DockerHubService.logger.error("Container[{}] not found, ", container_id, e);
 			}
 		};
+	}
+
+	/**
+	 * 向容器分配端口,并做映射
+	 */
+	private void assignPort(Container container) throws DBInitException, SQLException {
+
+		// 收到容器成功启动的信息，向容器分配端口
+		// 分配容器跳板机内网端口
+		Pair<Tunnel, Integer> tunnel_port = ReverseProxyService.getInstance().selectTunnelPort();
+		Tunnel tunnel = tunnel_port.getLeft();
+
+		container.tunnel_id = tunnel_port.getLeft().id;
+		container.tunnel_port = tunnel_port.getRight();
+
+		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;
+		ReverseProxyService.getInstance().setupProxyPass(container);
 	}
 }
