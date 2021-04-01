@@ -85,7 +85,7 @@ public class ResourceInfoFetcher {
 		String branches_src = BasicRequester.req(branches_url, proxy);
 		Pattern p = Pattern.compile("(?<=branch=\").+?(?=\")");
 		Matcher m = p.matcher(branches_src);
-		if(m.find()) {
+		while (m.find()) {
 			branches.add(m.group());
 		}
 
