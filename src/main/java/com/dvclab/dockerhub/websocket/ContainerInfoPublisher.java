@@ -32,15 +32,12 @@ public class ContainerInfoPublisher {
 	@OnWebSocketConnect
 	public void connected(Session session) {
 
-		// ?host_id=<host_id>
-		String host_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "host_id");
+		String container_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "id");
 
-		if(host_id != null && ContainerCache.containers.containsKey(host_id)) {
+		if(container_id != null && ContainerCache.containers.containsKey(container_id)) {
 
-			Routes.logger.info(host_id);
-
-			container_sessions.computeIfAbsent(host_id, v -> new ConcurrentLinkedQueue<>()).add(session);
-			session_container_map.put(session, host_id);
+			container_sessions.computeIfAbsent(container_id, v -> new ConcurrentLinkedQueue<>()).add(session);
+			session_container_map.put(session, container_id);
 		}
 		else {
 			session.close(1011, "Not Valid");
