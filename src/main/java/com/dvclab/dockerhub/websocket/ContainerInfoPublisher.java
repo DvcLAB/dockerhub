@@ -1,21 +1,26 @@
 package com.dvclab.dockerhub.websocket;
 
 import com.dvclab.dockerhub.DockerHubService;
+import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.model.Container;
+import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.route.Routes;
 import one.rewind.txt.URLUtil;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
+import spark.Route;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
+import java.net.HttpCookie;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -28,14 +33,22 @@ public class ContainerInfoPublisher {
 
 	public static Map<String, Queue<Session>> container_sessions = new HashMap<>();
 	private static Map<Session, String> session_container_map = new HashMap<>();
+	private final String WS_AUTH_HEADER = "Sec-WebSocket-Protocol";
 
 	@OnWebSocketConnect
 	public void connected(Session session) {
 
+		String token = session.getUpgradeRequest().getHeader(WS_AUTH_HEADER);
 		String container_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "id");
 
-		if(container_id != null && ContainerCache.containers.containsKey(container_id)) {
+		// ws连接认证
+		try {
+			KeycloakAdapter.getInstance().verifyAccessToken(token);
+		} catch (URISyntaxException | IOException e) {
+			session.close(1011, "Not Valid");
+		}
 
+		if(container_id != null && ContainerCache.containers.containsKey(container_id)) {
 			container_sessions.computeIfAbsent(container_id, v -> new ConcurrentLinkedQueue<>()).add(session);
 			session_container_map.put(session, container_id);
 		}
