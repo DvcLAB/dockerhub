@@ -208,7 +208,7 @@ public class ContainerRoute {
 	 */
 	public static Route getContainerProxyInfo = (q, a) -> {
 
-		String uid = q.params("uid");
+		String uid = q.params(":uid");
 		String id = q.params(":id");
 
 		String frp_local_ip = "127.0.0.1";
@@ -225,7 +225,7 @@ public class ContainerRoute {
 
 			// 权限：用户只能获取自己容器的信息
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
-			//  仍未分配端口
+			// 仍未分配端口
 			if(container.tunnel_id == null) return new Msg(Msg.Code.BAD_REQUEST, null, null);
 
 			Tunnel t = ReverseProxyService.getInstance().tunnels.get(container.tunnel_id);

@@ -3,11 +3,14 @@ package com.dvclab.dockerhub.service;
 import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.*;
+import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.serialization.ServiceMsg;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
-import one.rewind.db.exception.ModelException;
 import one.rewind.db.kafka.KafkaClient;
 import one.rewind.db.kafka.msg.MsgStringSerializer;
 import one.rewind.txt.StringUtil;
@@ -15,12 +18,13 @@ import one.rewind.util.FileUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +35,7 @@ public class ContainerService {
 	public static final Logger logger = LogManager.getLogger(ContainerService.class);
 
 	public static ContainerService instance;
+	public static ExecutorService es;
 
 	/**
 	 * 单例模式
@@ -107,13 +112,17 @@ public class ContainerService {
 				MsgStringSerializer.class,
 				ServiceMsg.class.getName()
 		).addConsumer(container_event_topic_name, 2, KafkaClient.OffsetPolicy.latest, getContainerMsgCallback()); // OffsetPolicy.latest不接受旧消息
+
+		// 初始化一个线程池
+		es = Executors.newFixedThreadPool(4,
+				new ThreadFactoryBuilder().setNameFormat("ContainerService-%d").build());
 	}
 
 	/**
 	 *
 	 * @param container
 	 */
-	public void removeContainer(Container container) throws DBInitException, SQLException {
+	public void removeContainer(Container container) throws DBInitException, SQLException, IOException, JSchException {
 
 		// 取消 proxy pass 映射
 		ReverseProxyService.getInstance().removeProxyPass(container);
@@ -123,6 +132,9 @@ public class ContainerService {
 
 		// 同步缓存
 		ContainerCache.containers.remove(container.id);
+
+		// TODO 更新tokens文件
+		removeToken(container);
 
 		// 更新状态
 		container.status = Container.Status.Deleted;
@@ -250,7 +262,7 @@ public class ContainerService {
 				ContainerInfoPublisher.broadcast(container_id, container);
 
 			}
-			catch (DBInitException | SQLException e) {
+			catch (DBInitException | SQLException | IOException | JSchException e) {
 				DockerHubService.logger.error("Container[{}] not found, ", container_id, e);
 			}
 		};
@@ -259,7 +271,10 @@ public class ContainerService {
 	/**
 	 * 向容器分配端口,并做映射
 	 */
-	private void assignPort(Container container) throws DBInitException, SQLException {
+	private void assignPort(Container container) throws DBInitException, SQLException, IOException, JSchException {
+
+		// 检查是否已经分配端口
+		if(container.tunnel_id != null) return;
 
 		// 收到容器成功启动的信息，向容器分配端口
 		// 分配容器跳板机内网端口
@@ -271,5 +286,61 @@ public class ContainerService {
 
 		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;
 		ReverseProxyService.getInstance().setupProxyPass(container);
+
+		// 分配一个meta_token写入tunnel的tokens文件
+		addToken(container);
+	}
+
+	/**
+	 * 删除tokens文件记录
+	 */
+	private void removeToken(Container container) {
+
+		String local_token_path = "/opt/frps/tokens";
+		String cmd = "pkill fp-multiuser && nohup /opt/frps/fp-multiuser -l 127.0.0.1:7200 -f /opt/frps/tokens";
+		// 更改tokens文件
+		String raw = FileUtil.readFileByLines(local_token_path);
+		String s = raw.replace(container.id + "=" + container.id, "")
+				.replace("\r", "")
+				.replace("\n", "");
+		FileUtil.writeBytesToFile(s.getBytes(), local_token_path);
+
+		// 执行重启命令
+		es.submit(() -> {
+			try {
+				Process process = Runtime.getRuntime().exec(cmd);
+				int status = process.waitFor();
+				if (status != 0) {
+					throw new RuntimeException();
+				}
+			} catch (InterruptedException | IOException e ) {
+				Routes.logger.error("add frps auth token error", e);
+			}
+		});
+
+	}
+
+	/**
+	 * 向tokens文件添加记录
+	 */
+	private void addToken(Container container) {
+
+		String local_token_path = "/opt/frps/tokens";
+		String cmd = "pkill fp-multiuser && nohup /opt/frps/fp-multiuser -l 127.0.0.1:7200 -f /opt/frps/tokens";
+		FileUtil.appendLineToFile( "\n" + container.id + "=" + container.id, local_token_path);
+
+		// 执行重启命令
+		es.submit(() -> {
+			try {
+				Process process = Runtime.getRuntime().exec(cmd);
+				int status = process.waitFor();
+				if (status != 0) {
+					throw new RuntimeException();
+				}
+			} catch (InterruptedException | IOException e ) {
+				Routes.logger.error("add frps auth token error", e);
+			}
+		});
+
 	}
 }
