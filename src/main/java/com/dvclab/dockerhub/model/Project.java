@@ -36,7 +36,7 @@ public class Project extends ModelD {
 	public String url;
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
-	public String cover_img_url;
+	public String cover_img_url = "";
 
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
