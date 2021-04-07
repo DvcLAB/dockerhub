@@ -101,6 +101,90 @@ public class ContainerService {
 		}
 	}
 
+	public static class CreateResourceBody {
+
+		public String name;
+		public String type;
+		public String owner;
+		public boolean ownerManagedAccess;
+		public List<String> resource_scopes = new ArrayList<>();
+		public String _id;
+
+		public CreateResourceBody() {}
+
+		public CreateResourceBody withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public CreateResourceBody withType(String type) {
+			this.type = type;
+			return this;
+		}
+
+		public CreateResourceBody withOwner(String owner) {
+			this.owner = owner;
+			return this;
+		}
+
+		public CreateResourceBody withOwnerManagedAccess(boolean ownerManagedAccess) {
+			this.ownerManagedAccess = ownerManagedAccess;
+			return this;
+		}
+
+		public CreateResourceBody withResource_scopes(List<String> resource_scopes) {
+			this.resource_scopes = resource_scopes;
+			return this;
+		}
+
+		public CreateResourceBody withId(String _id) {
+			this._id = _id;
+			return this;
+		}
+	}
+
+	public static class ApplyResourcePolicyBody {
+
+		public String name;
+		public String description;
+		public List<String> users;
+		public List<String> scopes = new ArrayList<>();
+		public String logic = "POSITIVE";
+		public String decisionStrategy = "UNANIMOUS";
+
+		public ApplyResourcePolicyBody() {}
+
+		public ApplyResourcePolicyBody withName(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withDesc(String description) {
+			this.description = description;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withUsers(List<String> users) {
+			this.users = users;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withScopes(List<String> scopes) {
+			this.scopes = scopes;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withLogic(String logic) {
+			this.logic = logic;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withDecisionStrategy(String decisionStrategy) {
+			this.decisionStrategy = decisionStrategy;
+			return this;
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -250,6 +334,30 @@ public class ContainerService {
 						break;
 					}
 					case Port_Forwarding_Success: {
+						// UUID
+						String resource_id = new StringBuilder(container_id).insert(8, "-")
+								.insert(13, "-")
+								.insert(18, "-")
+								.insert(23, "-").toString();
+						CreateResourceBody cr_body = new CreateResourceBody()
+								// 容器ID转UUID
+								.withId(resource_id)
+								.withName("jupyterlab_" + container_id)
+								.withOwner(UserCache.USERS.get(container.uid).username)
+								.withType("jupyterlab")
+								.withResource_scopes(List.of("view"))
+								.withOwnerManagedAccess(true);
+						// 获取资源ID
+						KeycloakAdapter.getInstance().createResource(cr_body);
+
+						// 为资源添加policy
+						String token = UserCache.UID_TOKEN.get(container.uid);
+						ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
+								.withDesc(container.uid + "_access_" + container_id)
+								.withName(container.uid + "_access_" + container_id)
+								.withScopes(List.of("view"))
+								.withUsers(List.of(UserCache.USERS.get(container.uid).username));
+						KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
 						break;
 					}
 					default:
@@ -262,7 +370,7 @@ public class ContainerService {
 				ContainerInfoPublisher.broadcast(container_id, container);
 
 			}
-			catch (DBInitException | SQLException | IOException | JSchException e) {
+			catch (DBInitException | SQLException | IOException | JSchException | URISyntaxException e) {
 				DockerHubService.logger.error("Container[{}] not found, ", container_id, e);
 			}
 		};

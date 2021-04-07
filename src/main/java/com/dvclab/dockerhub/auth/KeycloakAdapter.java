@@ -1,6 +1,8 @@
 package com.dvclab.dockerhub.auth;
 
 import com.dvclab.dockerhub.model.User;
+import com.dvclab.dockerhub.service.ContainerService;
+import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
@@ -13,6 +15,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.http.HttpHeaders;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -49,9 +52,17 @@ public class KeycloakAdapter {
 	public String client_id = "test";
 	public String client_secret = "71034e0a-50f5-4795-b961-e28f206e8f82";
 
+	private String request_pat_template = "%s/auth/realms/%s/protocol/openid-connect/token";
+	private String request_pat_body_template = "client_id=%s&client_secret=%s&grant_type=client_credentials";
 	private String verify_url_template = "%s/auth/realms/%s/protocol/openid-connect/token/introspect";
 	private String verify_url;
 	private String verify_body_template = "client_id=%s&client_secret=%s&token=%s";
+	private String create_resource_template = "%s/auth/realms/%s/authz/protection/resource_set";
+	private String create_resource_url;
+	private String apply_resource_policy_template = "%s/auth/realms/%s/authz/protection/uma-policy/%s";
+	private String apply_resource_policy_url;
+	private String request_pat_url;
+	private String request_pat_body;
 
 	public Admin admin;
 
@@ -76,6 +87,14 @@ public class KeycloakAdapter {
 
 		verify_url = String.format(verify_url_template, host, realm);
 
+		create_resource_template = config.getString("create_resource_template");
+		request_pat_body_template = config.getString("request_pat_body_template");
+		apply_resource_policy_template = config.getString("apply_resource_policy_template");
+		request_pat_template = config.getString("request_pat_template");
+
+		create_resource_url = String.format(create_resource_template, host, realm);
+		request_pat_body = String.format(request_pat_body_template, client_id, client_secret);
+		request_pat_url = String.format(request_pat_template, host, realm);
 		Config admin_config = config.getConfig("admin");
 		if(admin_config != null) {
 			admin = new Admin(admin_config);
@@ -129,6 +148,42 @@ public class KeycloakAdapter {
 		headers.put("Authorization", "bearer " + token);
 		return headers;
 	}
+
+	/**
+	 * 申请pat
+	 */
+	private String requestPat () throws URISyntaxException, IOException {
+
+		Task t = new Task(request_pat_url, HttpMethod.POST, request_pat_body.getBytes());
+		BasicRequester.req(t);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode node = mapper.readTree(t.r.rBody);
+
+		return node.get("access_token").asText();
+	}
+
+	/**
+	 * 创建资源
+	 */
+	public void createResource (ContainerService.CreateResourceBody create_resource_body) throws URISyntaxException, IOException {
+		String body = JSON.toJson(create_resource_body);
+		System.out.println(body);
+		Task t = new Task(create_resource_url, HttpMethod.POST, getHeaders(requestPat()), null, null, body.getBytes());
+		BasicRequester.req(t);
+	}
+
+	/**
+	 *
+	 */
+	public void applyResourcePolicy (String access_token, String resource_id, ContainerService.ApplyResourcePolicyBody apply_resource_policy_body) throws URISyntaxException, IOException {
+		apply_resource_policy_url = String.format(apply_resource_policy_template, host, realm, resource_id);
+		String body = JSON.toJson(apply_resource_policy_body);
+		Task t = new Task(apply_resource_policy_url, HttpMethod.POST, getHeaders(access_token), null, null, body.getBytes());
+		BasicRequester.req(t);
+	}
+
+
 
 	/**
 	 *

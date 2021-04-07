@@ -17,6 +17,7 @@ public class UserCache extends Caches {
 
 	public static Map<String, String> TOKEN_UID = new HashMap<>();
 	public static Map<String, User> USERS = new HashMap<>();
+	public static Map<String, String> UID_TOKEN = new HashMap<>();
 
 	/**
 	 * 更新用户缓存信息
@@ -45,13 +46,16 @@ public class UserCache extends Caches {
 		user.roles = user_info.roles;
 
 		TOKEN_UID.put(token, user.id);
+		UID_TOKEN.put(user.id, token);
 		USERS.put(user.id, user);
 
 		long delay = expiration.getTime() - System.currentTimeMillis();
 
 		// 超过有效期清空用户token缓存
 		ses.schedule(() -> {
-			USERS.remove(TOKEN_UID.remove(token));
+			String uid = TOKEN_UID.remove(token);
+			USERS.remove(uid);
+			UID_TOKEN.remove(uid);
 		}, delay, TimeUnit.SECONDS);
 
 		user.upsert();
