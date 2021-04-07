@@ -107,7 +107,7 @@ public class KeycloakAdapter {
 		u.id = node.get("sub").asText();
 
 		for(JsonNode roleNode : node.get("realm_access").get("roles")) {
-			u.roles.add(User.Role.valueOf(roleNode.asText()));
+			u.roles.add(User.Role.valueOf(roleNode.asText().toUpperCase()));
 		}
 
 		u.username = node.get("username").asText();

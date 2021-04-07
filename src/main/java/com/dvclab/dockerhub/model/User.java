@@ -22,7 +22,9 @@ public class User extends ModelD {
 
 	public static enum Role {
 		DOCKHUB_ADMIN,
-		DOCKHUB_USER
+		DOCKHUB_USER,
+		OFFLINE_ACCESS,
+		UMA_AUTHORIZATION,
 	}
 
 	@DatabaseField(dataType = DataType.STRING, width = 32, indexName = "ue")
