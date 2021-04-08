@@ -17,10 +17,6 @@ public class Routes {
 			"/_containers"
 	);
 
-	public static String NoAuthRoutes = String.join("|",
-			"/containers/.*/users/.*/assign"
-	);
-
 	/**
 	 *
 	 * @param a
