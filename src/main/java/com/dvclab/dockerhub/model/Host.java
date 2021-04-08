@@ -133,7 +133,7 @@ public class Host extends DockerHost {
 		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
 		sshHost.copyLocalToRemote(name, name);
 
-		exec("docker-compose -f " + name + " up");
+		exec("docker-compose -f " + name + " up -d");
 		// exec("rm " + name);
 		container_num.incrementAndGet();
 

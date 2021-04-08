@@ -80,12 +80,16 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dataset.conf";
 
+		String cover_image_url = url.replaceAll("(\\.git|/)$", "")
+				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
+				+ "/master/config/.cover_img.png"; // 1024 * 1024 png
+
 		List<String> branches = new ArrayList<>();
 		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
 		String branches_src = BasicRequester.req(branches_url, proxy);
 		Pattern p = Pattern.compile("(?<=branch=\").+?(?=\")");
 		Matcher m = p.matcher(branches_src);
-		if(m.find()) {
+		while (m.find()) {
 			branches.add(m.group());
 		}
 
@@ -93,7 +97,7 @@ public class ResourceInfoFetcher {
 		if(branches.size() == 0) throw new IOException("Can not retrieve project branches");
 
 		return new Project(
-				name, url, desc, null,
+				name, url, desc, cover_image_url,
 				branches,
 				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n"))
 		);

@@ -5,6 +5,7 @@ import com.dvclab.dockerhub.serialization.JsonTransformer;
 import com.dvclab.dockerhub.serialization.Msg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.websocket.api.WebSocketConstants;
 import spark.Response;
 
 import static spark.Spark.*;
@@ -12,6 +13,9 @@ import static spark.Spark.*;
 public class Routes {
 
 	public static final Logger logger = LogManager.getLogger(Routes.class.getName());
+	public static String NoAuthRoutes = String.join("|",
+			"/_containers"
+	);
 
 	public static String NoAuthRoutes = String.join("|",
 			"/containers/.*/users/.*/assign"
@@ -109,6 +113,9 @@ public class Routes {
 
 			// 设置返回 HTTP header
 			setHeader(a);
+			// 设置ws header
+			if(q.pathInfo().toLowerCase().matches("/_containers")) a.header(WebSocketConstants.SEC_WEBSOCKET_PROTOCOL,
+					q.headers(WebSocketConstants.SEC_WEBSOCKET_PROTOCOL));
 		});
 
 		/**
