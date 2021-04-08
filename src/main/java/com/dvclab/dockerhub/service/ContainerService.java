@@ -5,10 +5,8 @@ import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.*;
-import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.serialization.ServiceMsg;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.kafka.KafkaClient;
@@ -205,7 +203,7 @@ public class ContainerService {
 	 *
 	 * @param container
 	 */
-	public void removeContainer(Container container) throws DBInitException, SQLException, IOException, JSchException {
+	public void removeContainer(Container container) throws DBInitException, SQLException, IOException, URISyntaxException {
 
 		// 取消 proxy pass 映射
 		ReverseProxyService.getInstance().removeProxyPass(container);
@@ -218,6 +216,12 @@ public class ContainerService {
 
 		// 更新tokens文件
 		removeToken(container);
+
+		// 删除Keycloak资源
+		KeycloakAdapter.getInstance().deleteResource(new StringBuilder(container.id).insert(8, "-")
+				.insert(13, "-")
+				.insert(18, "-")
+				.insert(23, "-").toString());
 
 		// 更新状态
 		container.status = Container.Status.Deleted;

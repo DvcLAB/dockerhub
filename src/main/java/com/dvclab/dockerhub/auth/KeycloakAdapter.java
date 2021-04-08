@@ -58,7 +58,9 @@ public class KeycloakAdapter {
 	private String verify_url;
 	private String verify_body_template = "client_id=%s&client_secret=%s&token=%s";
 	private String create_resource_template = "%s/auth/realms/%s/authz/protection/resource_set";
+	private String delete_resource_template = "%s/auth/realms/%s/authz/protection/resource_set/%s";
 	private String create_resource_url;
+	private String delete_resource_url;
 	private String apply_resource_policy_template = "%s/auth/realms/%s/authz/protection/uma-policy/%s";
 	private String apply_resource_policy_url;
 	private String request_pat_url;
@@ -88,6 +90,7 @@ public class KeycloakAdapter {
 		verify_url = String.format(verify_url_template, host, realm);
 
 		create_resource_template = config.getString("create_resource_template");
+		delete_resource_template = config.getString("delete_resource_template");
 		request_pat_body_template = config.getString("request_pat_body_template");
 		apply_resource_policy_template = config.getString("apply_resource_policy_template");
 		request_pat_template = config.getString("request_pat_template");
@@ -173,7 +176,7 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 *
+	 * 向资源添加policy
 	 */
 	public void applyResourcePolicy (String access_token, String resource_id, ContainerService.ApplyResourcePolicyBody apply_resource_policy_body) throws URISyntaxException, IOException {
 		apply_resource_policy_url = String.format(apply_resource_policy_template, host, realm, resource_id);
@@ -181,6 +184,16 @@ public class KeycloakAdapter {
 		Task t = new Task(apply_resource_policy_url, HttpMethod.POST, getHeaders(access_token), null, null, body.getBytes());
 		BasicRequester.req(t);
 	}
+
+	/**
+	 * 删除资源
+	 */
+	public void deleteResource (String resource_id) throws IOException, URISyntaxException {
+		delete_resource_url = String.format(delete_resource_template, host, realm, resource_id);
+		Task t = new Task(delete_resource_url, HttpMethod.DELETE, getHeaders(requestPat()), null, null, null);
+		BasicRequester.req(t);
+	}
+
 
 
 
