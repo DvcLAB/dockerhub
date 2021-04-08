@@ -10,6 +10,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
       - container_id=${container_id}
+      - frp_service_url=${frp_service_url}
 
       - project_git_url=${project_git_url}.git
       - project_branch=${project_branch}
@@ -25,19 +26,11 @@ services:
       - client_id=${client_id}
       - client_secret=${client_secret}
       - scope=openid+email
-      - redirect_url=${container_login_url}
       - service_addr=${service_addr}
 
 
       - kafka_server=${kafka_server}
       - kafka_topic=${kafka_topic}
-
-      - frp_type = tcp
-      - frp_local_ip=127.0.0.1
-      - frp_local_port=${jupyter_port}
-      - frp_server_addr=${frp_server_addr}
-      - frp_server_port=${frp_server_port}
-      - frp_remote_port=${frp_remote_port}
 
       - CPU=${cpus}
       - MEM=${mem}

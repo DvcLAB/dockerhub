@@ -4,8 +4,9 @@ import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.ImageCache;
 import com.dvclab.dockerhub.route.Routes;
-import com.dvclab.dockerhub.service.ContainerService;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
+import com.typesafe.config.Config;
+import one.rewind.util.Configs;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +21,8 @@ public class DockerHubService implements Runnable {
 	public static final Logger logger = LogManager.getLogger(DockerHubService.class);
 
 	public static DockerHubService instance;
+
+	public String service_url;
 
 	/**
 	 * 单例模式
@@ -45,7 +48,8 @@ public class DockerHubService implements Runnable {
 	 *
 	 */
 	private DockerHubService() {
-
+		Config config = Configs.getConfig(DockerHubService.class);
+		service_url = config.getString("service_url");
 	}
 
 	@Override

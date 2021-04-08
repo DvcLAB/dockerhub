@@ -168,7 +168,6 @@ public class KeycloakAdapter {
 	 */
 	public void createResource (ContainerService.CreateResourceBody create_resource_body) throws URISyntaxException, IOException {
 		String body = JSON.toJson(create_resource_body);
-		System.out.println(body);
 		Task t = new Task(create_resource_url, HttpMethod.POST, getHeaders(requestPat()), null, null, body.getBytes());
 		BasicRequester.req(t);
 	}
