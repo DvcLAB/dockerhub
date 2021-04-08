@@ -14,7 +14,8 @@ public class Routes {
 
 	public static final Logger logger = LogManager.getLogger(Routes.class.getName());
 	public static String NoAuthRoutes = String.join("|",
-			"/_containers"
+			"/_containers",
+			"/containers/.*/assign$"
 	);
 
 	/**
