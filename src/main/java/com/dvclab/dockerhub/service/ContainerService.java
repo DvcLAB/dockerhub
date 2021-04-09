@@ -214,14 +214,15 @@ public class ContainerService {
 		// 同步缓存
 		ContainerCache.containers.remove(container.id);
 
-		// 更新tokens文件
-		removeToken(container);
-
 		// 删除Keycloak资源
-		KeycloakAdapter.getInstance().deleteResource(new StringBuilder(container.id).insert(8, "-")
-				.insert(13, "-")
-				.insert(18, "-")
-				.insert(23, "-").toString());
+		if(container.status != Container.Status.Deleted && container.status != Container.Status.New) {
+			// 更新tokens文件
+			removeToken(container);
+			KeycloakAdapter.getInstance().deleteResource(new StringBuilder(container.id).insert(8, "-")
+					.insert(13, "-")
+					.insert(18, "-")
+					.insert(23, "-").toString());
+		}
 
 		// 更新状态
 		container.status = Container.Status.Deleted;
