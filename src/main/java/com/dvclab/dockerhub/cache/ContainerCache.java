@@ -19,7 +19,7 @@ public class ContainerCache {
 
 		// 初始化容器
 		for(Container c : Container.getAll(Container.class)) {
-			if(c.user_host && c.status != Container.Status.Deleted && c.status != Container.Status.New) {
+			if(c.status != Container.Status.Deleted && c.status != Container.Status.New) {
 				ReverseProxyService.getInstance().available_ports.get(c.tunnel_id).remove(Integer.valueOf(c.tunnel_port));
 				ReverseProxyService.getInstance().setupProxyPass(c);
 			}
