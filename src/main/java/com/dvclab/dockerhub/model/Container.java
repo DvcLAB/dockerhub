@@ -34,7 +34,7 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String host_id;
 
-	// 是否时用户主机创建的容器
+	// 是否是用户主机创建的容器
 	@DatabaseField(dataType = DataType.BOOLEAN)
 	public boolean user_host = false;
 

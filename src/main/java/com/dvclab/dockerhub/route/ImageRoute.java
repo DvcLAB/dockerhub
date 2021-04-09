@@ -195,6 +195,7 @@ public class ImageRoute {
 
 			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
 			if(obj.update()) {
+				ImageCache.images.put(obj.name, obj);
 				return Msg.success(obj);
 			}
 			else {

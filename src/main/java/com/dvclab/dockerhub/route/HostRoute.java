@@ -128,6 +128,7 @@ public class HostRoute {
 			if(!obj.id.equals(id)) throw new Exception("Host ip/port/username can not be changed");
 
 			if(obj.update()) {
+				HostCache.hosts.put(obj.id, obj);
 				return Msg.success(obj);
 			}
 			else {

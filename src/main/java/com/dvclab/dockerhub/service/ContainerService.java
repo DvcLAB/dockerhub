@@ -338,32 +338,8 @@ public class ContainerService {
 						break;
 					}
 					case Port_Forwarding_Success: {
-						// UUID
-						String resource_id = new StringBuilder(container_id).insert(8, "-")
-								.insert(13, "-")
-								.insert(18, "-")
-								.insert(23, "-").toString();
-						CreateResourceBody cr_body = new CreateResourceBody()
-								// 容器ID转UUID
-								.withId(resource_id)
-								.withName("jupyterlab_" + container_id)
-								.withOwner(UserCache.USERS.get(container.uid).username)
-								.withType("jupyterlab")
-								.withResource_scopes(List.of("view"))
-								.withOwnerManagedAccess(true);
-						// 获取资源ID
-						KeycloakAdapter.getInstance().createResource(cr_body);
-
-						// 为资源添加policy
-						String token = UserCache.UID_TOKEN.get(container.uid);
-						// 换取后端token
-						token = KeycloakAdapter.getInstance().exchangeToken(token);
-						ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
-								.withDesc(container.uid + "_access_" + container_id)
-								.withName(container.uid + "_access_" + container_id)
-								.withScopes(List.of("view"))
-								.withUsers(List.of(UserCache.USERS.get(container.uid).username));
-						KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
+						createContainerResource(container_id, container.uid);
+						applyContainerPolicy(container_id, container.uid);
 						break;
 					}
 					default:
@@ -380,6 +356,50 @@ public class ContainerService {
 				DockerHubService.logger.error("Container[{}] not found, ", container_id, e);
 			}
 		};
+	}
+
+	/**
+	 * 在keycloak中创建Container对应的资源
+	 */
+	private void createContainerResource (String container_id, String container_uid) throws IOException, URISyntaxException {
+
+		// UUID
+		String resource_id = new StringBuilder(container_id).insert(8, "-")
+				.insert(13, "-")
+				.insert(18, "-")
+				.insert(23, "-").toString();
+		CreateResourceBody cr_body = new CreateResourceBody()
+				// 容器ID转UUID
+				.withId(resource_id)
+				.withName("jupyterlab_" + container_id)
+				.withOwner(UserCache.USERS.get(container_uid).username)
+				.withType("jupyterlab")
+				.withResource_scopes(List.of("view"))
+				.withOwnerManagedAccess(true);
+		// 获取资源ID
+		KeycloakAdapter.getInstance().createResource(cr_body);
+	}
+
+	/**
+	 * 为keycalok中的Container资源分配Policy
+	 */
+	private void applyContainerPolicy (String container_id, String container_uid) throws IOException, URISyntaxException {
+
+		// UUID
+		String resource_id = new StringBuilder(container_id).insert(8, "-")
+				.insert(13, "-")
+				.insert(18, "-")
+				.insert(23, "-").toString();
+		// 为资源添加policy
+		String token = UserCache.UID_TOKEN.get(container_uid);
+		// 换取后端token
+		token = KeycloakAdapter.getInstance().exchangeToken(token);
+		ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
+				.withDesc(container_uid + "_access_" + container_id)
+				.withName(container_uid + "_access_" + container_id)
+				.withScopes(List.of("view"))
+				.withUsers(List.of(UserCache.USERS.get(container_uid).username));
+		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
 	}
 
 	/**
@@ -433,24 +453,26 @@ public class ContainerService {
 		updateToken();
 	}
 
+	/**
+	 * 更新fp-multiuser服务
+	 */
 	private synchronized void updateToken() throws IOException {
 
-		// B
 		String update_token_shell_path = "tpl/updateToken.sh";
 		String cmd = "#! /bin/bash\n" +
 				"pkill fp-multiuser && nohup /opt/frps/fp-multiuser -l 127.0.0.1:7200 -f /opt/frps/tokens > nohup.out 2> nohup.err < /dev/null &\n";
 
-		// B1
+		// 清除旧脚本
 		File file = new File(update_token_shell_path);
 		file.delete();
 
-		// B2
+		// 设置脚本可执行权限
 		Set<PosixFilePermission> ownerWritable = PosixFilePermissions.fromString("rwxrwxrwx");
 		FileAttribute<?> permissions = PosixFilePermissions.asFileAttribute(ownerWritable);
 		Files.createFile(Path.of(update_token_shell_path), permissions);
 		Files.write(Path.of(update_token_shell_path), cmd.getBytes());
 
-		// B3
+		// 执行脚本
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.command(List.of(update_token_shell_path));
 		processBuilder.start();
