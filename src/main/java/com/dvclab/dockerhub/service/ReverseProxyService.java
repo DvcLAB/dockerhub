@@ -107,6 +107,7 @@ public class ReverseProxyService {
 	 * @param container
 	 */
 	public void removeTunnelPort(Container container) {
+		if(container.status == Container.Status.Deleted && container.status == Container.Status.New) return;
 		available_ports.get(container.tunnel_id).add(container.tunnel_port);
 	}
 

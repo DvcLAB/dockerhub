@@ -356,6 +356,8 @@ public class ContainerService {
 
 						// 为资源添加policy
 						String token = UserCache.UID_TOKEN.get(container.uid);
+						// 换取后端token
+						token = KeycloakAdapter.getInstance().exchangeToken(token);
 						ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
 								.withDesc(container.uid + "_access_" + container_id)
 								.withName(container.uid + "_access_" + container_id)

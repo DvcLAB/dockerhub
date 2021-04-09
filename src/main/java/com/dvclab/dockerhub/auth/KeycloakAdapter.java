@@ -2,20 +2,15 @@ package com.dvclab.dockerhub.auth;
 
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.service.ContainerService;
-import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.io.requester.basic.BasicRequester;
 import one.rewind.io.requester.task.Task;
 import one.rewind.json.JSON;
 import one.rewind.util.Configs;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.apache.http.HttpHeaders;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -54,6 +49,9 @@ public class KeycloakAdapter {
 
 	private String request_pat_template = "%s/auth/realms/%s/protocol/openid-connect/token";
 	private String request_pat_body_template = "client_id=%s&client_secret=%s&grant_type=client_credentials";
+	private String exchange_token_body_template = "client_id=%s&client_secret=%s&" +
+			"grant_type=urn:ietf:params:oauth:grant-type:token-exchange&audience=%s&" +
+			"subject_token=%s&requested_token_type=urn:ietf:params:oauth:token-type:access_token";
 	private String verify_url_template = "%s/auth/realms/%s/protocol/openid-connect/token/introspect";
 	private String verify_url;
 	private String verify_body_template = "client_id=%s&client_secret=%s&token=%s";
@@ -65,6 +63,7 @@ public class KeycloakAdapter {
 	private String apply_resource_policy_url;
 	private String request_pat_url;
 	private String request_pat_body;
+	private String exchange_token_body;
 
 	public Admin admin;
 
@@ -92,6 +91,7 @@ public class KeycloakAdapter {
 		create_resource_template = config.getString("create_resource_template");
 		delete_resource_template = config.getString("delete_resource_template");
 		request_pat_body_template = config.getString("request_pat_body_template");
+		exchange_token_body_template = config.getString("exchange_token_body_template");
 		apply_resource_policy_template = config.getString("apply_resource_policy_template");
 		request_pat_template = config.getString("request_pat_template");
 
@@ -141,7 +141,7 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 *
+	 * 设置Bearer Authorization和 Content-Type请求头
 	 * @param token
 	 * @return
 	 */
@@ -167,7 +167,7 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 * 创建资源
+	 * 创建Keycloak资源
 	 */
 	public void createResource (ContainerService.CreateResourceBody create_resource_body) throws URISyntaxException, IOException {
 		String body = JSON.toJson(create_resource_body);
@@ -176,7 +176,7 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 * 向资源添加policy
+	 * 向Keycloak资源添加policy
 	 */
 	public void applyResourcePolicy (String access_token, String resource_id, ContainerService.ApplyResourcePolicyBody apply_resource_policy_body) throws URISyntaxException, IOException {
 		apply_resource_policy_url = String.format(apply_resource_policy_template, host, realm, resource_id);
@@ -186,7 +186,7 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 * 删除资源
+	 * 删除Keycloak资源
 	 */
 	public void deleteResource (String resource_id) throws IOException, URISyntaxException {
 		delete_resource_url = String.format(delete_resource_template, host, realm, resource_id);
@@ -194,11 +194,26 @@ public class KeycloakAdapter {
 		BasicRequester.req(t);
 	}
 
+	/**
+	 * 交换token
+	 */
+	public String exchangeToken (String front_token) throws URISyntaxException, IOException {
+
+		exchange_token_body = String.format(exchange_token_body_template, client_id, client_secret, client_id, front_token);
+		Task t = new Task(request_pat_url, HttpMethod.POST, exchange_token_body.getBytes());
+		BasicRequester.req(t);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode node = mapper.readTree(t.r.rBody);
+
+		return node.get("access_token").asText();
+	}
+
 
 
 
 	/**
-	 *
+	 * Admin用户行为
 	 */
 	public class Admin {
 
