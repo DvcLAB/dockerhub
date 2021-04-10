@@ -168,6 +168,7 @@ public class Routes {
 			put("", ContainerRoute.createContainer, transformer);
 			get("", ContainerRoute.listContainers, transformer);
 			get("/:id", ContainerRoute.getContainer, transformer);
+			post("/:id/name/:name", ContainerRoute.updateContainer, transformer);
 			post("/:id/run", ContainerRoute.runContainer, transformer);
 			delete("/:id", ContainerRoute.deleteContainer, transformer);
 			get("/:id/users/:uid/assign", ContainerRoute.getContainerProxyInfo, transformer);

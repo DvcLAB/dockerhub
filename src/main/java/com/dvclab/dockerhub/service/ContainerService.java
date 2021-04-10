@@ -295,7 +295,7 @@ public class ContainerService {
 		container.mem = mem;
 		// TODO 容器ID的生成方法需要更新
 		container.id = StringUtil.md5(uid + "::" + System.currentTimeMillis());
-		container.container_name = container.id;
+		container.container_name = image.name + "-" + container.id.substring(0, 8);
 		String service_path = "/users/" + container.uid + "/containers/" + container.id;
 		container.user_host = true;
 		container.image_id = image_id;

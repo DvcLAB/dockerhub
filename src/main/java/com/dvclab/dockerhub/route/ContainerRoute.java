@@ -102,6 +102,33 @@ public class ContainerRoute {
 	};
 
 	/**
+	 * 更新容器
+	 */
+	public static Route updateContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+		String name = q.params(":name");
+
+		try {
+
+			Container container = Container.getById(Container.class, id);
+			container.container_name = name;
+			if(container.update()) {
+				return Msg.success(container);
+			}
+			else {
+				return Msg.failure();
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Update Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
 	 *
 	 */
 	public static Route runContainer = (q, a) -> {

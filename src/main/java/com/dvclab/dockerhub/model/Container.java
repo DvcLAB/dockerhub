@@ -92,7 +92,7 @@ public class Container extends ModelD {
 			dataType = DataType.DATE,
 			width = 3
 	)
-	public Date last_keep_alive = new Date();
+	public Date last_keep_alive;
 
 	@DatabaseField(
 			dataType = DataType.DATE,
