@@ -7,6 +7,7 @@ import one.rewind.db.annotation.DBName;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
 
+import java.util.Date;
 import java.util.List;
 
 @DBName("dockerhub")
@@ -81,6 +82,12 @@ public class Container extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String container_name;
+
+	@DatabaseField(
+			dataType = DataType.DATE,
+			width = 3
+	)
+	public Date last_keep_alive = new Date();
 
 	public Container(){}
 }

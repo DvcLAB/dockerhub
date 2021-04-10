@@ -3,10 +3,12 @@ package com.dvclab.dockerhub.service;
 import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
+import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.*;
 import com.dvclab.dockerhub.serialization.ServiceMsg;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.kafka.KafkaClient;
@@ -27,6 +29,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +42,9 @@ public class ContainerService {
 	public static final Logger logger = LogManager.getLogger(ContainerService.class);
 
 	public static ContainerService instance;
+	private ScheduledExecutorService ses;
+	private final Integer KEEP_ALIVE_CHECK_INTERVAL = 90;
+	private final Integer INITIAL_KEEP_ALIVE_CHECK_INTERVAL = 30;
 
 	/**
 	 * 单例模式
@@ -197,6 +205,35 @@ public class ContainerService {
 				MsgStringSerializer.class,
 				ServiceMsg.class.getName()
 		).addConsumer(container_event_topic_name, 2, KafkaClient.OffsetPolicy.latest, getContainerMsgCallback()); // OffsetPolicy.latest不接受旧消息
+
+		ses = Executors.newScheduledThreadPool(2,
+				new ThreadFactoryBuilder().setNameFormat("KeepAliveCheck-%d").build());
+
+		ses.scheduleWithFixedDelay(() -> {
+
+			try {
+				ContainerService.logger.info("----清扫----");
+
+				Container.getAll(Container.class).stream()
+						.filter(container -> container.status == Container.Status.Running
+								&& System.currentTimeMillis() - container.last_keep_alive.getTime() > KEEP_ALIVE_CHECK_INTERVAL * 1000)
+						.forEach(container -> {
+							try {
+								// 认定为容器已经失效，执行容器删除操作
+								if(!container.user_host) {
+									HostCache.hosts.get(container.host_id).removeContainer(container);
+								}
+
+								ContainerService.getInstance().removeContainer(container);
+							} catch (DBInitException | SQLException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | IOException | URISyntaxException e) {
+								ContainerService.logger.error("Keep Alive Check Error", e);
+							}
+						});
+			} catch (DBInitException | SQLException e) {
+				ContainerService.logger.error("Keep Alive Check Error", e);
+			}
+
+		}, INITIAL_KEEP_ALIVE_CHECK_INTERVAL, KEEP_ALIVE_CHECK_INTERVAL, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -318,6 +355,7 @@ public class ContainerService {
 
 				if(data.get("event").equals("Keep_Alive")) {
 					container.status = Container.Status.Running;
+					container.last_keep_alive = new Date();
 				} else container.status = Container.Status.valueOf((String) data.get("event"));
 
 				switch (container.status) {
