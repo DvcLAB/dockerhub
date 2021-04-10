@@ -41,7 +41,7 @@ jobs:
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.SSHKEY }}
       with:
-        source: "./build/libs/dockerhub-1.0.0.jar"
+        source: "build/libs/dockerhub-1.0.0.jar"
         target: "/opt/dockerhub-1.0.0/lib"
     # 7. 重启服务
     - name: Deploy
