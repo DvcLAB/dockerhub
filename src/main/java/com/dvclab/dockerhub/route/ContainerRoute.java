@@ -146,10 +146,10 @@ public class ContainerRoute {
 			// TODO 判断用户是否有权限使用 Container  待验证
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			Host host = HostCache.hosts.get(host_id);
-
-			// TODO 判断用户是否有权限操作该Host
-			// if(! host.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			Host host = null;
+			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
+				host = HostCache.hosts.get(host_id);
+			}
 
 			if(host == null) {
 				host = HostCache.getHost(gpu_enabled);

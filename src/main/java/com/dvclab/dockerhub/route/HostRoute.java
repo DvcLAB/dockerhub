@@ -27,6 +27,8 @@ public class HostRoute {
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
 
+		if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+
 		try {
 
 			Dao<Host, ?> dao = Daos.get(Host.class);
