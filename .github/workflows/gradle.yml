@@ -42,7 +42,7 @@ jobs:
         KEY: ${{ secrets.SSHKEY }}
       with:
         source: "build/libs/dockerhub-1.0.0.jar"
-        target: "/opt/dockerhub-1.0.0/lib/dockerhub-1.0.0.jar"
+        target: "/opt/dockerhub-1.0.0/temp"
     # 7. 重启服务
     - name: Deploy
       uses: appleboy/ssh-action@master # 使用ssh链接服务器
@@ -52,6 +52,7 @@ jobs:
         key: ${{ secrets.SSHKEY }}
         port: ${{ secrets.PORT }}
         script: |
+          mv /opt/dockerhub-1.0.0/temp/build/libs/dockerhub-1.0.0.jar /opt/dockerhub-1.0.0/lib/
           cd /opt/dockerhub-1.0.0/ 
           jps |grep DockerHubService | awk '{print $1}' | xargs kill -9
           nohup bin/dockerhub > nohup.out 2> nohup.err < /dev/null &
