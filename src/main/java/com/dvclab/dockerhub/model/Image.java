@@ -4,14 +4,16 @@ import com.dvclab.dockerhub.serialization.EnumListPersister;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
+import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
 import one.rewind.txt.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -72,5 +74,20 @@ public class Image extends ModelD {
 	public Image genId() {
 		id = StringUtil.md5(name);
 		return this;
+	}
+
+	/**
+	 * 根据镜像id列表获取镜像列表
+	 * @return
+	 */
+	public static Map<String, Image> getImages(List<String> image_ids) throws DBInitException, SQLException {
+
+		if(image_ids.size() == 0) {
+			return new HashMap<>();
+		}
+
+		return Daos.get(Image.class).queryBuilder()
+				.where().in("id", image_ids).query()
+				.stream().collect(Collectors.toMap(Image::getId, image -> image));
 	}
 }

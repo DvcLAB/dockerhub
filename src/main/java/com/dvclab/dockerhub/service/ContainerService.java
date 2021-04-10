@@ -298,6 +298,7 @@ public class ContainerService {
 		container.container_name = container.id;
 		String service_path = "/users/" + container.uid + "/containers/" + container.id;
 		container.user_host = true;
+		container.image_id = image_id;
 
 		// 创建配置文件
 		container.docker_compose_config = tpl.replaceAll("\\$\\{image_name\\}", image.name)
@@ -354,6 +355,7 @@ public class ContainerService {
 				if(container == null || container.status == Container.Status.Deleted) return;
 
 				if(data.get("event").equals("Keep_Alive")) {
+					if(container.begin_run_time == null) container.begin_run_time = new Date();
 					container.status = Container.Status.Running;
 					container.last_keep_alive = new Date();
 				} else container.status = Container.Status.valueOf((String) data.get("event"));

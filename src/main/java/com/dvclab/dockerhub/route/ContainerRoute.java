@@ -4,10 +4,7 @@ import com.dvclab.dockerhub.DockerHubService;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.UserCache;
-import com.dvclab.dockerhub.model.Container;
-import com.dvclab.dockerhub.model.Host;
-import com.dvclab.dockerhub.model.Tunnel;
-import com.dvclab.dockerhub.model.User;
+import com.dvclab.dockerhub.model.*;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.service.ContainerService;
 import com.dvclab.dockerhub.service.ReverseProxyService;
@@ -86,9 +83,14 @@ public class ContainerRoute {
 
 			List<Container> list = qb.query();
 
-			// 返回结果补全 用户信息
+			// 返回结果补全 用户信息、容器运行时长、镜像信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
-			list.stream().forEach(c -> c.user = users.get(c.uid));
+			Map<String, Image> images = Image.getImages(list.stream().map(c -> c.image_id).collect(Collectors.toList()));
+			list.stream().forEach(c -> {
+				c.user = users.get(c.uid);
+				c.image = images.get(c.image_id);
+				if(c.status == Container.Status.Running) c.alive_time = System.currentTimeMillis() - c.begin_run_time.getTime();
+			});
 
 			return Msg.success(list, size, page, total);
 		}

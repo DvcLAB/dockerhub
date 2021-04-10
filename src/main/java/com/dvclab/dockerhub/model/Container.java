@@ -83,11 +83,24 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String container_name;
 
+	@DatabaseField(dataType = DataType.STRING, width = 64)
+	public String image_id;
+
+	public Image image;
+
 	@DatabaseField(
 			dataType = DataType.DATE,
 			width = 3
 	)
 	public Date last_keep_alive = new Date();
+
+	@DatabaseField(
+			dataType = DataType.DATE,
+			width = 3
+	)
+	public Date begin_run_time;
+
+	public Long alive_time;
 
 	public Container(){}
 }
