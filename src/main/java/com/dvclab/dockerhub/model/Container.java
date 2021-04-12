@@ -17,12 +17,14 @@ public class Container extends ModelD {
 	public enum Status {
 		New,
 		Init,
+		Deployed,
 		Repo_Clone_Success,
 		Pip_Install_Success,
 		Dataset_Load_Success,
 		Jupyterlab_Start_Success,
 		Port_Forwarding_Success,
 		Failure,
+		Paused,
 		Deleted,
 		Running
 	}

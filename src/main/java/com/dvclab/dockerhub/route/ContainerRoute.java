@@ -148,6 +148,13 @@ public class ContainerRoute {
 			// TODO 判断用户是否有权限使用 Container 待验证
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
+			// 首先检查容器状态，避免重复运行
+			if(container.status == Container.Status.Deployed) return new Msg(Msg.Code.TOO_MANGY_REQ, null, null);
+
+			// 更新容器状态
+			container.status = Container.Status.Deployed;
+			container.update();
+
 			Host host;
 			// 指定 host_id
 			if(HostCache.hosts.containsKey(host_id)) {
