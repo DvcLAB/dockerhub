@@ -143,27 +143,29 @@ public class ContainerRoute {
 		try {
 
 			Container container = Container.getById(Container.class, id);
-			// TODO 判断用户是否有权限使用 Container  待验证
+			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+
+			// TODO 判断用户是否有权限使用 Container 待验证
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			Host host = null;
-			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
-				host = HostCache.hosts.get(host_id);
+			Host host;
+			// 指定 host_id
+			if(HostCache.hosts.containsKey(host_id)) {
+
+				if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
+					host = HostCache.hosts.get(host_id);
+				}
+				else {
+					return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+				}
 			}
-
-			if(host == null) {
-				host = HostCache.getHost(gpu_enabled);
-			}
-
-			if(container != null) {
-
-				host.runContainer(container);
-
-				return Msg.success();
-			}
+			// 未指定 host_id
 			else {
-				return new Msg(Msg.Code.NOT_FOUND, null, null);
+				host = HostCache.getHost(gpu_enabled, container.cpus, container.mem);
 			}
+
+			host.runContainer(container);
+			return Msg.success();
 		}
 		catch (Exception e) {
 

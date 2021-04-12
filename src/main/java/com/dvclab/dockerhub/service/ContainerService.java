@@ -268,6 +268,7 @@ public class ContainerService {
 
 	/**
 	 *
+	 * TODO 支持指定GPU
 	 * @param uid
 	 * @param image_id
 	 * @param project_id

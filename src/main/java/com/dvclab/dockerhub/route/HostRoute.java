@@ -43,10 +43,11 @@ public class HostRoute {
 
 			// 返回结果补全 用户信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
-			list.stream().forEach(c -> {
+			list.forEach(c -> {
 				c.user = users.get(c.uid);
 				c.private_key = null;
 			});
+
 			return Msg.success(list, size, page, total);
 		}
 		catch (Exception e) {

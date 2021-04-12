@@ -8,14 +8,23 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
+import one.rewind.db.persister.JSONablePersister;
 import one.rewind.io.docker.model.DockerHost;
 import one.rewind.io.ssh.SshHost;
+import one.rewind.monitor.*;
 import one.rewind.txt.StringUtil;
 import one.rewind.util.FileUtil;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -43,6 +52,34 @@ public class Host extends DockerHost {
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String fingerprint;
+
+	@DatabaseField(dataType = DataType.FLOAT)
+	public float cpu_assign = 0;
+
+	@DatabaseField(dataType = DataType.FLOAT)
+	public float mem_assign = 0;
+
+	//
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public CPUInfo cpu_info = new CPUInfo();
+
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public MemInfo mem_info = new MemInfo();
+
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public IoInfo io_info = new IoInfo();
+
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public NetInfo net_info = new NetInfo();
+
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public GPUInfo gpu_info = null;
+
+	public Queue<Object[]> cpu_series = new CircularFifoQueue<>(30);
+
+	public Queue<Object[]> network_series = new CircularFifoQueue<>(30);
+
+	public Queue<Object[]> gpu_series = new CircularFifoQueue<>(30);
 
 	/**
 	 *
@@ -108,6 +145,19 @@ public class Host extends DockerHost {
 	}
 
 	/**
+	 * 获取当前主机可用GPU id列表
+	 * @return
+	 */
+	public List<Integer> getAvailableGPUIdList() {
+
+		if(this.gpu_info != null && this.gpu_info.gpus.size() > 0) {
+			return IntStream.range(0, this.gpu_info.gpus.size()).boxed().collect(Collectors.toList());
+		}
+
+		return new ArrayList<>();
+	}
+
+	/**
 	 *
 	 */
 	public void runNodeExporter() {
@@ -136,6 +186,8 @@ public class Host extends DockerHost {
 		exec("docker-compose -f " + name + " up -d");
 		// exec("rm " + name);
 		container_num.incrementAndGet();
+		cpu_assign += container.cpus;
+		mem_assign += container.mem;
 
 		new File(name).delete();
 
@@ -159,5 +211,21 @@ public class Host extends DockerHost {
 
 		container_num.decrementAndGet();
 		this.update();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public float getCpuAvailable() {
+		return this.cpu_info.cpu_num - this.cpu_assign;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public float getMemAvailable() {
+		return this.mem_info.total - this.mem_assign;
 	}
 }

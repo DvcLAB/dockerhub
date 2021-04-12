@@ -80,6 +80,9 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.FLOAT, canBeNull = false)
 	public float mem_usage = 0;
 
+	@DatabaseField(dataType = DataType.INTEGER, canBeNull = false)
+	public int proc_num = 0;
+
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String container_name;
 
