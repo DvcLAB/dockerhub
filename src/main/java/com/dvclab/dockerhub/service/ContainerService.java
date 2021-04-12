@@ -282,8 +282,7 @@ public class ContainerService {
 	 */
 	public Container createDockerComposeConfig(
 			String uid, String image_id, String project_id, String project_branch, String[] dataset_urls, float cpus, float mem, boolean gpu)
-			throws DBInitException, SQLException
-	{
+			throws DBInitException, SQLException, IOException, URISyntaxException {
 
 		Image image = Image.getById(Image.class, image_id);
 		Project project = Project.getById(Project.class, project_id);
@@ -332,6 +331,10 @@ public class ContainerService {
 					.replaceAll("\\$\\{runtime\\}", "");
 		}
 
+		// 创建Keycloak资源并分配资源policy
+		createContainerResource(container.id, container.uid);
+		applyContainerPolicy(container.id, container.uid);
+
 		container.insert();
 		ContainerCache.containers.put(container.id, container);
 
@@ -379,8 +382,6 @@ public class ContainerService {
 						break;
 					}
 					case Port_Forwarding_Success: {
-						createContainerResource(container_id, container.uid);
-						applyContainerPolicy(container_id, container.uid);
 						break;
 					}
 					default:
@@ -393,7 +394,7 @@ public class ContainerService {
 				ContainerInfoPublisher.broadcast(container_id, container);
 
 			}
-			catch (DBInitException | SQLException | IOException | JSchException | URISyntaxException e) {
+			catch (DBInitException | SQLException | IOException | JSchException e) {
 				DockerHubService.logger.error("Container[{}] not found, ", container_id, e);
 			}
 		};
