@@ -43,13 +43,13 @@ public class Project extends ModelD {
 
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
-
+	// 项目依赖
 	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
 	public Map<String, String> deps = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
-
+	// 项目数据集的ID列表
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> dataset_ids = new ArrayList<>();
 
@@ -81,7 +81,7 @@ public class Project extends ModelD {
 	}
 
 	/**
-	 *
+	 * 生成项目ID
 	 * @return
 	 */
 	public Project genId() {

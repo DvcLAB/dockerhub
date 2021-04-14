@@ -35,7 +35,7 @@ public class Dataset extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
-
+	// 数据集标签
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> tags = new ArrayList<>();
 
@@ -56,13 +56,17 @@ public class Dataset extends ModelD {
 		this.genId();
 	}
 
+	/**
+	 * 使用数据集url生成数据集ID
+	 * @return
+	 */
 	public Dataset genId() {
 		id = StringUtil.md5(url);
 		return this;
 	}
 
 	/**
-	 *
+	 * 获取一组数据集url对应的数据集列表
 	 * @param urls
 	 * @return
 	 * @throws DBInitException

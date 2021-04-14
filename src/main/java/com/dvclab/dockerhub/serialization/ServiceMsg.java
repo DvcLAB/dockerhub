@@ -8,6 +8,9 @@ import one.rewind.db.persister.JSONableMapPersister;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * kafka消息的结构定义
+ */
 public class ServiceMsg extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 128)

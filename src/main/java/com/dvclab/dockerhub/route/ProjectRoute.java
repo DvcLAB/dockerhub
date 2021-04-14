@@ -143,7 +143,7 @@ public class ProjectRoute {
 	};
 
 	/**
-	 *
+	 * 删除项目
 	 */
 	public static Route deleteProject = (q, a) -> {
 
@@ -166,7 +166,7 @@ public class ProjectRoute {
 	};
 
 	/**
-	 *
+	 * 获取项目信息
 	 */
 	public static Route getInfo = (q, a) -> {
 

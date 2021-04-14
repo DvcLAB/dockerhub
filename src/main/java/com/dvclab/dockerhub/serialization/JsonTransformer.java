@@ -9,7 +9,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 /**
- *
+ * 使用Gson构建的json序列化器
  */
 public class JsonTransformer implements ResponseTransformer {
 

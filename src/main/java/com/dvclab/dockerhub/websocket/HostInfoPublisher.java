@@ -14,6 +14,9 @@ import java.util.concurrent.*;
 
 import static com.dvclab.dockerhub.DockerHubService.logger;
 
+/**
+ * 容主机信息的WebSocket发布器
+ */
 @WebSocket
 public class HostInfoPublisher {
 

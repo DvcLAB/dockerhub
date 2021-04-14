@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 响应状态信息与状态码
  * @author lw
  */
 public class Msg<T> implements JSONable<Msg> {

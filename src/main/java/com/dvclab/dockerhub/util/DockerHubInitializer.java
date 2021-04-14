@@ -11,10 +11,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.sql.SQLException;
 
+/**
+ * 服务初始化
+ */
 public class DockerHubInitializer {
 
 	/**
-	 *
+	 * 创建秘钥对
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException
 	 * @throws IOException
@@ -27,7 +30,7 @@ public class DockerHubInitializer {
 	}
 
 	/**
-	 *
+	 * 初始化方法
 	 * @param args
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchProviderException

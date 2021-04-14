@@ -41,7 +41,7 @@ public class Host extends DockerHost {
 	public String uid;
 
 	public User user;
-	//
+	// 是否是项目自有的服务器
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean user_host = false;
 

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- *
+ * 镜像缓存
  */
 public class ImageCache extends Caches{
 

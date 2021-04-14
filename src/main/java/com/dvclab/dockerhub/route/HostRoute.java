@@ -26,7 +26,7 @@ public class HostRoute {
 		String query = q.queryParamOrDefault("q", "");
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
-
+		// 只有管理员可以获得主机列表
 		if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
@@ -69,6 +69,7 @@ public class HostRoute {
 			Host obj = Host.fromJSON(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
+
 			if(obj.insert()) {
 				HostCache.addHost(obj);
 				return Msg.success();
@@ -146,7 +147,7 @@ public class HostRoute {
 	};
 
 	/**
-	 *
+	 * 删除主机
 	 */
 	public static Route deleteHost = (q, a) -> {
 
@@ -158,6 +159,7 @@ public class HostRoute {
 			if(! HostCache.hosts.get(id).uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			Dataset.deleteById(Dataset.class, id);
+			// 断开中台与指定主机的ssh连接
 			HostCache.hosts.remove(id).disconnectSshHost();
 
 			return Msg.success();

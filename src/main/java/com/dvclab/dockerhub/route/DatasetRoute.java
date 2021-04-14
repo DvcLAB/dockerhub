@@ -145,7 +145,7 @@ public class DatasetRoute {
 	};
 
 	/**
-	 *
+	 * 删除数据集
 	 */
 	public static Route deleteDataset = (q, a) -> {
 
@@ -168,7 +168,7 @@ public class DatasetRoute {
 	};
 
 	/**
-	 * 通过url获取简单信息
+	 * 通过url获取数据集信息
 	 */
 	public static Route getInfo = (q, a) -> {
 

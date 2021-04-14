@@ -56,40 +56,45 @@ public class ResourceInfoFetcher {
 	}
 
 	/**
+	 * 请求获得GitHub项目信息
 	 * TODO 不能正常采集时 应抛出对应异常 阻止创建Project
 	 * @param url
 	 * @return
 	 * @throws URISyntaxException
+	 * @throws DBInitException
+	 * @throws SQLException
+	 * @throws IOException
 	 */
 	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException {
 
 		Task t1 = new Task(url);
 		BasicRequester.req(t1, proxy);
-
+		// 解析项目名
 		String name = t1.r.getDom().select("title")
 				.html().replaceAll("GitHub - ", "")
 				.split(" ")[0]
 				.replaceAll(":", "")
 				.replaceAll("^.+?/", "");
-
+		// 解析项目描述
 		String desc = t1.r.getDom().select("meta[name='description']")
 				.attr("content");
-
+		// 项目数据集配置文件的url
 		String dataset_conf_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dataset.conf";
-
+		// 项目封面图的url
 		String cover_image_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/.cover_img.png"; // 1024 * 1024 png
-
+		// 项目依赖配置文件的url
 		String dependencies_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dep.conf";
 
 		String dependencies_src = BasicRequester.req(dependencies_url, proxy);
+		// 解析得到项目的依赖
 		Map<String, String> deps = JSON.fromJson(dependencies_src, new TypeToken<HashMap<String, String>>(){}.getType());
-
+		// 解析得到项目的所有分支
 		List<String> branches = new ArrayList<>();
 		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
 		String branches_src = BasicRequester.req(branches_url, proxy);
@@ -111,7 +116,7 @@ public class ResourceInfoFetcher {
 	}
 
 	/**
-	 *
+	 * 请求获得Ceph中存储的数据集信息
 	 * @param url
 	 * @return
 	 */
@@ -128,7 +133,7 @@ public class ResourceInfoFetcher {
 	}
 
 	/**
-	 *
+	 * 请求获得Docker Registry的 auth token (Docker Auth)
 	 * @param scope
 	 * @return
 	 * @throws URISyntaxException

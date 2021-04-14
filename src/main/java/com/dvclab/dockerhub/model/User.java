@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @DBName("dockerhub")
 @DatabaseTable(tableName = "users")
 public class User extends ModelD {
-
+	// 用户角色类型
 	public static enum Role {
 		DOCKHUB_ADMIN,
 		DOCKHUB_USER,

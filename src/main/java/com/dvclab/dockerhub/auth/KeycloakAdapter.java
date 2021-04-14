@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
+/**
+ * 单例模式的keycloak管理适配器
+ */
 public class KeycloakAdapter {
 
 	public static KeycloakAdapter instance;
@@ -153,7 +156,10 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 * 申请pat
+	 * 申请pat,用于创建和删除keycloak资源
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
 	private String requestPat () throws URISyntaxException, IOException {
 
@@ -168,6 +174,9 @@ public class KeycloakAdapter {
 
 	/**
 	 * 创建Keycloak资源
+	 * @param create_resource_body
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
 	public void createResource (ContainerService.CreateResourceBody create_resource_body) throws URISyntaxException, IOException {
 		String body = JSON.toJson(create_resource_body);
@@ -177,6 +186,11 @@ public class KeycloakAdapter {
 
 	/**
 	 * 向Keycloak资源添加policy
+	 * @param access_token
+	 * @param resource_id
+	 * @param apply_resource_policy_body
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
 	public void applyResourcePolicy (String access_token, String resource_id, ContainerService.ApplyResourcePolicyBody apply_resource_policy_body) throws URISyntaxException, IOException {
 		apply_resource_policy_url = String.format(apply_resource_policy_template, host, realm, resource_id);
@@ -187,6 +201,9 @@ public class KeycloakAdapter {
 
 	/**
 	 * 删除Keycloak资源
+	 * @param resource_id
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	public void deleteResource (String resource_id) throws IOException, URISyntaxException {
 		delete_resource_url = String.format(delete_resource_template, host, realm, resource_id);
@@ -195,7 +212,11 @@ public class KeycloakAdapter {
 	}
 
 	/**
-	 * 交换token
+	 * 用前端client token交换后端client token
+	 * @param front_token
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws IOException
 	 */
 	public String exchangeToken (String front_token) throws URISyntaxException, IOException {
 
@@ -236,7 +257,7 @@ public class KeycloakAdapter {
 		}
 
 		/**
-		 *
+		 * 获取admin token
 		 * @return
 		 * @throws URISyntaxException
 		 * @throws IOException
@@ -254,7 +275,7 @@ public class KeycloakAdapter {
 		}
 
 		/**
-		 *
+		 * 添加用户
 		 * @param token
 		 * @param user_representation
 		 * @throws URISyntaxException
@@ -275,7 +296,7 @@ public class KeycloakAdapter {
 		}
 
 		/**
-		 *
+		 * 添加用户角色
 		 * @param token
 		 * @param uid
 		 * @param role_id
@@ -298,7 +319,7 @@ public class KeycloakAdapter {
 		}
 
 		/**
-		 *
+		 * 移除用户角色
 		 * @param token
 		 * @param uid
 		 * @param role_id
@@ -319,7 +340,7 @@ public class KeycloakAdapter {
 		}
 
 		/**
-		 *
+		 * 更新用户
 		 * @param token
 		 * @param uid
 		 * @param user_representation

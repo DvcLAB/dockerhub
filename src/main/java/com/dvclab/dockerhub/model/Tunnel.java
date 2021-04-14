@@ -11,17 +11,19 @@ import one.rewind.txt.StringUtil;
 @DatabaseTable(tableName = "tunnels")
 public class Tunnel extends ModelD {
 
+	// 跳板机的公网IP
 	@DatabaseField(dataType = DataType.STRING, width = 128)
 	public String wan_addr;
-
+	// 跳板机的frps监听端口
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)
 	public int wan_port;
+	// 跳板机的内网IP
 	@DatabaseField(dataType = DataType.STRING, width = 128)
 	public String lan_addr;
-
+	// 跳板机的代理端口的起始端口
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)
 	public int begin_port;
-
+	// 跳板机的代理端口的终止端口
 	@DatabaseField(dataType = DataType.INTEGER, width = 5)
 	public int end_port;
 
@@ -45,7 +47,7 @@ public class Tunnel extends ModelD {
 	}
 
 	/**
-	 *
+	 * 生成跳板机ID
 	 * @return
 	 */
 	public Tunnel genId(){

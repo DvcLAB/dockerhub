@@ -16,12 +16,21 @@ import java.util.concurrent.*;
 
 import static com.dvclab.dockerhub.DockerHubService.logger;
 
+/**
+ * 主机缓存
+ */
 public class HostCache {
 
 	public static Map<String, Host> hosts = new HashMap<>();
 
 	public static ScheduledExecutorService ses;
 
+	/**
+	 *
+	 * @throws DBInitException
+	 * @throws SQLException
+	 * @throws JSchException
+	 */
 	public static void init() throws DBInitException, SQLException, JSchException {
 
 		ses = Executors.newScheduledThreadPool(2,
@@ -33,8 +42,9 @@ public class HostCache {
 	}
 
 	/**
-	 *
+	 * 添加主机，并通过websocket定时发布主机状态信息
 	 * @param host
+	 * @throws JSchException
 	 */
 	public static void addHost(Host host) throws JSchException {
 
@@ -111,7 +121,11 @@ public class HostCache {
 	/**
 	 * 获取主机
 	 * TODO gpu使用模式
+	 * @param gpu_enabled
+	 * @param cpus
+	 * @param mem
 	 * @return
+	 * @throws HostException
 	 */
 	public static Host getHost(boolean gpu_enabled, float cpus, float mem) throws HostException {
 

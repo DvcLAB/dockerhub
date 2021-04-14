@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
+ * 容器信息的WebSocket发布器
  */
 @WebSocket
 public class ContainerInfoPublisher {

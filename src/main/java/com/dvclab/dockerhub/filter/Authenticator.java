@@ -21,7 +21,6 @@ import java.util.Date;
 
 /**
  * Token 验证以及生成
- *
  */
 public class Authenticator implements Filter {
 
@@ -58,7 +57,8 @@ public class Authenticator implements Filter {
 
 	/**
 	 * 验证Token
-	 *
+	 * 1. 如果缓存有效则取缓存信息
+	 * 2. 若缓存失效则验证token，获取用户信息，并更新缓存
 	 * @param q  request
 	 * @param a response
 	 * @throws ProtocolException ProtocolException

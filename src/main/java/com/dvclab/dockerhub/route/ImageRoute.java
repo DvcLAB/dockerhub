@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- *
+ * 镜像路由
  */
 public class ImageRoute {
 
@@ -154,7 +154,7 @@ public class ImageRoute {
 	};
 
 	/**
-	 *
+	 * 获取适配指定项目（依赖）的镜像
 	 */
 	public static Route getImagesForProject = (q, a) -> {
 
@@ -247,7 +247,7 @@ public class ImageRoute {
 
 
 	/**
-	 *
+	 * 删除镜像
 	 */
 	public static Route deleteImage = (q, a) -> {
 
@@ -255,7 +255,7 @@ public class ImageRoute {
 		String id = q.params(":id");
 
 		// 只有管理员才能删除记录
-		if(! UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 

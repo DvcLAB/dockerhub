@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- *
+ * 单例容器服务
  */
 public class ContainerService {
 
@@ -49,6 +49,12 @@ public class ContainerService {
 	/**
 	 * 单例模式
 	 * @return
+	 * @throws DBInitException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
 	 */
 	public static ContainerService getInstance() throws DBInitException, SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 
@@ -195,7 +201,12 @@ public class ContainerService {
 	}
 
 	/**
-	 *
+	 * 1. 初始化kafka consumer客户端
+	 * 2. 开启容器的定时状态检查
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
 	 */
 	public ContainerService() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
@@ -237,8 +248,12 @@ public class ContainerService {
 	}
 
 	/**
-	 *
+	 * 回收容器资源
 	 * @param container
+	 * @throws DBInitException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	public void removeContainer(Container container) throws DBInitException, SQLException, IOException, URISyntaxException {
 
@@ -252,7 +267,8 @@ public class ContainerService {
 		ContainerCache.containers.remove(container.id);
 
 		// 删除Keycloak资源
-		if(container.status != Container.Status.Deleted && container.status != Container.Status.New) {
+		if(container.status != Container.Status.Deleted && container.status != Container.Status.New
+				&& container.status != Container.Status.Deployed) {
 			// 更新tokens文件
 			removeToken(container);
 			KeycloakAdapter.getInstance().deleteResource(new StringBuilder(container.id).insert(8, "-")
@@ -267,7 +283,7 @@ public class ContainerService {
 	}
 
 	/**
-	 *
+	 * 创建容器
 	 * TODO 支持指定GPU
 	 * @param uid
 	 * @param image_id
@@ -285,6 +301,7 @@ public class ContainerService {
 			String uid, String image_id, String project_id, String project_branch, String[] dataset_urls, float cpus, float mem, boolean gpu)
 			throws DBInitException, SQLException, IOException, URISyntaxException {
 
+		// 获取容器对应的镜像与项目
 		Image image = Image.getById(Image.class, image_id);
 		Project project = Project.getById(Project.class, project_id);
 
@@ -344,7 +361,7 @@ public class ContainerService {
 	}
 
 	/**
-	 *
+	 * kafka consumer接受消息的回调
 	 * @return
 	 */
 	public KafkaClient.ReceiveCallback<ServiceMsg> getContainerMsgCallback() {
@@ -360,8 +377,10 @@ public class ContainerService {
 				if(container == null || container.status == Container.Status.Deleted) return;
 
 				if(data.get("event").equals("Keep_Alive")) {
+					// 收集容器的开始运行时间
 					if(container.begin_run_time == null) container.begin_run_time = new Date();
 					container.status = Container.Status.Running;
+					// 更新容器的活跃时间
 					container.last_keep_alive = new Date();
 				} else container.status = Container.Status.valueOf((String) data.get("event"));
 
@@ -393,6 +412,7 @@ public class ContainerService {
 				container.update();
 				// 缓存更新
 				ContainerCache.containers.put(container.id, container);
+				// 使用websocket推送容器信息
 				ContainerInfoPublisher.broadcast(container_id, container);
 
 			}
@@ -404,14 +424,19 @@ public class ContainerService {
 
 	/**
 	 * 在keycloak中创建Container对应的资源
+	 * @param container_id
+	 * @param container_uid
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	private void createContainerResource (String container_id, String container_uid) throws IOException, URISyntaxException {
 
-		// UUID
+		// 容器ID转为UUID格式
 		String resource_id = new StringBuilder(container_id).insert(8, "-")
 				.insert(13, "-")
 				.insert(18, "-")
 				.insert(23, "-").toString();
+
 		CreateResourceBody cr_body = new CreateResourceBody()
 				// 容器ID转UUID
 				.withId(resource_id)
@@ -426,10 +451,14 @@ public class ContainerService {
 
 	/**
 	 * 为keycalok中的Container资源分配Policy
+	 * @param container_id
+	 * @param container_uid
+	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
 	private void applyContainerPolicy (String container_id, String container_uid) throws IOException, URISyntaxException {
 
-		// UUID
+		// 容器ID转为UUID格式
 		String resource_id = new StringBuilder(container_id).insert(8, "-")
 				.insert(13, "-")
 				.insert(18, "-")
@@ -438,6 +467,7 @@ public class ContainerService {
 		String token = UserCache.UID_TOKEN.get(container_uid);
 		// 换取后端token
 		token = KeycloakAdapter.getInstance().exchangeToken(token);
+
 		ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
 				.withDesc(container_uid + "_access_" + container_id)
 				.withName(container_uid + "_access_" + container_id)
@@ -448,6 +478,11 @@ public class ContainerService {
 
 	/**
 	 * 向容器分配端口,并做映射
+	 * @param container
+	 * @throws DBInitException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws JSchException
 	 */
 	private void assignPort(Container container) throws DBInitException, SQLException, IOException, JSchException {
 
@@ -472,6 +507,8 @@ public class ContainerService {
 	/**
 	 * 删除tokens文件记录
 	 * TODO 删除效率可能需要改进
+	 * @param container
+	 * @throws IOException
 	 */
 	private void removeToken(Container container) throws IOException {
 
@@ -486,8 +523,11 @@ public class ContainerService {
 
 		updateToken();
 	}
+
 	/**
 	 * 向tokens文件添加记录
+	 * @param container
+	 * @throws IOException
 	 */
 	private void addToken(Container container) throws IOException {
 
@@ -499,6 +539,7 @@ public class ContainerService {
 
 	/**
 	 * 更新fp-multiuser服务
+	 * @throws IOException
 	 */
 	private synchronized void updateToken() throws IOException {
 

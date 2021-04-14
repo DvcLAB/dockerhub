@@ -9,6 +9,9 @@ import one.rewind.json.JSON;
 
 import java.util.List;
 
+/**
+ * List类型的自定义序列化器
+ */
 public class EnumListPersister extends StringType {
 
 	private static final EnumListPersister INSTANCE = new EnumListPersister();

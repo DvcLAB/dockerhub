@@ -49,6 +49,7 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.FLOAT, width = 4, canBeNull = false)
 	public float mem = 4;
 
+	// 容器是否支持GPU
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean gpu_enabled = false;
 
@@ -56,6 +57,7 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 16)
 	public String gpu_devices;
 
+	// GPU 设备名
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> gpu_devices_product_names;
 
@@ -79,35 +81,43 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.ENUM_STRING, width = 32)
 	public Status status = Status.New;
 
+	// CPU使用率
 	@DatabaseField(dataType = DataType.FLOAT, canBeNull = false)
 	public float cpu_usage = 0;
 
+	// 内存使用率
 	@DatabaseField(dataType = DataType.FLOAT, canBeNull = false)
 	public float mem_usage = 0;
 
+	// 进程数量
 	@DatabaseField(dataType = DataType.INTEGER, canBeNull = false)
 	public int proc_num = 0;
 
+	// 容器名
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String container_name;
 
+	// 镜像ID
 	@DatabaseField(dataType = DataType.STRING, width = 64)
 	public String image_id;
 
 	public Image image;
 
+	// 上一次接收到心跳包的时间
 	@DatabaseField(
 			dataType = DataType.DATE,
 			width = 3
 	)
 	public Date last_keep_alive;
 
+	// 开始运行的时间
 	@DatabaseField(
 			dataType = DataType.DATE,
 			width = 3
 	)
 	public Date begin_run_time;
 
+	// 容器运行的时长
 	public Long alive_time;
 
 	public Container(){}

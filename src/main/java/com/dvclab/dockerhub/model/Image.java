@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @DBName("dockerhub")
 @DatabaseTable(tableName = "images")
 public class Image extends ModelD {
-
+	// 镜像类型
 	public static enum Type {
 		CPU,
 		GPU
@@ -35,16 +35,16 @@ public class Image extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
-
+	// 镜像标签
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> tags = new ArrayList<>();
-
+	// 镜像类库
 	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
 	public Map<String, String> libs = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url;
-
+	// 镜像类型
 	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT")
 	public List<Type> types = new ArrayList<>();
 
@@ -67,12 +67,15 @@ public class Image extends ModelD {
 		this.genId();
 	}
 
+	/**
+	 * 获取镜像名
+	 */
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-	 *
+	 * 生成镜像ID
 	 * @return
 	 */
 	public Image genId() {
