@@ -76,7 +76,7 @@ public class Dataset extends ModelD {
 
 		return Daos.get(Dataset.class).queryBuilder().where()
 				.in(
-					"url",
+					"id",
 					urls.stream().map(StringUtil::md5).collect(Collectors.toList())
 				)
 				.query();
