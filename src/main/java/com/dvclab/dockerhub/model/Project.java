@@ -7,6 +7,7 @@ import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.db.persister.JSONableMapPersister;
 import one.rewind.db.persister.JSONablePersister;
 import one.rewind.txt.StringUtil;
 
@@ -44,7 +45,7 @@ public class Project extends ModelD {
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
 	// 项目依赖
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
 	public Map<String, String> deps = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
