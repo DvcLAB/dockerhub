@@ -59,7 +59,6 @@ public class Host extends DockerHost {
 	@DatabaseField(dataType = DataType.FLOAT)
 	public float mem_assign = 0;
 
-	//
 	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
 	public CPUInfo cpu_info = new CPUInfo();
 

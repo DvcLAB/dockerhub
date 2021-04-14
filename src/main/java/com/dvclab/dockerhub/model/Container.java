@@ -49,6 +49,9 @@ public class Container extends ModelD {
 	@DatabaseField(dataType = DataType.FLOAT, width = 4, canBeNull = false)
 	public float mem = 4;
 
+	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
+	public boolean gpu_enabled = false;
+
 	// 使用GPU设备编号
 	@DatabaseField(dataType = DataType.STRING, width = 16)
 	public String gpu_devices;

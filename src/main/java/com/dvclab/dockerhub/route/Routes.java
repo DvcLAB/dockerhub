@@ -15,7 +15,8 @@ public class Routes {
 	public static final Logger logger = LogManager.getLogger(Routes.class.getName());
 	public static String NoAuthRoutes = String.join("|",
 			"/_containers",
-			"/containers/.*/assign$"
+			"/containers/.*/assign$",
+			"_hosts"
 	);
 
 	/**
@@ -137,6 +138,7 @@ public class Routes {
 		// 镜像
 		path("/images", () -> {
 			get("", ImageRoute.listImages, transformer);
+			get("_project", ImageRoute.getImagesForProject, transformer);
 			get("/:name/tags", ImageRoute.listImageTags, transformer);
 			post("/:id", ImageRoute.updateImage, transformer);
 			get("/:id", ImageRoute.getImage, transformer);

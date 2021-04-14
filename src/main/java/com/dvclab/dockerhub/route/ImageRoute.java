@@ -4,6 +4,7 @@ import com.dvclab.dockerhub.cache.ImageCache;
 import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Image;
+import com.dvclab.dockerhub.model.Project;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.util.ResourceInfoFetcher;
@@ -75,7 +76,14 @@ public class ImageRoute {
 
 			// 数据库中不存在的镜像 --> 增加新记录
 			repo_names.removeAll(images.stream().map(img->img.name).collect(Collectors.toList()));
-			List<Image> new_images = repo_names.stream().map(name -> new Image(name, "")).collect(Collectors.toList());
+			List<Image> new_images = repo_names.stream()
+					.map(name -> {
+						Image image = new Image(name, "");
+						// 同步镜像缓存
+						ImageCache.images.put(image.name, image);
+						return image;
+					})
+					.collect(Collectors.toList());
 			ModelD.batchInsertIgnore(new_images);
 
 			// 合并结果，并排序
@@ -145,6 +153,31 @@ public class ImageRoute {
 		}
 	};
 
+	/**
+	 *
+	 */
+	public static Route getImagesForProject = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String pid = q.queryParamOrDefault("project_id", "");
+
+		try {
+
+			Project p = Project.getById(Project.class, pid);
+
+			if(p != null) {
+				return Msg.success(ImageCache.getImagesForProject(p));
+			}
+			else {
+				return new Msg(Msg.Code.NOT_FOUND, null, null);
+			}
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Get Project[{}] images error, ", pid, e);
+			return Msg.failure(e);
+		}
+	};
 
 	/**
 	 * 获取镜像
@@ -158,10 +191,10 @@ public class ImageRoute {
 
 			Image obj = Image.getById(Image.class, id);
 
-			// 返回结果补全 用户信息
-			obj.user = User.getById(User.class, obj.uid);
-
 			if(obj != null) {
+
+				// 返回结果补全 用户信息
+				obj.user = User.getById(User.class, obj.uid);
 				return Msg.success(obj);
 			}
 			else {
@@ -183,6 +216,9 @@ public class ImageRoute {
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
 		String source = q.body();
+
+		// 只有管理员才可以更新镜像
+		if(! UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 

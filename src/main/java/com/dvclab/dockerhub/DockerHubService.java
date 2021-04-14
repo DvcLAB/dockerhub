@@ -5,6 +5,7 @@ import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.cache.ImageCache;
 import com.dvclab.dockerhub.route.Routes;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
+import com.dvclab.dockerhub.websocket.HostInfoPublisher;
 import com.typesafe.config.Config;
 import one.rewind.util.Configs;
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +64,7 @@ public class DockerHubService implements Runnable {
 			port(port);
 
 			webSocket("/_containers", ContainerInfoPublisher.class);
+			webSocket("/_hosts", HostInfoPublisher.class);
 
 			Routes.init();
 		}

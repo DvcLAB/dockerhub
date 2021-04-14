@@ -3,6 +3,7 @@ package com.dvclab.dockerhub.util;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Project;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeToken;
 import com.typesafe.config.Config;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.exception.DBInitException;
@@ -10,6 +11,7 @@ import one.rewind.io.requester.basic.BasicRequester;
 import one.rewind.io.requester.proxy.Proxy;
 import one.rewind.io.requester.proxy.ProxyImpl;
 import one.rewind.io.requester.task.Task;
+import one.rewind.json.JSON;
 import one.rewind.util.Configs;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
@@ -19,10 +21,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,6 +83,13 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/.cover_img.png"; // 1024 * 1024 png
 
+		String dependencies_url = url.replaceAll("(\\.git|/)$", "")
+				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
+				+ "/master/config/dep.conf";
+
+		String dependencies_src = BasicRequester.req(dependencies_url, proxy);
+		Map<String, String> deps = JSON.fromJson(dependencies_src, new TypeToken<HashMap<String, String>>(){}.getType());
+
 		List<String> branches = new ArrayList<>();
 		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
 		String branches_src = BasicRequester.req(branches_url, proxy);
@@ -99,7 +105,8 @@ public class ResourceInfoFetcher {
 		return new Project(
 				name, url, desc, cover_image_url,
 				branches,
-				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n"))
+				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n")),
+				deps
 		);
 	}
 

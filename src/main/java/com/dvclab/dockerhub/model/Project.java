@@ -7,11 +7,14 @@ import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.db.persister.JSONablePersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +44,9 @@ public class Project extends ModelD {
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
 
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public Map<String, String> deps = new HashMap<>();
+
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
 
@@ -57,13 +63,15 @@ public class Project extends ModelD {
 	 * @param url
 	 * @param desc
 	 */
-	public Project(String name, String url, String desc, String cover_img_url, List<String> branches, List<String> dataset_urls) throws DBInitException, SQLException {
+	public Project(String name, String url, String desc, String cover_img_url,
+				   List<String> branches, List<String> dataset_urls, Map<String, String> deps) throws DBInitException, SQLException {
 
 		this.name = name;
 		this.url = url;
 		this.desc = desc;
 		this.cover_img_url = cover_img_url;
 		this.branches = branches;
+		this.deps = deps;
 		this.genId();
 
 		if(! dataset_urls.isEmpty()) {

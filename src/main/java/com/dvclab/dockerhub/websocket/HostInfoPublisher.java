@@ -1,5 +1,6 @@
 package com.dvclab.dockerhub.websocket;
 
+import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.model.Host;
 import one.rewind.txt.URLUtil;
@@ -7,6 +8,7 @@ import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -19,11 +21,20 @@ public class HostInfoPublisher {
 
 	public static Map<Integer, Queue<Session>> host_sessions = new HashMap<>();
 	private static Map<Session, Integer> session_host_map = new HashMap<>();
+	private final String WS_AUTH_HEADER = "Sec-WebSocket-Protocol";
 
 	@OnWebSocketConnect
 	public void connected(Session session) {
 
+		String token = session.getUpgradeRequest().getHeader(WS_AUTH_HEADER);
 		String host_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "host_id");
+
+		// ws连接认证
+		try {
+			KeycloakAdapter.getInstance().verifyAccessToken(token);
+		} catch (URISyntaxException | IOException e) {
+			session.close(1011, "Not Valid");
+		}
 
 		if(host_id != null && HostCache.hosts.keySet().contains(Integer.parseInt(host_id))) {
 

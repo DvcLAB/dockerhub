@@ -136,8 +136,6 @@ public class ContainerRoute {
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
 
-		boolean gpu_enabled = Boolean.parseBoolean(q.queryParamOrDefault("gpu_enabled", "false"));
-
 		String host_id = q.queryParamOrDefault("host_id", "");
 
 		try {
@@ -168,7 +166,7 @@ public class ContainerRoute {
 			}
 			// 未指定 host_id
 			else {
-				host = HostCache.getHost(gpu_enabled, container.cpus, container.mem);
+				host = HostCache.getHost(container.gpu_enabled, container.cpus, container.mem);
 			}
 
 			host.runContainer(container);

@@ -9,6 +9,7 @@ import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.db.persister.JSONablePersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
@@ -35,13 +36,16 @@ public class Image extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 
-	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT", width = 16)
+	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> tags = new ArrayList<>();
+
+	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	public Map<String, String> libs = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url;
 
-	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT", width = 16)
+	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT")
 	public List<Type> types = new ArrayList<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 4096)

@@ -327,6 +327,7 @@ public class ContainerService {
 		if(gpu) {
 			container.docker_compose_config = container.docker_compose_config
 					.replaceAll("\\$\\{runtime\\}", "runtime: nvidia");
+			container.gpu_enabled = true;
 		} else {
 			container.docker_compose_config = container.docker_compose_config
 					.replaceAll("\\$\\{runtime\\}", "");
