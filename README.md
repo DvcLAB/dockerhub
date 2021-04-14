@@ -8,23 +8,25 @@
 
 ## 功能特性
 
-在线jupyterlab开发
+1. 在线jupyterlab开发
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/jupyterlab.png)
-支持Docker Compose配置文件下载在私有主机运行，由平台管理，远程访问
+
+2. 支持Docker Compose配置文件下载在私有主机运行，由平台管理，远程访问
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/docker-compose.png)
-基于Keycloak的统一认证管理(支持微信登录与Github登录)
+
+3. 基于Keycloak的统一认证管理(支持微信登录与Github登录)
 - 用户登录
 - 用户访问资源（容器、项目、数据集..）
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/login.png)
 
-在线项目管理
+4. 在线项目管理
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/project.png)
    
-在线数据集管理
+5. 在线数据集管理
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/dataset.png)
    
-镜像管理
+6. 镜像管理
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/image.png)
    
-在线容器管理
+7. 在线容器管理
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/container.png)
