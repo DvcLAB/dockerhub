@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 @DatabaseTable(tableName = "hosts")
 public class Host extends DockerHost {
 
+	// 主机是否支持GPU
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean gpu_enabled = false;
 
@@ -40,7 +41,7 @@ public class Host extends DockerHost {
 	public String uid;
 
 	public User user;
-
+	//
 	@DatabaseField(dataType = DataType.BOOLEAN, canBeNull = false)
 	public boolean user_host = false;
 
@@ -53,9 +54,11 @@ public class Host extends DockerHost {
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String fingerprint;
 
+	// cpu用量
 	@DatabaseField(dataType = DataType.FLOAT)
 	public float cpu_assign = 0;
 
+	// 内存用量
 	@DatabaseField(dataType = DataType.FLOAT)
 	public float mem_assign = 0;
 
@@ -74,10 +77,11 @@ public class Host extends DockerHost {
 	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
 	public GPUInfo gpu_info = null;
 
+	// 主机CPU时序用量
 	public Queue<Object[]> cpu_series = new CircularFifoQueue<>(30);
-
+	// 主机网络时序用量
 	public Queue<Object[]> network_series = new CircularFifoQueue<>(30);
-
+	// 主机GPU时序用量
 	public Queue<Object[]> gpu_series = new CircularFifoQueue<>(30);
 
 	/**
@@ -118,7 +122,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 生成主机ID
 	 * @return
 	 */
 	public Host genId() {
@@ -127,7 +131,8 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 构建中台到服务器的ssh连接
+	 * @throws JSchException
 	 */
 	public void connectSshHost() throws JSchException {
 		this.sshHost = new SshHost(ip, port, username, this.private_key.getBytes());
@@ -136,7 +141,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 断开中台到服务器的ssh连接
 	 */
 	public void disconnectSshHost() {
 		this.sshHost.close();
@@ -157,7 +162,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 在服务器上运行node-exporter
 	 */
 	public void runNodeExporter() {
 		String cmd = FileUtil.readFileByLines("tpl/docker-run-node-exporter.sh");
@@ -165,7 +170,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 * 创建容器
+	 * 在主机上运行指定容器
 	 * @param container
 	 * @throws IOException
 	 * @throws JSchException
@@ -181,9 +186,9 @@ public class Host extends DockerHost {
 		String name = "jupyterlab-" + container.id + ".yml";
 		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
 		sshHost.copyLocalToRemote(name, name);
-
+		// 构建容器
 		exec("docker-compose -f " + name + " up -d");
-		// exec("rm " + name);
+		// 更新主机容器信息
 		container_num.incrementAndGet();
 		cpu_assign += container.cpus;
 		mem_assign += container.mem;
@@ -193,7 +198,75 @@ public class Host extends DockerHost {
 		// 同步缓存
 		ContainerCache.containers.get(container.id).host_id = this.id;
 		ContainerCache.containers.get(container.id).user_host = false;
+		// 更新容器信息
+		container.update();
+		this.update();
+	}
 
+	/**
+	 * 暂停容器
+	 * @param container
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws DBInitException
+	 * @throws SQLException
+	 */
+	public void pauseContainer(Container container) throws IOException, JSchException, DBInitException, SQLException {
+
+		// 复制配置文件
+		String name = "jupyterlab-" + container.id + ".yml";
+		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
+		sshHost.copyLocalToRemote(name, name);
+
+		// 暂停容器
+		exec("docker-compose -f " + name + " stop");
+
+		// 更新主机容器信息
+		container_num.decrementAndGet();
+		cpu_assign -= container.cpus;
+		mem_assign -= container.mem;
+
+		new File(name).delete();
+
+		container.status = Container.Status.Paused;
+
+		// 更新缓存
+		ContainerCache.containers.get(container.id).status = Container.Status.Paused;
+
+		// 更新容器信息
+		container.update();
+		this.update();
+	}
+
+	/**
+	 * 重新启动容器
+	 * @param container
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws DBInitException
+	 * @throws SQLException
+	 */
+	public void restartContainer(Container container) throws IOException, JSchException, DBInitException, SQLException {
+
+		// 复制配置文件
+		String name = "jupyterlab-" + container.id + ".yml";
+		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
+		sshHost.copyLocalToRemote(name, name);
+
+		// 开启容器
+		exec("docker-compose -f " + name + " start");
+
+		// 更新主机容器信息
+		container_num.incrementAndGet();
+		cpu_assign += container.cpus;
+		mem_assign += container.mem;
+
+		new File(name).delete();
+
+		container.status = Container.Status.Deployed;
+		// 更新缓存
+		ContainerCache.containers.get(container.id).status = Container.Status.Deployed;
+		// 更新容器信息
 		container.update();
 		this.update();
 	}
@@ -201,6 +274,8 @@ public class Host extends DockerHost {
 	/**
 	 * 删除容器
 	 * @param container
+	 * @throws DBInitException
+	 * @throws SQLException
 	 */
 	public void removeContainer(Container container) throws DBInitException, SQLException {
 
@@ -213,7 +288,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 获取当前可用的cpu资源
 	 * @return
 	 */
 	public float getCpuAvailable() {
@@ -221,7 +296,7 @@ public class Host extends DockerHost {
 	}
 
 	/**
-	 *
+	 * 获取当前可用的mem资源
 	 * @return
 	 */
 	public float getMemAvailable() {

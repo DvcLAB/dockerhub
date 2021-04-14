@@ -11,14 +11,16 @@ import com.dvclab.dockerhub.service.ReverseProxyService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
+import one.rewind.db.exception.DBInitException;
 import spark.Route;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- *
+ * 容器相关路由
  */
 public class ContainerRoute {
 
@@ -74,7 +76,7 @@ public class ContainerRoute {
 				qb.where().like("id", query + "%")
 						.or().like("uid", query + "%");
 			}
-			// 一般用户查询分支
+			// 一般用户查询分支，只能查询到自己的容器
 			else {
 				qb.where().like("id", query + "%")
 						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted); // 使用Enum，而不是对应的字符串
@@ -103,6 +105,7 @@ public class ContainerRoute {
 
 	/**
 	 * 更新容器
+	 * 当前只能更新容器名
 	 */
 	public static Route updateContainer = (q, a) -> {
 
@@ -129,7 +132,7 @@ public class ContainerRoute {
 	};
 
 	/**
-	 *
+	 * 在指定主机运行容器
 	 */
 	public static Route runContainer = (q, a) -> {
 
@@ -141,11 +144,10 @@ public class ContainerRoute {
 		try {
 
 			Container container = Container.getById(Container.class, id);
+			// 容器不存在
 			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
-
-			// TODO 判断用户是否有权限使用 Container 待验证
-			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
-
+			// 无权执行容器
+			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 			// 首先检查容器状态，避免重复运行
 			if(container.status == Container.Status.Deployed) return new Msg(Msg.Code.TOO_MANGY_REQ, null, null);
 
@@ -156,7 +158,7 @@ public class ContainerRoute {
 			Host host;
 			// 指定 host_id
 			if(HostCache.hosts.containsKey(host_id)) {
-
+				// 只有管理员才可以选取主机
 				if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
 					host = HostCache.hosts.get(host_id);
 				}
@@ -170,6 +172,84 @@ public class ContainerRoute {
 			}
 
 			host.runContainer(container);
+			return Msg.success();
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Run Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 暂停容器
+	 */
+	public static Route pauseContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+
+			Container container = ContainerCache.containers.computeIfAbsent(id, v -> {
+				try {
+					return Container.getById(Container.class, id);
+				} catch (DBInitException | SQLException e) {
+					return null;
+				}
+			});
+
+			// 容器不存在
+			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			// 无权执行容器
+			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			// 首先检查容器状态，只在Running和Port_Forwarding_Success状态才能执行暂停操作
+			if(container.status != Container.Status.Running &&
+			container.status != Container.Status.Port_Forwarding_Success)
+				return new Msg(Msg.Code.METHOD_REJECTED, null, null);
+
+			Host host = HostCache.hosts.get(container.host_id);
+			if(host == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			host.pauseContainer(container);
+
+			return Msg.success();
+		}
+		catch (Exception e) {
+
+			Routes.logger.error("Run Container[{}] error, ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 重启容器
+	 */
+	public static Route restartContainer = (q, a) -> {
+
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+
+		try {
+
+			Container container = ContainerCache.containers.computeIfAbsent(id, v -> {
+				try {
+					return Container.getById(Container.class, id);
+				} catch (DBInitException | SQLException e) {
+					return null;
+				}
+			});
+
+			// 容器不存在
+			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			// 无权执行容器
+			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			// 首先检查容器状态，避免重复运行
+			if(container.status != Container.Status.Paused) return new Msg(Msg.Code.METHOD_REJECTED, null, null);
+
+			Host host = HostCache.hosts.get(container.host_id);
+			if(host == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			host.restartContainer(container);
+
 			return Msg.success();
 		}
 		catch (Exception e) {
@@ -223,11 +303,11 @@ public class ContainerRoute {
 			// 权限：用户删除自己的容器
 			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			// Host remove container
+			// 公共服务器shutdown容器
 			if(!container.user_host) {
 				HostCache.hosts.get(container.host_id).removeContainer(container);
 			}
-
+			// 回收容器资源
 			ContainerService.getInstance().removeContainer(container);
 
 			return Msg.success();
@@ -240,7 +320,7 @@ public class ContainerRoute {
 	};
 
 	/**
-	 * 获取容器的映射信息
+	 * 获取分配给容器的frp配置信息
 	 */
 	public static Route getContainerProxyInfo = (q, a) -> {
 
@@ -254,7 +334,6 @@ public class ContainerRoute {
 		try {
 
 			Container container = ContainerCache.containers.get(id);
-
 
 			if(container == null || container.status == Container.Status.Deleted)
 				return new Msg(Msg.Code.NOT_FOUND, null, null);
