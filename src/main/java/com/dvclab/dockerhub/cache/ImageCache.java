@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.eq;
+
 /**
  * 镜像缓存
  */
@@ -52,7 +54,7 @@ public class ImageCache extends Caches{
 					if(i.libs!= null && p.deps.keySet().stream().allMatch(dep -> i.libs.containsKey(dep))) {
 						// 版本号匹配
 						return p.deps.entrySet().stream().allMatch(en ->
-								Version.valueOf(i.libs.get(en.getKey())).satisfies(en.getValue())
+								Version.valueOf(i.libs.get(en.getKey())).satisfies(eq(en.getValue()))
 						);
 					}
 					else {
