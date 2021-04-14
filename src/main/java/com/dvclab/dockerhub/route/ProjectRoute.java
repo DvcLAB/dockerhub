@@ -126,7 +126,7 @@ public class ProjectRoute {
 			Project obj = Project.fromJSON(source, Project.class);
 			obj.genId();
 
-			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
+			if(!obj.id.equals(id)) throw new Exception("Project url can not be changed");
 
 			if(obj.update()) {
 				return Msg.success(obj);

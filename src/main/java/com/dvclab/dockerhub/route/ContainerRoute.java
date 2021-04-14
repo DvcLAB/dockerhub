@@ -12,6 +12,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
 import one.rewind.db.exception.DBInitException;
+import org.checkerframework.checker.units.qual.C;
 import spark.Route;
 
 import java.sql.SQLException;
@@ -144,12 +145,10 @@ public class ContainerRoute {
 		try {
 
 			Container container = Container.getById(Container.class, id);
-			// 容器不存在
-			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			// 容器不存在或者容器是除New之外的其余状态
+			if(container == null || container.status != Container.Status.New) return new Msg(Msg.Code.NOT_FOUND, null, null);
 			// 无权执行容器
 			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
-			// 首先检查容器状态，避免重复运行
-			if(container.status == Container.Status.Deployed) return new Msg(Msg.Code.TOO_MANGY_REQ, null, null);
 
 			// 更新容器状态
 			container.status = Container.Status.Deployed;
@@ -202,7 +201,7 @@ public class ContainerRoute {
 			// 容器不存在
 			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
 			// 无权执行容器
-			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 			// 首先检查容器状态，只在Running和Port_Forwarding_Success状态才能执行暂停操作
 			if(container.status != Container.Status.Running &&
 			container.status != Container.Status.Port_Forwarding_Success)
@@ -242,7 +241,7 @@ public class ContainerRoute {
 			// 容器不存在
 			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
 			// 无权执行容器
-			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 			// 首先检查容器状态，避免重复运行
 			if(container.status != Container.Status.Paused) return new Msg(Msg.Code.METHOD_REJECTED, null, null);
 
@@ -270,6 +269,9 @@ public class ContainerRoute {
 		try {
 
 			Container obj = Container.getById(Container.class, id);
+			// 普通用户不能查到删除状态的容器
+			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)
+					&& obj.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			if(obj != null) {
 
@@ -301,7 +303,7 @@ public class ContainerRoute {
 			Container container = ContainerCache.containers.get(id);
 
 			// 权限：用户删除自己的容器
-			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && ! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			// 公共服务器shutdown容器
 			if(!container.user_host) {

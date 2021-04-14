@@ -49,7 +49,7 @@ public class ImageCache extends Caches{
 		return images.values().stream()
 				.filter(i -> {
 					// 镜像的依赖项列表 包含 项目的全部依赖项名称
-					if(p.deps.keySet().stream().allMatch(dep -> i.libs.containsKey(dep))) {
+					if(i.libs!= null && p.deps.keySet().stream().allMatch(dep -> i.libs.containsKey(dep))) {
 						// 版本号匹配
 						return p.deps.entrySet().stream().allMatch(en ->
 								Version.valueOf(i.libs.get(en.getKey())).satisfies(en.getValue())
