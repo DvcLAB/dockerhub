@@ -1,0 +1,1470 @@
+{
+	"info": {
+		"_postman_id": "8f3cbe9e-8561-4dbc-b539-17bbddfd9f93",
+		"name": "dvclab",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "request access_token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "dockerhub_admin",
+							"description": "test2  dockerhub_admin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "zhulou3-412",
+							"description": "123456  zhulou3-412",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "dvclab",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "6df01180-7ed0-464a-85b2-ef5d8625087e",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/dvclab/protocol/openid-connect/token",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"dvclab",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request pat",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "dvclab",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "6df01180-7ed0-464a-85b2-ef5d8625087e",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/dvclab/protocol/openid-connect/token",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"dvclab",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDYyOTIsImlhdCI6MTYxODQwNDQ5MiwianRpIjoiNWE0MTJjYTMtZTVhNy00ZTdhLTk0YTYtY2I5ZjcyNzc3ZTFjIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJlZWY1N2I3ZS03MjY1LTQ3YmItOGRiNC0zZDQ1ODAwMWRmZmIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.w0uBahs2XDJAef48p83oxxV3Of6XDwmTojKDyWuqnUYzaOHhhES6gFaxomdTRc1L5Z2QIwxV1ZGqGgRDvIvEHnOu9KNCYj49v4wd89-y2wE6MDQet101evJBQP2pv3L0n5BSlst1s_v5K6mS1gWE2ZeF0DI2_4cIPc_evhScSDYHJGcVj8dr2BqEpLdl_h9w_FAzJaRC8DHnrpz9tl8cleHAWqnofOXzHzsNaYc7JNkpIPnoenAQQbesiAfp_Y_b3oypGKqqIuBmxtbzS_l40ubv88h9bnti8ZvSKHBTbWO8j6X3IRLah5HjZ0NX4-DGuTxuVpZ7D7d0ToevISOGBQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/users",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects_info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects_info?url=https://github.com/DvcLAB/container_test",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects_info"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https://github.com/DvcLAB/container_test"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"name\": \"container_test\",\n        \"url\": \"https://github.com/DvcLAB/container_test\",\n        \"cover_img_url\": \"https://raw.githubusercontent.com/DvcLAB/container_test/master/config/.cover_img.png\",\n        \"branches\": [\n            \"master\"\n        ],\n        \"deps\": {\n            \"tensorflow\": \"2.2\"\n        },\n        \"desc\": \"Contribute to DvcLAB/container_test development by creating an account on GitHub.\",\n        \"dataset_ids\": [\n            \"b43f01598c9e4038c03ee61aeb50398b\"\n        ]\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects/dc072411a673345e9e3aeed15e298b8d",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects",
+						"dc072411a673345e9e3aeed15e298b8d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"name\": \"container_test\",\n        \"url\": \"https://github.com/DvcLAB/container_test\",\n        \"cover_img_url\": \"https://raw.githubusercontent.com/DvcLAB/container_test/master/config/.cover_img.png\",\n        \"branches\": [\n            \"master\"\n        ],\n        \"framework\": \"python3.8\",\n        \"deps\": {\n            \"tensorflow\": \"2.2.0\"\n        },\n        \"desc\": \"Contribute to DvcLAB/container_test development by creating an account on GitHub.\",\n        \"dataset_ids\": [\n            \"b43f01598c9e4038c03ee61aeb50398b\"\n        ]\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects/dc072411a673345e9e3aeed15e298b8d",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects",
+						"dc072411a673345e9e3aeed15e298b8d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/projects/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/projects/dc072411a673345e9e3aeed15e298b8d",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"projects",
+						"dc072411a673345e9e3aeed15e298b8d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hosts (admin)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/hosts",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"hosts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hosts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDkyMDQsImlhdCI6MTYxODQwNzQwNCwianRpIjoiYmNmYzM0NGQtNjI0NC00ZjUzLThkNTAtYzkwMzA0ZDMxNGQyIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJjNzVkODU1My1jODRjLTRmM2UtODM3Yi1hYWIxMjllODcwOTIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.AG-zNYehp_EJzPl2CPQW-JzKmhB0SHEkY2LLdGhnCss3MQgSP62dP9RicqcDzHOGiAd1eFYxzg5BQX5oecdnfMbbfSXRfBTxWZRZkEFF6QQdN1p4BGrXNKsEvzfmyn3cz1M1iBgBACm6M89NH4OZttW8_BTIQra8EmwwQoOSRdU8z5X6d84e38rCQMn6sd2RsAgP6qkhk_KQRc6cZmAK3CK6ybYgC0DD28YwXZM3d0FBwvfuEySVNX4ncVNJLzlt4F2Nm3AFP-Y9IOjtX1Z6y5d_yXRmaGkLs1zUuYkc9TdNha7nXClTmfLQbF8ETnhXVpYf3owBJbF31lI0ZzOnNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gpu_enabled\": true,\n    \"ip\": \"172.17.221.237\",\n    \"port\": \"60111\",\n    \"username\":\"root\",\n    \"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAsY/gKNULrQuomC3eLKVyduXH2t+N4npEXX4tKNCZnG8Cb27u\ntBIPLGcO6snEApEcyr9rEiqoAQdIgfMtPtWcOaGmKP22/XZGlSSWk4+FyVzs5ubK\n8ipBKAM4K/5LWFVrXK8SCdIVf01+Iqx+Ne4aly6LQVfvPwq8lsRF2au/8dwLVYYJ\nZDQGI8s0p47fH7ZtjzhZbXLkL7AAXAiXG4Cb4GbWmaq6UXVE8jLdlKk9/HjE771h\nwZxt8vusMBLHa4wopoO2BNpQbRer7QTVe/PNr1Xxw1iteumWkHso5GvtPqDCPicW\nQ+ESDejNhmAtR6VxwXSot5h2pATqzRvgZtfRIwIDAQABAoIBAALq/18MaT21xFaD\n4nPPYDst+YPSSq2fHsJ+kVVrYCre9CZKp2eUKGWtZ+RZ3nvAUL3QOX058DrcGMfx\n7BttPT0BOA7SZJBzwiMvT74rDKLLgSUmQ82I/jsfGmw2qJxSAwqp4d0Bc9L8vgbp\n2MUgHZXAcQ9o14isr362yQMTvHrIAO8qhquH1tlP0HsXoxeNg/qU0Abu4PWvvxje\nJGn3lbg4dOhWcxlJUuDcXPR+GOICpd+TrYjb+e3oB2Y41+cIXSYsmD4vIUca8hCn\nQAGBReV2fSqfsMp9NFNucJ4LK3K9fVZ5XQ8nNbNw1f7Cfd7mXFkLqTcRpzLWCqbX\nB8oVXGkCgYEA4QCAYHGibcDZiXJzzn6UgctXXzxWOjQAp5mLr3JbaFEZgD9pP1HN\nXipuQ5SAxCatwgAqWdAE1KZ7utpqK9qWiGpjGJDE6hTbuJyjf3aN1MitksOOWeO/\nJgVkUQpsPbMWaA1iOi1vnAIKAUV5pFUCm5C2qrsI4WX1kgh1yg4ZHr8CgYEAygY8\nIa8t6O4TtXNauVlw8qKmmMvgE5/EE+tQoFNWPdO3jrxXAdX1WgUJVwEYsttfH+Go\nKNsgkA54gF5lT0t9EfbH2tT5t5TLPc7/fFk9Owsr5+LTQqvYtznaOAEIIDwqEP0F\nn9PS86I0gMMK/ZBpfiVUoVlLTN28RkGD8m1jip0CgYEA1e0rIgeI3v9YFaXbU77o\nJgwWs3bjqQ0efjuwIw0Aucs6CsS/pbN6JokDM3/zegwocubDXYc5wJHV3E+kWLPJ\nIkS8mXOztbhFPF652Qv4SBLRbVQ/eVnfuR+xRJg7V+J5cE8hUJ04m8UYjCLpSASH\nqS9LbkLMa7oMZV9j1svWuHMCgYEAp2T5KDP+B3ZVsFDPyKq6suFgx1SO69PC5Xpi\nySWkXQBzpPqb4XKGpLttnMDU1UZ+EG2rJ4dB+Pt0j3En4sc678qamNFFxP6uVR2S\nhldvK+A61h4VTLYVkOSH00XPlN4lQQRWR7N9pNAvTs3N6oJhVtvZvwO9KAjGuzQH\n/7Tx+OUCgYBUybFJh6B+vriDVHssWYOF+anY7WFNJzR8ph7Eqx0f0e5XSKYa8NK+\n0tZyDev0LcWyU7eJ8/ZiEZNvc18dIrDpNO+ClUi6jqF68Bm+bc4UrY3kdPYx9l3R\nsMtihKuzVoKdh3BwooijWlWTy4fhXMYanHlgp4m8bKix27Fcb1iJVw==\n-----END RSA PRIVATE KEY-----\",\n    \"container_num\":\"0\",\n    \"status\":\"RUNNING\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/hosts",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"hosts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hosts/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDkyMDQsImlhdCI6MTYxODQwNzQwNCwianRpIjoiYmNmYzM0NGQtNjI0NC00ZjUzLThkNTAtYzkwMzA0ZDMxNGQyIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJjNzVkODU1My1jODRjLTRmM2UtODM3Yi1hYWIxMjllODcwOTIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.AG-zNYehp_EJzPl2CPQW-JzKmhB0SHEkY2LLdGhnCss3MQgSP62dP9RicqcDzHOGiAd1eFYxzg5BQX5oecdnfMbbfSXRfBTxWZRZkEFF6QQdN1p4BGrXNKsEvzfmyn3cz1M1iBgBACm6M89NH4OZttW8_BTIQra8EmwwQoOSRdU8z5X6d84e38rCQMn6sd2RsAgP6qkhk_KQRc6cZmAK3CK6ybYgC0DD28YwXZM3d0FBwvfuEySVNX4ncVNJLzlt4F2Nm3AFP-Y9IOjtX1Z6y5d_yXRmaGkLs1zUuYkc9TdNha7nXClTmfLQbF8ETnhXVpYf3owBJbF31lI0ZzOnNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/hosts/b8615dd29109f32a4178dc57faef6fb1",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"hosts",
+						"b8615dd29109f32a4178dc57faef6fb1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hosts/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTgyMTYwMDksImlhdCI6MTYxODIxNDIwOSwianRpIjoiNDNlMDhlNjQtZjM1Yy00NDZiLTlhYjAtZDM1MTZiMzE1NTk3IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJkYjU0YTk0Ni02NjY5LTQ1OTQtYmIyOC0zZDc1NzQ1MGJmNmIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.laC94M3VN6cCLs1npiyzcnkGdtMh7105yoelcGyQARcEh3pue4idy7jki_5xzNBazEDIWYHfhnV2wUpqyovGbQHRKcPVQjV1j9FXlyUc_vw-DJWEyqwkVSwU6HbLcE5iBKMMVce1ML4H_ICkHMoFU1mf4vIU_oqWE6cjZbxBBuTSWlK5eC8YqNJoYnnBZe8hnwAtUz7Xr-i0VFTFdMhvBFZ-7H80se4Z0jBwM39tTH4ZTPSAMR69XXewizUxzY6HBuoF4OI4OI8OWfVajWZxLUSH8I_jSZ2nLC8_IcrCazVUUMe7P5BHNQfNlUanXbbtW6YJKzCSKufLhkoymbPFmw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"gpu_enabled\": true,\n    \"ip\": \"172.17.221.237\",\n    \"port\": \"60111\",\n    \"username\":\"root\",\n    \"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEAsY/gKNULrQuomC3eLKVyduXH2t+N4npEXX4tKNCZnG8Cb27u\ntBIPLGcO6snEApEcyr9rEiqoAQdIgfMtPtWcOaGmKP22/XZGlSSWk4+FyVzs5ubK\n8ipBKAM4K/5LWFVrXK8SCdIVf01+Iqx+Ne4aly6LQVfvPwq8lsRF2au/8dwLVYYJ\nZDQGI8s0p47fH7ZtjzhZbXLkL7AAXAiXG4Cb4GbWmaq6UXVE8jLdlKk9/HjE771h\nwZxt8vusMBLHa4wopoO2BNpQbRer7QTVe/PNr1Xxw1iteumWkHso5GvtPqDCPicW\nQ+ESDejNhmAtR6VxwXSot5h2pATqzRvgZtfRIwIDAQABAoIBAALq/18MaT21xFaD\n4nPPYDst+YPSSq2fHsJ+kVVrYCre9CZKp2eUKGWtZ+RZ3nvAUL3QOX058DrcGMfx\n7BttPT0BOA7SZJBzwiMvT74rDKLLgSUmQ82I/jsfGmw2qJxSAwqp4d0Bc9L8vgbp\n2MUgHZXAcQ9o14isr362yQMTvHrIAO8qhquH1tlP0HsXoxeNg/qU0Abu4PWvvxje\nJGn3lbg4dOhWcxlJUuDcXPR+GOICpd+TrYjb+e3oB2Y41+cIXSYsmD4vIUca8hCn\nQAGBReV2fSqfsMp9NFNucJ4LK3K9fVZ5XQ8nNbNw1f7Cfd7mXFkLqTcRpzLWCqbX\nB8oVXGkCgYEA4QCAYHGibcDZiXJzzn6UgctXXzxWOjQAp5mLr3JbaFEZgD9pP1HN\nXipuQ5SAxCatwgAqWdAE1KZ7utpqK9qWiGpjGJDE6hTbuJyjf3aN1MitksOOWeO/\nJgVkUQpsPbMWaA1iOi1vnAIKAUV5pFUCm5C2qrsI4WX1kgh1yg4ZHr8CgYEAygY8\nIa8t6O4TtXNauVlw8qKmmMvgE5/EE+tQoFNWPdO3jrxXAdX1WgUJVwEYsttfH+Go\nKNsgkA54gF5lT0t9EfbH2tT5t5TLPc7/fFk9Owsr5+LTQqvYtznaOAEIIDwqEP0F\nn9PS86I0gMMK/ZBpfiVUoVlLTN28RkGD8m1jip0CgYEA1e0rIgeI3v9YFaXbU77o\nJgwWs3bjqQ0efjuwIw0Aucs6CsS/pbN6JokDM3/zegwocubDXYc5wJHV3E+kWLPJ\nIkS8mXOztbhFPF652Qv4SBLRbVQ/eVnfuR+xRJg7V+J5cE8hUJ04m8UYjCLpSASH\nqS9LbkLMa7oMZV9j1svWuHMCgYEAp2T5KDP+B3ZVsFDPyKq6suFgx1SO69PC5Xpi\nySWkXQBzpPqb4XKGpLttnMDU1UZ+EG2rJ4dB+Pt0j3En4sc678qamNFFxP6uVR2S\nhldvK+A61h4VTLYVkOSH00XPlN4lQQRWR7N9pNAvTs3N6oJhVtvZvwO9KAjGuzQH\n/7Tx+OUCgYBUybFJh6B+vriDVHssWYOF+anY7WFNJzR8ph7Eqx0f0e5XSKYa8NK+\n0tZyDev0LcWyU7eJ8/ZiEZNvc18dIrDpNO+ClUi6jqF68Bm+bc4UrY3kdPYx9l3R\nsMtihKuzVoKdh3BwooijWlWTy4fhXMYanHlgp4m8bKix27Fcb1iJVw==\n-----END RSA PRIVATE KEY-----\",\n    \"container_num\":\"0\",\n    \"status\":\"RUNNING\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/hosts/b8615dd29109f32a4178dc57faef6fb1",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"hosts",
+						"b8615dd29109f32a4178dc57faef6fb1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/hosts/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDkyMDQsImlhdCI6MTYxODQwNzQwNCwianRpIjoiYmNmYzM0NGQtNjI0NC00ZjUzLThkNTAtYzkwMzA0ZDMxNGQyIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJjNzVkODU1My1jODRjLTRmM2UtODM3Yi1hYWIxMjllODcwOTIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.AG-zNYehp_EJzPl2CPQW-JzKmhB0SHEkY2LLdGhnCss3MQgSP62dP9RicqcDzHOGiAd1eFYxzg5BQX5oecdnfMbbfSXRfBTxWZRZkEFF6QQdN1p4BGrXNKsEvzfmyn3cz1M1iBgBACm6M89NH4OZttW8_BTIQra8EmwwQoOSRdU8z5X6d84e38rCQMn6sd2RsAgP6qkhk_KQRc6cZmAK3CK6ybYgC0DD28YwXZM3d0FBwvfuEySVNX4ncVNJLzlt4F2Nm3AFP-Y9IOjtX1Z6y5d_yXRmaGkLs1zUuYkc9TdNha7nXClTmfLQbF8ETnhXVpYf3owBJbF31lI0ZzOnNg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/hosts/b8615dd29109f32a4178dc57faef6fb1",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"hosts",
+						"b8615dd29109f32a4178dc57faef6fb1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MTIzMzQsImlhdCI6MTYxODQxMDUzNCwianRpIjoiZGM5MzVhOGUtZWZlNy00MDVjLWE0MzItNWMwNWNlNDNhOTRkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5OWZiMGQ5Yy0wZDNjLTQ5YjEtYjFmOS01ZWQzNzI2ZDE0YzIiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.ZQUVzyseqoKdnmXKczoou3I6qnTyGaPuimrdp2VJPsp_H8mXzfG-wzWNhrDB5c6j-K9uBnNBBS4EOQ-EawkHDgsisZgt8C8TquBOJcTpr3WaOUyVO_mA0DvM8JWC_FSJ7iIa3NAeJi1JOL8P8xzLvR55p0puK1HilWi-vGDouynsWLHxMO-44GOJGRtJaiYnW6z4d0psZbGGsCe2z_AU3cFbpSxsh0eMA1SkH6oMG5YTBOEhHw6YhYhusOAmkv5vizAfZB6EzOZGuIajc7goWQVq0JpYnXV1inzRr6_gyGfIHbZuKXilCgFHtiZGIIcFgi0phmaLsv69-YSJPUm0MA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images_project",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0Njg5MjEsImlhdCI6MTYxODQ2NzEyMSwianRpIjoiMGMxYzBlNjQtMDViOC00NTE0LWJhNjktY2EwNjgzZjg0ZTg2IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NzE0YjkzMy05YWFkLTRiZTctYmY3ZC0yYzUyZTg5ZDZmZGUiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.jQDa3NdpGrm8rF0EMTw0zaTixfQNkNJz9EUwMKW6XpdNmoNEwI3PtsAwkrDcvL0JTFbVPLpMjX94CPeze5DrIGYfNWeGPvWd19LxQ2c5692tPF9VtR1KmQknOoLVukc580-zW6hwwDqjZZEEvr1LePabfsn8zpQ1cq0mQi576DSbGn3oMTGdlt3KhruZ8a4_fNhDOf42ij7F0Dqgx9Qk2dfu41fvTr4KREdNeK5hox04RbOC92aN1vYhgkorQDzC8DA0zACdOuU-LtwhRZufD2jGHCSlDJFs4l3tnEz09pwhvyrnmeCvrZ8em0IyCQO7aeKEpeg2f9-rmyFbBht_Uw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images_project?project_id=dc072411a673345e9e3aeed15e298b8d",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images_project"
+					],
+					"query": [
+						{
+							"key": "project_id",
+							"value": "dc072411a673345e9e3aeed15e298b8d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images/:name/tags",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MTAxODcsImlhdCI6MTYxODQwODM4NywianRpIjoiZjYyZWIwYjMtMGNhYS00MWZkLTk5YzgtNGM2Zjc5NDUwYmI3IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiIwNTU1NjIxOS0xN2U4LTQ5ZmUtOTI0Zi1mMDJiNjk2NDE2ZDEiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.KFEuRwQI04VTTNKTma4xwzITLyTzqjOk-OgIaK-4qDoAnBgtHyLWd8ewanEnYUixRo0_djeml_dOMbvVGveIUHsfkDL_VznziCTFJS7iP-11UH2xZrP7b851vHOhOCBI3rO-HE6d0M-y-znlkQ6oe1vTlNc4xjU-pmPi1tFALcEm2hyUaiD4iNqs0KPHwfqKgx8VAzDGz78gzWcuu0fbvaQAFpWUwsoRu7xp28N9B5TgEMSyt4cciMy7ARGnnW0ZXXzEMZ5PMbixqrkBjq4VMzuRFnrXPFpXdsQjkwMTJId7pYWCS4S2E9BIJHtg1TSELuoWQEqX61QJSa2cPFJZpQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images/tf2.2/tags",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images",
+						"tf2.2",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images/:id (admin)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MTM2NzMsImlhdCI6MTYxODQxMTg3MywianRpIjoiODcyMGM2MDUtNmNkYi00ZTFjLWFkYTUtZDY4YWUzNjU2NzQxIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJlYzNhNWY0Mi02ZWYyLTRjZDEtYmVmYS1hYzNlM2JlNDg2ZDciLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.FYgaeQF1jdWv0OEjoaLpbULxVIt3gg3aAq6oNv2kBJT_pX-QaoilD7CT_ttN3GWLcfJ61J6s5YdzZP9yOob_1EfD0fIc5MAYneLys947JmkJYhSNIHyH7AOscuP78iftvVLJFFSL4krINucPIjUPVIBD8kFi6bRru39InLnLyicCb--yuXcp01N0PLePFgiRc7lKbbq_jJJf40Aia6-nGFNTBKyRSHbwiSLLS8Cqkf4n7oc0P9brT61zMTr8orTlnNK-TQkAJemvi2Ex3BPvKiWcMyk6-jWF9lyNmlg7opIErQXxObfAoSvlaeI96WbAPAkjSN8ScI1CqF0rbknqQw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n            \"name\": \"tf2.2\",\n            \"tags\": [\n                \"1.4\",\n                \"latest\",\n                \"1.1\",\n                \"1.0\",\n                \"1.2\",\n                \"1.3\",\n                \"1.6\"\n            ],\n            \"types\": [],\n            \"libs\": {\"tensorflow\":\"2.2.0\"},\n            \"desc\": \"\",\n            \"id\": \"7d43dac42adadc367d54fa83a8017589\",\n            \"create_time\": 1618238761000,\n            \"update_time\": 1618238761000\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images/7d43dac42adadc367d54fa83a8017589",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images",
+						"7d43dac42adadc367d54fa83a8017589"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJfQlh3Z2NXQUlYWDhPZ2toRjVnczJzQnFIRUJPa3I0VmNiajNPZE9oMU5NIn0.eyJleHAiOjE2MTY4NDQzOTAsImlhdCI6MTYxNjg0MjU5MCwianRpIjoiMGMwM2FlZmEtNTA2Yi00YzM1LTgzMTgtYTZjNzhmM2U0NmM0IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImNkNjY5ZjkzLTVkNTgtNGZjOC1iYTI5LTRkYzhkOTRhY2ZjMiIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJmZDZjZWRhMy0zMDQ4LTQ1ZWUtYTE4Ny0zYjU4NmU1ZmJmMmYiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHBzOi8vYXV0aC5kdmNsYWIuY29tIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJET0NLSFVCX0FETUlOIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIHVzZXJpbmZvIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9pbWFnZS5jb20iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkb2NrZXJodWJfYWRtaW4iLCJlbWFpbCI6ImppYWxlZTgxMkBnbWFpbC5jb20iLCJlbmFibGVkIjp0cnVlfQ.J5mwC1yaFLUSg0oW10FD066nR8jYIm0PcDusdtFqfMrtztlHC27wv5p4yiBqc_FMGG3Kykxq5zZsrW6vuFlkWzCbLQu1oBBSDUxGLcFE7jBSrGKpsQx3ogB6JX2ODmqTUVb8UOm2gkLhnCbgpicfwQw7liB1fcq1_xiyse5P1ONHH0v6cvbg0JHoXOWYuYleqhEhEBfZh7CgUJCzVXHJkcdVhpZoezCnHoqhrTozmsCErApjinTdwvqlvnLgEqG3s96z_cTAyzPteYAy9oYpbQ7tb4fFrjc1x97wL89LC5fvN5zsdlLIQ2H3CrHNBujxoPNl5VempjL9Vbi8tv3uBA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images/696dc5c7b67f00b31ff5a8f8be102abd",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images",
+						"696dc5c7b67f00b31ff5a8f8be102abd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/images/:id (admin)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJfQlh3Z2NXQUlYWDhPZ2toRjVnczJzQnFIRUJPa3I0VmNiajNPZE9oMU5NIn0.eyJleHAiOjE2MTY4NDQzOTAsImlhdCI6MTYxNjg0MjU5MCwianRpIjoiMGMwM2FlZmEtNTA2Yi00YzM1LTgzMTgtYTZjNzhmM2U0NmM0IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImNkNjY5ZjkzLTVkNTgtNGZjOC1iYTI5LTRkYzhkOTRhY2ZjMiIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJmZDZjZWRhMy0zMDQ4LTQ1ZWUtYTE4Ny0zYjU4NmU1ZmJmMmYiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHBzOi8vYXV0aC5kdmNsYWIuY29tIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJET0NLSFVCX0FETUlOIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIHVzZXJpbmZvIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9pbWFnZS5jb20iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkb2NrZXJodWJfYWRtaW4iLCJlbWFpbCI6ImppYWxlZTgxMkBnbWFpbC5jb20iLCJlbmFibGVkIjp0cnVlfQ.J5mwC1yaFLUSg0oW10FD066nR8jYIm0PcDusdtFqfMrtztlHC27wv5p4yiBqc_FMGG3Kykxq5zZsrW6vuFlkWzCbLQu1oBBSDUxGLcFE7jBSrGKpsQx3ogB6JX2ODmqTUVb8UOm2gkLhnCbgpicfwQw7liB1fcq1_xiyse5P1ONHH0v6cvbg0JHoXOWYuYleqhEhEBfZh7CgUJCzVXHJkcdVhpZoezCnHoqhrTozmsCErApjinTdwvqlvnLgEqG3s96z_cTAyzPteYAy9oYpbQ7tb4fFrjc1x97wL89LC5fvN5zsdlLIQ2H3CrHNBujxoPNl5VempjL9Vbi8tv3uBA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/images/696dc5c7b67f00b31ff5a8f8be102abd",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"images",
+						"696dc5c7b67f00b31ff5a8f8be102abd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets_info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDc2NjksImlhdCI6MTYxODQwNTg2OSwianRpIjoiNWEwMzhiMWQtZmFlNC00OGY3LWI5YzItNzY0NDkzNmFiMjNmIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI0MDQ3NmYzMC04YmViLTRmZjUtOTBiNC1hZTA1YzYwNTk2ZjEiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.xCbAalprv7mI_x2tLfLpqJRXrBZna76-dH7tbnDB9Bn81GGgSr2C_avWpa1n4jdatCkGGYSgcHL5heQdWW1EKM7229XoC4fikmsU5UxysfXIAWkMcLat-HfGEsSOg0LrVDL8Hm4TL21HI5NBVIdt4045bgYyFs54mILG_z_fX2vP0ExmByqGbufbWhiKhE7jkgljm-5gyFBelUL6Yfm4fH1BAnh1H3ZbY_HwsgUTm1iUoh7pmej9ZASqQT3soJ-he-2KrPLL3MDgML1h39z5wIO8deH58dWTAaELzvmnVlqTJ79V-af1kMVt09hkFeStxzOi5fzMFqykDAeNOvyYgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets_info?url=https://s3.dvclab.com/mnist",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets_info"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https://s3.dvclab.com/mnist"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ3SXhvd1RsWDhZUkx0WEo2TmdzZ083OHdqZ1FiQU1DaFd5em1zSVQzXzNzIn0.eyJleHAiOjE2MTYxNDkzMjAsImlhdCI6MTYxNjEzMTMyMCwianRpIjoiNjlkN2EzYWMtMjk5Zi00MTc3LWJkOTAtMzBlYTVlZmE5MGQ3IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvcHNpYWkiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZDYwY2ZlMjEtNTQ5OC00ZDRjLWEyNWItNWQwM2M4MmJlZGRlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoicHNpYWlfc2VydmVyIiwic2Vzc2lvbl9zdGF0ZSI6IjY0ZmMzOTJjLTcyYzgtNDNiMC1hNTAxLTI5N2EzNDZhZGMzYyIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiRE9DS0hVQl9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCB1c2VyaW5mbyBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9ob3N0bmFtZSIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3QiLCJlbmFibGVkIjoidHJ1ZSIsImVtYWlsIjoiODc3MzY5NjEwQHFxLmNvbSJ9.XQMv4jy5jXQJPhHKJdsJlmTrrsxIZagPd7asjODoG7tSQaTJ_XtHfqGl3lUEUybKuLuoDxb-ZwcUSP0VOWP-iQuF8kjYMCixoh75E5Vs7abP-XBx5xs6foN7okdnzRt4VQfDMF2QWH8YrCjEW4YLNwG9iRcYRDgV17aFfk0r-Hl3Js-zBtFTBzUt6oizBTMJfj0Zly6KHejv9A8blTahQP9z9i9RPUjMGApII9BdP-m3Avg1Fz44JZcBW0bryx9LyHRkL7bTqWnULXnpzD3bP_Km5kCjtu4BVLWtoSrrz7esKv3MXCZHAj3yIDvm2PLf8goAisBnzTYHgoCkNHtlOw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0MDc3MTUsImlhdCI6MTYxODQwNTkxNSwianRpIjoiNTZjNGJjYWUtZTg4MS00MDJmLTlmYTctODhkODE0MjJjNmIyIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJlMDZjMjJkOC1lNTQwLTQ2MmMtOWJkYi04NjY5NDNlZDc0NjAiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.MOETi9XtmBpbXNZi8m5rhEv8zD3M15r-cvgcUxdbCo09aaLTftgkKbmwYMJYGEA7-dq1C-Yfv9p39GO-ozSWH-fY7VJEQKQlFmZEP7lJjoljWPo2TQJk0gL3kWYayR5tMJvB_X-2N085DtpAYMkSmuB2hV_c-q5OhpUKtPdLGP1-Sr-e9C2-vsjRIKaflsdgG6BZ6VD7nBFVQDxtT6M-ZXiqE9PWogziYdEhLWSJ9JkBiAcJo2efx8VcgbpzzhfEUwdZnKe8umjEljmOSXhohR9AEXAv1t6tztXre798T0LunOJrEAiSl6_dG3m-AR8TmoP5lKCbsW3njQf0xNvaEw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"name\": \"mnist\",\n        \"url\": \"https://s3.dvclab.com/mnist\",\n        \"cover_img_url\": \"https://s3.dvclab.com/mnist/.cover_img.png\",\n        \"desc\": \"# 数据集说明\\n## 数据集结构\\n```\\nmnist\\n├─ train-images-idx1-ubyte.gz (训练数据图片)\\n├─ train-labels-idx3-ubyte.gz (训练数据标签)\\n├─ test-images-idx3-ubyte.gz (测试集图片)\\n└─ test-labels-idx1-ubyte.gz (测试集标签)\\n```\\n## 内容\\n1. 本数据集是下载的fasion_mnist官方数据集文件，格式为.gz的压缩包。\\n2. Fashion-MNIST数据集包含了10个类别的图像，分别是：t-shirt（T恤），trouser（牛仔裤），pullover（套衫），dress（裙子），coat（外套），sandal（凉鞋），shirt（衬衫），sneaker（运动鞋），bag（包），ankle boot（短靴）。\\n3. 训练数据集每个类别含有6000个样本，测试数据集每个类别含有1000个样本，一共有10个类别，故而训练数据集共60000个样本，测试数据集共10000个样本。\\n4. 每幅图像是一个28*28的像素数组，每个像素的值为0~255之间的8位无符号整数（uint8），使用三维NDArray存储，最后一维表示通道个数。由于为灰度图像，故通道数为1。\\n## 预览<img src=\\\"https://i.ibb.co/vPp4pxJ/fashion-mnist-3-0-1.png\\\" alt=\\\"fashion_mnist-3.0.1\\\" style=\\\"zoom:50%;\\\" />## 关联的项目\\n项目名称：CNN\\n项目地址：https://github.com/DvcLAB/CNN.git\\n\",\n        \"tags\": [],\n        \"id\": \"b43f01598c9e4038c03ee61aeb50398b\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ3SXhvd1RsWDhZUkx0WEo2TmdzZ083OHdqZ1FiQU1DaFd5em1zSVQzXzNzIn0.eyJleHAiOjE2MTYxNTg0MTcsImlhdCI6MTYxNjE0MDQxNywianRpIjoiMTU4N2Q0YzQtNGNlNS00YzIyLWEyOTQtNDM3MzdmZGFkMTczIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvcHNpYWkiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZDYwY2ZlMjEtNTQ5OC00ZDRjLWEyNWItNWQwM2M4MmJlZGRlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoicHNpYWlfc2VydmVyIiwic2Vzc2lvbl9zdGF0ZSI6IjljZDRmYWY4LTc2OTYtNGViYS1hMTc3LTAzNmUwNjJmYmYwNCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiRE9DS0hVQl9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCB1c2VyaW5mbyBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9ob3N0bmFtZSIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3QiLCJlbmFibGVkIjoidHJ1ZSIsImVtYWlsIjoiODc3MzY5NjEwQHFxLmNvbSJ9.LlIdOxj6NPmRv9tXkP2DZvsxwNBxfu6Hvop8yWAHoieJ-PNf2ZJF_DDSpuwhOm4LUEeYXlGQOD2aP-VzU6rAA1oUiQtLniZOoEmzFV2FnGKrrvQrUhmu2HBafvFzo2cgu1w4pG64Gze7oiIX9ANreDZUSdmqgrNCX-olN-SpyIdJ4QHIEp3Itk6WMgtO3dVOghTkY3uFy7NXx7mkXbVI4ZPDra-1h7V9-8YCl4CD5G26wXF8ALnodMrtZ7gronobI6qEmBEdb4Oxhpk-tXvp0irm9gcWmBJ6xLpUX_D52B56dl2sHgpk39yQtdmejpcJmIk1MRtB7YyhLU5AfPVlGA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets/b43f01598c9e4038c03ee61aeb50398b",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets",
+						"b43f01598c9e4038c03ee61aeb50398b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ3SXhvd1RsWDhZUkx0WEo2TmdzZ083OHdqZ1FiQU1DaFd5em1zSVQzXzNzIn0.eyJleHAiOjE2MTYxNTg0MTcsImlhdCI6MTYxNjE0MDQxNywianRpIjoiMTU4N2Q0YzQtNGNlNS00YzIyLWEyOTQtNDM3MzdmZGFkMTczIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvcHNpYWkiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZDYwY2ZlMjEtNTQ5OC00ZDRjLWEyNWItNWQwM2M4MmJlZGRlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoicHNpYWlfc2VydmVyIiwic2Vzc2lvbl9zdGF0ZSI6IjljZDRmYWY4LTc2OTYtNGViYS1hMTc3LTAzNmUwNjJmYmYwNCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiRE9DS0hVQl9VU0VSIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCB1c2VyaW5mbyBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9ob3N0bmFtZSIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3QiLCJlbmFibGVkIjoidHJ1ZSIsImVtYWlsIjoiODc3MzY5NjEwQHFxLmNvbSJ9.LlIdOxj6NPmRv9tXkP2DZvsxwNBxfu6Hvop8yWAHoieJ-PNf2ZJF_DDSpuwhOm4LUEeYXlGQOD2aP-VzU6rAA1oUiQtLniZOoEmzFV2FnGKrrvQrUhmu2HBafvFzo2cgu1w4pG64Gze7oiIX9ANreDZUSdmqgrNCX-olN-SpyIdJ4QHIEp3Itk6WMgtO3dVOghTkY3uFy7NXx7mkXbVI4ZPDra-1h7V9-8YCl4CD5G26wXF8ALnodMrtZ7gronobI6qEmBEdb4Oxhpk-tXvp0irm9gcWmBJ6xLpUX_D52B56dl2sHgpk39yQtdmejpcJmIk1MRtB7YyhLU5AfPVlGA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"mnist\",\n    \"url\": \"https://s3.dvclab.com/mnist\",\n    \"cover_img_url\": \"https://s3.dvclab.com/mnist/.cover_img.png\",\n    \"desc\": \"# 数据集说明\\n## 数据集结构\\n```\\nmnist\\n├─ train-images-idx1-ubyte.gz (训练数据图片)\\n├─ train-labels-idx3-ubyte.gz (训练数据标签)\\n├─ test-images-idx3-ubyte.gz (测试集图片)\\n└─ test-labels-idx1-ubyte.gz (测试集标签)\\n```\\n## 内容\\n1. 本数据集是下载的fasion_mnist官方数据集文件，格式为.gz的压缩包。\\n2. Fashion-MNIST数据集包含了10个类别的图像，分别是：t-shirt（T恤），trouser（牛仔裤），pullover（套衫），dress（裙子），coat（外套），sandal（凉鞋），shirt（衬衫），sneaker（运动鞋），bag（包），ankle boot（短靴）。\\n3. 训练数据集每个类别含有6000个样本，测试数据集每个类别含有1000个样本，一共有10个类别，故而训练数据集共60000个样本，测试数据集共10000个样本。\\n4. 每幅图像是一个28*28的像素数组，每个像素的值为0~255之间的8位无符号整数（uint8），使用三维NDArray存储，最后一维表示通道个数。由于为灰度图像，故通道数为1。\\n## 预览<img src=\\\"https://i.ibb.co/vPp4pxJ/fashion-mnist-3-0-1.png\\\" alt=\\\"fashion_mnist-3.0.1\\\" style=\\\"zoom:50%;\\\" />## 关联的项目\\n项目名称：CNN\\n项目地址：https://github.com/DvcLAB/CNN.git\\n\",\n    \"id\": \"b43f01598c9e4038c03ee61aeb50398b\",\n    \"tags\": [\"手写体\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets/b43f01598c9e4038c03ee61aeb50398b",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets",
+						"b43f01598c9e4038c03ee61aeb50398b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/datasets/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTc4NjIxNTMsImlhdCI6MTYxNzg2MDM1MywianRpIjoiNzYwYzAxZGQtZmRjYS00OGQ1LTg0OTctZmM0MzU2MDQ5MTNiIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI1NmNiODRlYy1lMTM1LTQ1MDItODI1ZC0yYTNlNDE1OWMzY2IiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.n_4L4dyo8Rg8YYNcXmQEBZISh7n3CFk1iV2UtKVq0PF9c4Egwb4khK3XMwkBG2hq1mli_2uk0qsf-2sPccvuiY06UsNOPblzQ_cJYDtUl_4R1mvYmAeRAixJtvtUqSrPJ2s_yG-sBp29Q9rqXkw3GwZXKzS6CQ_v37mMSsTMCXRCFLVwjOcFcOPG5KdotN6Q1yu4FkK8EcKo5P97zyFdRmluQUVt-kJvHzZiW_X3KDl1z9rt_qK_n1HdbHXbiQ4WtM4ZVCC-f9dvAvazTYK2SJ3OI8GeB5zcmkDLOPjQ9hMdCDuRMoshN0Sj1PXzjeVX1SZbm_HtU4goklc11CJoLQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"mnist\",\n    \"url\": \"https://s3.dvclab.com/mnist\",\n    \"cover_img_url\": \"https://s3.dvclab.com/mnist/.cover_img.png\",\n    \"desc\": \"# 数据集说明\\n## 数据集结构\\n```\\nmnist\\n├─ train-images-idx1-ubyte.gz (训练数据图片)\\n├─ train-labels-idx3-ubyte.gz (训练数据标签)\\n├─ test-images-idx3-ubyte.gz (测试集图片)\\n└─ test-labels-idx1-ubyte.gz (测试集标签)\\n```\\n## 内容\\n1. 本数据集是下载的fasion_mnist官方数据集文件，格式为.gz的压缩包。\\n2. Fashion-MNIST数据集包含了10个类别的图像，分别是：t-shirt（T恤），trouser（牛仔裤），pullover（套衫），dress（裙子），coat（外套），sandal（凉鞋），shirt（衬衫），sneaker（运动鞋），bag（包），ankle boot（短靴）。\\n3. 训练数据集每个类别含有6000个样本，测试数据集每个类别含有1000个样本，一共有10个类别，故而训练数据集共60000个样本，测试数据集共10000个样本。\\n4. 每幅图像是一个28*28的像素数组，每个像素的值为0~255之间的8位无符号整数（uint8），使用三维NDArray存储，最后一维表示通道个数。由于为灰度图像，故通道数为1。\\n## 预览<img src=\\\"https://i.ibb.co/vPp4pxJ/fashion-mnist-3-0-1.png\\\" alt=\\\"fashion_mnist-3.0.1\\\" style=\\\"zoom:50%;\\\" />## 关联的项目\\n项目名称：CNN\\n项目地址：https://github.com/DvcLAB/CNN.git\\n\",\n    \"id\": \"b43f01598c9e4038c03ee61aeb50398b\",\n    \"tags\": [\"手写体\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://j.dvclab.com:50000/datasets/88ada0cf8f57bcc66a724c3c6e328a40",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"datasets",
+						"88ada0cf8f57bcc66a724c3c6e328a40"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzIxMzQsImlhdCI6MTYxODQ3MDMzNCwianRpIjoiYWQ2YzkwYzEtMWFjMC00YzYxLThjODMtNDZkNDVmMzgzZTM5IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5Y2ZiMGM0ZC1mN2NhLTQ4ZDMtODE5NC0yNDQzZmY5NDUzY2IiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.ESjEL5xVZiy0muKV-ibZWPBZrgMenKmeslAMKwPdaopQF7I9c4rUsMllPNoqqUjgupAiD5u8QWoFQSVkWhJrlYOR4LMgCgkLFBHCsZsHwWH6ao1ZPWWJf2zVh0lf6WvoyRtigfPXC8PyzMRZHWdK5idi19YYx3wgzCxvJIrGKLy8OHxHnCh-AJnMprD6hM_2VX2vyUtJTY0V4M4YFUDtKfVK_ePKB6XpLDE6778kPlocuLuPZJiMax0cvraoEWkSRfn4ReKsJJEejN-XItbC_CIlpZ7CwlqirB-bVHs7t4DoECTYlHptiEikwR009x90XxKiqQUt3chZhffDpz0kPw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers?image_id=7d43dac42adadc367d54fa83a8017589&project_id=dc072411a673345e9e3aeed15e298b8d&project_branch=main&dataset_url=https://s3.dvclab.com/mnist",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers"
+					],
+					"query": [
+						{
+							"key": "image_id",
+							"value": "7d43dac42adadc367d54fa83a8017589"
+						},
+						{
+							"key": "project_id",
+							"value": "dc072411a673345e9e3aeed15e298b8d"
+						},
+						{
+							"key": "project_branch",
+							"value": "main"
+						},
+						{
+							"key": "dataset_url",
+							"value": "https://s3.dvclab.com/mnist"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzAzNjksImlhdCI6MTYxODQ2ODU2OSwianRpIjoiMTVkMzg5NzgtNzBiYy00ZjliLWJiZWYtMTNkNTgyMmM1YjdkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5M2FjY2U1OS02ZjlmLTRhNDQtOWUzOC04OTU1MGRkOTU0YmMiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.CSDH8bKdOZGa_u64SICYpmzY4e74a2gBIrAvsPPnnTuaW1RV4LPVTfiTDGI3VCmgK2f0J_lZ3ECio37i0t_D1Dom-BxQBqkIFRho2TngKJ0BqqJNUKiDhku2p7HrvIfgl_vqksjqzBDet_xGptebtMqs2jH6I6llU7XVN_yeHCQmvbzp4pZVe5nY-Vi3oHoCEh-NycI3vlxJWZvMZE1Zklye6cUPZuVodmHNMzlv08uwGTccwd87KyVo3V_T3LiY1IylYtKkq6ANigm6QZejB0LwBf4N12_4j4ptluEqgGlGV9FccrL4cg4WV7-795nGgMGeh7Qheqq-dFc92t0vhg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzAzNjksImlhdCI6MTYxODQ2ODU2OSwianRpIjoiMTVkMzg5NzgtNzBiYy00ZjliLWJiZWYtMTNkNTgyMmM1YjdkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5M2FjY2U1OS02ZjlmLTRhNDQtOWUzOC04OTU1MGRkOTU0YmMiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.CSDH8bKdOZGa_u64SICYpmzY4e74a2gBIrAvsPPnnTuaW1RV4LPVTfiTDGI3VCmgK2f0J_lZ3ECio37i0t_D1Dom-BxQBqkIFRho2TngKJ0BqqJNUKiDhku2p7HrvIfgl_vqksjqzBDet_xGptebtMqs2jH6I6llU7XVN_yeHCQmvbzp4pZVe5nY-Vi3oHoCEh-NycI3vlxJWZvMZE1Zklye6cUPZuVodmHNMzlv08uwGTccwd87KyVo3V_T3LiY1IylYtKkq6ANigm6QZejB0LwBf4N12_4j4ptluEqgGlGV9FccrL4cg4WV7-795nGgMGeh7Qheqq-dFc92t0vhg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/b1c2acc8140ac7609c99e9f86a86bf79",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"b1c2acc8140ac7609c99e9f86a86bf79"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id/names/:name",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzAzNjksImlhdCI6MTYxODQ2ODU2OSwianRpIjoiMTVkMzg5NzgtNzBiYy00ZjliLWJiZWYtMTNkNTgyMmM1YjdkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5M2FjY2U1OS02ZjlmLTRhNDQtOWUzOC04OTU1MGRkOTU0YmMiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.CSDH8bKdOZGa_u64SICYpmzY4e74a2gBIrAvsPPnnTuaW1RV4LPVTfiTDGI3VCmgK2f0J_lZ3ECio37i0t_D1Dom-BxQBqkIFRho2TngKJ0BqqJNUKiDhku2p7HrvIfgl_vqksjqzBDet_xGptebtMqs2jH6I6llU7XVN_yeHCQmvbzp4pZVe5nY-Vi3oHoCEh-NycI3vlxJWZvMZE1Zklye6cUPZuVodmHNMzlv08uwGTccwd87KyVo3V_T3LiY1IylYtKkq6ANigm6QZejB0LwBf4N12_4j4ptluEqgGlGV9FccrL4cg4WV7-795nGgMGeh7Qheqq-dFc92t0vhg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/b1c2acc8140ac7609c99e9f86a86bf79/names/test",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"b1c2acc8140ac7609c99e9f86a86bf79",
+						"names",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id/run",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzIxMzQsImlhdCI6MTYxODQ3MDMzNCwianRpIjoiYWQ2YzkwYzEtMWFjMC00YzYxLThjODMtNDZkNDVmMzgzZTM5IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiI5Y2ZiMGM0ZC1mN2NhLTQ4ZDMtODE5NC0yNDQzZmY5NDUzY2IiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.ESjEL5xVZiy0muKV-ibZWPBZrgMenKmeslAMKwPdaopQF7I9c4rUsMllPNoqqUjgupAiD5u8QWoFQSVkWhJrlYOR4LMgCgkLFBHCsZsHwWH6ao1ZPWWJf2zVh0lf6WvoyRtigfPXC8PyzMRZHWdK5idi19YYx3wgzCxvJIrGKLy8OHxHnCh-AJnMprD6hM_2VX2vyUtJTY0V4M4YFUDtKfVK_ePKB6XpLDE6778kPlocuLuPZJiMax0cvraoEWkSRfn4ReKsJJEejN-XItbC_CIlpZ7CwlqirB-bVHs7t4DoECTYlHptiEikwR009x90XxKiqQUt3chZhffDpz0kPw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/793b259ecee3e44a8f98ee5369971b8d/run?host_id=b8615dd29109f32a4178dc57faef6fb1",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"793b259ecee3e44a8f98ee5369971b8d",
+						"run"
+					],
+					"query": [
+						{
+							"key": "host_id",
+							"value": "b8615dd29109f32a4178dc57faef6fb1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id/pause",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzIzOTEsImlhdCI6MTYxODQ3MDU5MSwianRpIjoiMGI5OTU2ZWEtYjY3Yi00MzU1LTg2ZDItZWY0OGRhNGE5NzU4IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJmY2ExNTU5Yy04ZWNkLTQwYmEtOWJmMS1jYjNlZjk3NTc0ZTEiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.cn8lH9Oraq5KLJH5QBIlFq3bqyRXRONi4JdYYPAMPm-GMkamya1KMFwAMPgaZHhR-YqdTVWwSGgxwC_KMnKsnry6db4aQR-py2yMzOskqb091fbRmZCgD1lsF9xHCgOx60G9y0BfDtp8Zm2-k-ZEjA_VBraHTIQY25mM5bKop-Zrw6ZKQMjmOTp2nNLGgSIIUlKvwibSP1XcnqK2C5-aloEdgTv9KODFW991QytPyZ-d6HBJIIN-7Hh8mItI2GOeYkdz57krr8Tpvi-aQ3xG-S0y8_yQq4envokvMRip0O1fgrKXIxDUhf-iSVWdMLom0b6ngUaEs_m0H3_ZzxU2Pw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/793b259ecee3e44a8f98ee5369971b8d/pause",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"793b259ecee3e44a8f98ee5369971b8d",
+						"pause"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id/run Copy 2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzIzOTEsImlhdCI6MTYxODQ3MDU5MSwianRpIjoiMGI5OTU2ZWEtYjY3Yi00MzU1LTg2ZDItZWY0OGRhNGE5NzU4IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJmY2ExNTU5Yy04ZWNkLTQwYmEtOWJmMS1jYjNlZjk3NTc0ZTEiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.cn8lH9Oraq5KLJH5QBIlFq3bqyRXRONi4JdYYPAMPm-GMkamya1KMFwAMPgaZHhR-YqdTVWwSGgxwC_KMnKsnry6db4aQR-py2yMzOskqb091fbRmZCgD1lsF9xHCgOx60G9y0BfDtp8Zm2-k-ZEjA_VBraHTIQY25mM5bKop-Zrw6ZKQMjmOTp2nNLGgSIIUlKvwibSP1XcnqK2C5-aloEdgTv9KODFW991QytPyZ-d6HBJIIN-7Hh8mItI2GOeYkdz57krr8Tpvi-aQ3xG-S0y8_yQq4envokvMRip0O1fgrKXIxDUhf-iSVWdMLom0b6ngUaEs_m0H3_ZzxU2Pw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/793b259ecee3e44a8f98ee5369971b8d/restart",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"793b259ecee3e44a8f98ee5369971b8d",
+						"restart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTg0NzIzOTEsImlhdCI6MTYxODQ3MDU5MSwianRpIjoiMGI5OTU2ZWEtYjY3Yi00MzU1LTg2ZDItZWY0OGRhNGE5NzU4IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImVjYTkzMWRlLTQyNTQtNDBkYi1iZjlhLTk0NDc3M2IxOGNiZSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsInNlc3Npb25fc3RhdGUiOiJmY2ExNTU5Yy04ZWNkLTQwYmEtOWJmMS1jYjNlZjk3NTc0ZTEiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIkRPQ0tIVUJfVVNFUiIsIkRPQ0tIVUJfQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwgdXNlcmluZm8iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImF2YXRhcl91cmwiOiJodHRwOi8vdGVzdC5pbWciLCJuYW1lIjoiZG9ja2VyIGh1YiIsInByZWZlcnJlZF91c2VybmFtZSI6ImRvY2tlcmh1Yl9hZG1pbiIsImdpdmVuX25hbWUiOiJkb2NrZXIiLCJmYW1pbHlfbmFtZSI6Imh1YiIsImVtYWlsIjoiMzQ3MTUxMTkyQHFxLmNvbSIsImVuYWJsZWQiOnRydWV9.cn8lH9Oraq5KLJH5QBIlFq3bqyRXRONi4JdYYPAMPm-GMkamya1KMFwAMPgaZHhR-YqdTVWwSGgxwC_KMnKsnry6db4aQR-py2yMzOskqb091fbRmZCgD1lsF9xHCgOx60G9y0BfDtp8Zm2-k-ZEjA_VBraHTIQY25mM5bKop-Zrw6ZKQMjmOTp2nNLGgSIIUlKvwibSP1XcnqK2C5-aloEdgTv9KODFW991QytPyZ-d6HBJIIN-7Hh8mItI2GOeYkdz57krr8Tpvi-aQ3xG-S0y8_yQq4envokvMRip0O1fgrKXIxDUhf-iSVWdMLom0b6ngUaEs_m0H3_ZzxU2Pw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/793b259ecee3e44a8f98ee5369971b8d",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"793b259ecee3e44a8f98ee5369971b8d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/containers/:id/users/:uid/assign",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://j.dvclab.com:50000/containers/4d7438549afdd11063bea6a34dfe668e/users/8f5fcb19-8550-4ad8-a6e4-1360fc5658d7/assign",
+					"protocol": "http",
+					"host": [
+						"j",
+						"dvclab",
+						"com"
+					],
+					"port": "50000",
+					"path": [
+						"containers",
+						"4d7438549afdd11063bea6a34dfe668e",
+						"users",
+						"8f5fcb19-8550-4ad8-a6e4-1360fc5658d7",
+						"assign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "创建Keycloak资源",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTc4ODM3ODQsImlhdCI6MTYxNzg4MTk4NCwianRpIjoiZWQwZGU0ZjEtMjQzNy00OTg4LWJlMWMtMWE1OWVkMTAzODUzIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6Ijg4MTA4MDUzLWYyYWUtNGY4NS1hODZlLTI4N2E4ZjZjY2EzNiIsInR5cCI6IkJlYXJlciIsImF6cCI6ImR2Y2xhYiIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfSwiZHZjbGFiIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIHVzZXJpbmZvIiwiY2xpZW50SG9zdCI6ImF1dGguZHZjbGFiLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SWQiOiJkdmNsYWIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtZHZjbGFiIiwiY2xpZW50QWRkcmVzcyI6ImF1dGguZHZjbGFiLmNvbSJ9.u6K9CYQhw1d7DZJT0VhI3z0ob46UIEDe4sLwY_UF6M6GsBWkVeq-JBhT1osdvIeEBsNxfka4uyNDWddkv940K7HD43EgzfkpduWZbQF5AKcUya0qI3j4UER25VdIq36rj04-dR2OsmOCdZvy4RfBDpzocn0GHZzXwxbLGk-OMmy9vgd_0arlg_QHbmky3QkDTETIoMsuMrLuKQ2-1DYZkyea7Nby4VXRVY-efk-Uwz6JKr4FvQ1SsjNqNTC4AqdKh-wGFZ-wYB-z0Ju9TDeq_tyGazrUsXR9h-Yd_gPGKjlbNDjlMH-T-kEqX9gNGVE_NyjAtqWfyonYqQzSwlwFEw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"jupyterlab_ed166e5d80ffb502569654004748a4bd\",\n    \"type\":\"jupyterlab\",\n    \"owner\":\"dockerhub_admin\",\n    \"ownerManagedAccess\":true,\n    \"resource_scopes\":[\"view\"],\n    \"_id\":\"ed166e5d-80ff-b502-5696-54004748a4bd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/DvcLAB/authz/protection/resource_set",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"DvcLAB",
+						"authz",
+						"protection",
+						"resource_set"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除Keycloak资源",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTgwNDcyMzEsImlhdCI6MTYxODA0NTQzMSwianRpIjoiMjBiZDU0NTUtZDVkOC00YjM0LWFmNjYtOThiYzZkNmViM2FkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmR2Y2xhYi5jb20vYXV0aC9yZWFsbXMvRHZjTEFCIiwiYXVkIjpbImFjY291bnQiLCJkdmNsYWIiXSwic3ViIjoiNDg5YjE2OWItZDAwMC00NmYyLWEzYWYtOTRiZjNlZjM1MTQ2IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZHZjbGFiIiwic2Vzc2lvbl9zdGF0ZSI6IjY2ZWIyNWMwLWQ1MjItNDg2NC04YTY1LTVmOTVkMzA5NWM4NCIsImFjciI6IjEiLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCB1c2VyaW5mbyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYXZhdGFyX3VybCI6Imh0dHBzOi8vdGhpcmR3eC5xbG9nby5jbi9tbW9wZW4vdmlfMzIvclpNV3VBSXFhUkJpYWV2cEgzWThrZWljc3FNSFI0elkyVkk2TldJdENOdENhTndVbGZYYjVuTm1iT096SVlRYjFBNUlGSmdSbDJpY0p3UzByV2daUXRmVWcvMTMyIiwibmFtZSI6ItCU0LvQuNC90L3Ri9C5INC80LDRgNGCIiwicHJlZmVycmVkX3VzZXJuYW1lIjoi0LTQu9C40L3QvdGL0Lkg0LzQsNGA0YIiLCJnaXZlbl9uYW1lIjoi0JTQu9C40L3QvdGL0LkiLCJmYW1pbHlfbmFtZSI6ItC80LDRgNGCIiwiZW1haWwiOiI4NzczNjk2MTFAcXEuY29tIiwiZW5hYmxlZCI6dHJ1ZX0.Go_jzmv7GzEb8EFo_jsHUcTbxGg766MRSARtAnagfyV4H755MuK1O6tvv3TchBc6UdPGGDVPAn3ll4S_NY2AM4xt9vvxsp9R-I2vKV4HtQH7vDDlHK5pVtRhRDN1xy14gp0aKUkcRYJy4oaXGHrN7X7Kj6XFevENantvccpBGlhnhmGMPo6LPT6Df5m6vhqEd0Nm-xP4dcD82zZuRnAMyuidrP16vQXQSS0uIGJum_whh_HA4mENq5qcQygejA8Lw-1jeZbcIcUuJWTS4x4zYCcorqWfMTXHqeBHGf7HMgbKwzy56C10MXvjD5mZ6fdVlsLE-3RClvDwpt7kbybJDg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/DvcLAB/authz/protection/resource_set/ee0bb2a2-9bd2-b25d-b18f-dfdc9c55a77c",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"DvcLAB",
+						"authz",
+						"protection",
+						"resource_set",
+						"ee0bb2a2-9bd2-b25d-b18f-dfdc9c55a77c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "设置Keycloak资源policy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTc4ODAzMTMsImlhdCI6MTYxNzg4MDAxMywiYXV0aF90aW1lIjoxNjE3ODgwMDEyLCJqdGkiOiJkYThjMTU1Mi1lZWFkLTQzMTAtOGNjMi1kMzRjOTYxMGQ2YTIiLCJpc3MiOiJodHRwczovL2F1dGguZHZjbGFiLmNvbS9hdXRoL3JlYWxtcy9EdmNMQUIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOGY1ZmNiMTktODU1MC00YWQ4LWE2ZTQtMTM2MGZjNTY1OGQ3IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJvbnRfZW5kIiwibm9uY2UiOiJjNmVjZTAxNS01M2ZjLTRiNzgtOGVmYy0yNTcxZjUyNWM5OTEiLCJzZXNzaW9uX3N0YXRlIjoiNzU0Yzg3NWYtYzNiYi00MzM4LTkyOGMtZDk1YTkzNmZhNGEyIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJET0NLSFVCX1VTRVIiLCJET0NLSFVCX0FETUlOIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB1c2VyaW5mbyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYXZhdGFyX3VybCI6Imh0dHBzOi8vdGhpcmR3eC5xbG9nby5jbi9tbW9wZW4vdmlfMzIvTWRXY3JJdVVJVk9Zc3JGQjRYRmJmVXZST2xlYWZ4REo4aWJlMlU5QjNtODFKdXU2N3NUTlE1dlVpYTgzbm1pYWs3M3lYWWJkc2tOcm1nQ002UkptWUxrU3cvMTMyIiwibmFtZSI6Ikxhbmh1aSBMaSIsInByZWZlcnJlZF91c2VybmFtZSI6Imdvb2RuaWdodCIsImdpdmVuX25hbWUiOiJMYW5odWkiLCJmYW1pbHlfbmFtZSI6IkxpIiwiZW1haWwiOiJnb29kbmlnaHRsaWxhbmh1aUBnbWFpbC5jb20iLCJlbmFibGVkIjp0cnVlfQ.o7lSITa4CgOiphywyQCuxd1u5rED9-zdNZnJ_wy4IKd6GKt0fxB9jZLhB6es62tJvPksaEUgl2xLfKlnDlx6dfpvsdQzjMIWDKXBqwjd1xFsCkeDwbooJAojEf6syYrCbhwDAT8lv5cgXh4CjGvl2YP0Y_r7HoHK4fPpR2a7wfk3abhYju_zn-WfpwYW3pna6Ifylu3f6bDxlosrGVaX76a3u_5mh8uusT0UeVS-JPT5IY19CQiejBLlBlNE4sj4595yBnZdYs8gmLmWxHnPs0ssstI-zbIsueqeCgcf-DOaCHHZsQ7a2LVkXbsu4ClDrXddxHU2vEYfbRYqdHUDlA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"8f5fcb19-8550-4ad8-a6e4-1360fc5658d7_access_00363b3948e3583d8b8fa2846f369e5e\",\n    \"description\":\"8f5fcb19-8550-4ad8-a6e4-1360fc5658d7_access_00363b3948e3583d8b8fa2846f369e5e\",\n    \"logic\": \"POSITIVE\",\n    \"decisionStrategy\": \"UNANIMOUS\",\n    \"users\":[\"goodnight\"],\n    \"scopes\":[\"view\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/DvcLAB/authz/protection/uma-policy/00363b39-48e3-583d-8b8f-a2846f369e5e",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"DvcLAB",
+						"authz",
+						"protection",
+						"uma-policy",
+						"00363b39-48e3-583d-8b8f-a2846f369e5e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "前端token换取后端token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "dvclab",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "6df01180-7ed0-464a-85b2-ef5d8625087e",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange",
+							"type": "text"
+						},
+						{
+							"key": "audience",
+							"value": "dvclab",
+							"type": "text"
+						},
+						{
+							"key": "subject_token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGTU9MU2xvTFZHQzQwRXE4VVROZ3liQXhtUzNrRTRPV21ibExERmY3ZkswIn0.eyJleHAiOjE2MTgwNTczMjUsImlhdCI6MTYxODA1NzAyNSwiYXV0aF90aW1lIjoxNjE4MDUzMTg1LCJqdGkiOiI1NjQ5OTQ5Mi0wZjY1LTQ1NDAtYmM4NC05ZTdmYzM4ZTk1MzUiLCJpc3MiOiJodHRwczovL2F1dGguZHZjbGFiLmNvbS9hdXRoL3JlYWxtcy9EdmNMQUIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNDg5YjE2OWItZDAwMC00NmYyLWEzYWYtOTRiZjNlZjM1MTQ2IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJvbnRfZW5kIiwibm9uY2UiOiIxMWI5OTYyZC01ODNjLTRiZGUtYTY2Ny0wY2UxN2Q5ZTE2OWIiLCJzZXNzaW9uX3N0YXRlIjoiM2RjNTkwY2YtNDQwZC00YjJhLTk4YzQtOGZiMzk5YWE2Mjc3IiwiYWNyIjoiMCIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB1c2VyaW5mbyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiYXZhdGFyX3VybCI6Imh0dHBzOi8vdGhpcmR3eC5xbG9nby5jbi9tbW9wZW4vdmlfMzIvclpNV3VBSXFhUkJpYWV2cEgzWThrZWljc3FNSFI0elkyVkk2TldJdENOdENhTndVbGZYYjVuTm1iT096SVlRYjFBNUlGSmdSbDJpY0p3UzByV2daUXRmVWcvMTMyIiwibmFtZSI6ItCU0LvQuNC90L3Ri9C5INC80LDRgNGCIiwicHJlZmVycmVkX3VzZXJuYW1lIjoi0LTQu9C40L3QvdGL0Lkg0LzQsNGA0YIiLCJnaXZlbl9uYW1lIjoi0JTQu9C40L3QvdGL0LkiLCJmYW1pbHlfbmFtZSI6ItC80LDRgNGCIiwiZW1haWwiOiI4NzczNjk2MTFAcXEuY29tIiwiZW5hYmxlZCI6dHJ1ZX0.iUdO5vlpTHgy2RUZQ4tuoUrjFPPl4Qubt7dwwYL8tOOLXZUTiL3fQ6m1oRRHLuC0Rc9iqGCFZmPp-0IZ83LC2LtgtOkP8fEo-L5JzdNDzfD_G8v-ih9SF7KgB7TtEwPdSoXzm6Uf_wpF-ouzLA96uzPinATiKIinfV3IQ4rZyBFk1UPmu_AgfsICKui760eoKYH-jKN2s_NGXkp_UuPlQmc5SKbZ1EDP_YXk1BssnMSPSRulHs-8qAwrAZlB7Gg4rvxwAkA3UbXVj-1SLe1aCP-V-Xb30xIGuwaqqm2lP4qiZIvNCVPOmYWcOU24wlFCOFBmLDQZ0c8mjZFHfn7l6Q",
+							"type": "text"
+						},
+						{
+							"key": "requested_token_type",
+							"value": "urn:ietf:params:oauth:token-type:access_token",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://auth.dvclab.com/auth/realms/DvcLAB/protocol/openid-connect/token",
+					"protocol": "https",
+					"host": [
+						"auth",
+						"dvclab",
+						"com"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"DvcLAB",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

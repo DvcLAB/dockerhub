@@ -302,8 +302,12 @@ public class ContainerRoute {
 
 			Container container = ContainerCache.containers.get(id);
 
+			if(container == null
+					&& container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
+
 			// 权限：用户删除自己的容器
-			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && ! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)
+					&& ! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			// 公共服务器shutdown容器
 			if(!container.user_host) {
