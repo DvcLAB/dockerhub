@@ -1177,7 +1177,7 @@
 			"response": []
 		},
 		{
-			"name": "/containers/:id/run Copy 2",
+			"name": "/containers/:id/restart",
 			"request": {
 				"auth": {
 					"type": "bearer",

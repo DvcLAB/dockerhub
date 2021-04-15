@@ -181,6 +181,7 @@ public class Host extends DockerHost {
 
 		container.host_id = this.id;
 		container.user_host = false;
+		container.status = Container.Status.Deployed;
 
 		// 复制配置文件
 		String name = "jupyterlab-" + container.id + ".yml";

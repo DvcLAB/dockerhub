@@ -150,10 +150,6 @@ public class ContainerRoute {
 			// 无权执行容器
 			if(!container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			// 更新容器状态
-			container.status = Container.Status.Deployed;
-			container.update();
-
 			Host host;
 			// 指定 host_id
 			if(HostCache.hosts.containsKey(host_id)) {
