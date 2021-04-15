@@ -284,6 +284,9 @@ public class Host extends DockerHost {
 		exec("docker-compose -f " + name + " down -v");
 		exec("rm " + name);
 
+		cpu_assign -= container.cpus;
+		mem_assign -= container.mem;
+
 		container_num.decrementAndGet();
 		this.update();
 	}
