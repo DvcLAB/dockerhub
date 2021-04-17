@@ -226,7 +226,7 @@ public class ContainerService {
 				ContainerService.logger.info("----清扫----");
 
 				Container.getAll(Container.class).stream()
-						.filter(container -> container.status == Container.Status.Running
+						.filter(container -> container.status == Container.Status.Running || container.status == Container.Status.Port_Forwarding_Success
 								&& System.currentTimeMillis() - container.last_keep_alive.getTime() > KEEP_ALIVE_CHECK_INTERVAL * 1000)
 						.forEach(container -> {
 							try {
