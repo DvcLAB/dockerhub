@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -193,9 +194,12 @@ public class Host extends DockerHost {
 		new File(name).delete();
 
 		// 同步缓存
-		ContainerCache.containers.get(container.id).host_id = this.id;
-		ContainerCache.containers.get(container.id).user_host = false;
-		ContainerCache.containers.get(container.id).status = Container.Status.Deployed;
+		Optional.ofNullable(ContainerCache.containers.get(container.id)).ifPresent(c -> {
+			c.host_id = this.id;
+			c.user_host = false;
+			c.status = Container.Status.Deployed;
+		});
+
 
 		// 同步数据库
 		container.host_id = this.id;
@@ -235,7 +239,9 @@ public class Host extends DockerHost {
 		container.status = Container.Status.Paused;
 
 		// 更新缓存
-		ContainerCache.containers.get(container.id).status = Container.Status.Paused;
+		Optional.ofNullable(ContainerCache.containers.get(container.id)).ifPresent(c -> {
+			c.status = Container.Status.Paused;
+		});
 
 		// 更新容器信息
 		container.update();
@@ -269,7 +275,9 @@ public class Host extends DockerHost {
 
 		container.status = Container.Status.Deployed;
 		// 更新缓存
-		ContainerCache.containers.get(container.id).status = Container.Status.Deployed;
+		Optional.ofNullable(ContainerCache.containers.get(container.id)).ifPresent(c -> {
+			c.status = Container.Status.Deployed;
+		});
 		// 更新容器信息
 		container.update();
 		this.update();

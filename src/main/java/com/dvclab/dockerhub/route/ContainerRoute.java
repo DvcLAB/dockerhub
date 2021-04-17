@@ -92,7 +92,7 @@ public class ContainerRoute {
 			list.stream().forEach(c -> {
 				c.user = users.get(c.uid);
 				c.image = images.get(c.image_id);
-				if(c.status == Container.Status.Running || c.status == Container.Status.Port_Forwarding_Success) c.alive_time = System.currentTimeMillis() - c.begin_run_time.getTime();
+				if(c.status == Container.Status.Running) c.alive_time = System.currentTimeMillis() - c.begin_run_time.getTime();
 			});
 
 			return Msg.success(list, size, page, total);
