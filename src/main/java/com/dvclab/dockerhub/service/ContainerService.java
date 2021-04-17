@@ -279,6 +279,9 @@ public class ContainerService {
 
 		// 更新状态
 		container.status = Container.Status.Deleted;
+		// 清除用量信息
+		container.clearStatus();
+
 		container.update();
 	}
 

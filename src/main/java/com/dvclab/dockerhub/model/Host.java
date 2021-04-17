@@ -179,10 +179,6 @@ public class Host extends DockerHost {
 	 */
 	public void runContainer(Container container) throws IOException, JSchException, DBInitException, SQLException {
 
-		container.host_id = this.id;
-		container.user_host = false;
-		container.status = Container.Status.Deployed;
-
 		// 复制配置文件
 		String name = "jupyterlab-" + container.id + ".yml";
 		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
@@ -199,6 +195,13 @@ public class Host extends DockerHost {
 		// 同步缓存
 		ContainerCache.containers.get(container.id).host_id = this.id;
 		ContainerCache.containers.get(container.id).user_host = false;
+		ContainerCache.containers.get(container.id).status = Container.Status.Deployed;
+
+		// 同步数据库
+		container.host_id = this.id;
+		container.user_host = false;
+		container.status = Container.Status.Deployed;
+
 		// 更新容器信息
 		container.update();
 		this.update();

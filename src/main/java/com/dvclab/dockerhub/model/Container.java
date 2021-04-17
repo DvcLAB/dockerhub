@@ -121,4 +121,10 @@ public class Container extends ModelD {
 	public Long alive_time;
 
 	public Container(){}
+
+	public void clearStatus () {
+		this.cpu_usage = 0;
+		this.mem_usage = 0;
+		this.proc_num = 0;
+	}
 }
