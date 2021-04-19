@@ -22,8 +22,8 @@ public class HostInfoPublisher {
 
 	// private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
-	public static Map<Integer, Queue<Session>> host_sessions = new HashMap<>();
-	private static Map<Session, Integer> session_host_map = new HashMap<>();
+	public static Map<String, Queue<Session>> host_sessions = new HashMap<>();
+	private static Map<Session, String> session_host_map = new HashMap<>();
 	private final String WS_AUTH_HEADER = "Sec-WebSocket-Protocol";
 
 	@OnWebSocketConnect
@@ -39,13 +39,10 @@ public class HostInfoPublisher {
 			session.close(1011, "Not Valid");
 		}
 
-		if(host_id != null && HostCache.hosts.keySet().contains(Integer.parseInt(host_id))) {
+		if(host_id != null && HostCache.hosts.containsKey(host_id)) {
 
-			logger.info(host_id);
-
-			int hostId = Integer.parseInt(host_id);
-			host_sessions.computeIfAbsent(hostId, v -> new ConcurrentLinkedQueue<>()).add(session);
-			session_host_map.put(session, hostId);
+			host_sessions.computeIfAbsent(host_id, v -> new ConcurrentLinkedQueue<>()).add(session);
+			session_host_map.put(session, host_id);
 		}
 		else {
 			session.close(1011, "Not valid");
