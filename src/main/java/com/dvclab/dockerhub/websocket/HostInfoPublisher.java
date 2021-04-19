@@ -30,7 +30,7 @@ public class HostInfoPublisher {
 	public void connected(Session session) {
 
 		String token = session.getUpgradeRequest().getHeader(WS_AUTH_HEADER);
-		String host_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "host_id");
+		String host_id = URLUtil.getParam(session.getUpgradeRequest().getQueryString(), "id");
 
 		// ws连接认证
 		try {

@@ -232,8 +232,8 @@ public class ContainerService {
 						 * 2. 容器创建过程中失败的容器，一直保留容器创建中间过程状态的容器，在10分钟内检查如果未更新则设置为不可用
 						 * 3. 暂停状态的容器可以一直保留
 						 */
-						.filter(container -> container.status == Container.Status.Running
-								&& (System.currentTimeMillis() - container.last_keep_alive.getTime()) > KEEP_ALIVE_CHECK_INTERVAL * 1000
+						.filter(container -> (container.status == Container.Status.Running
+								&& (System.currentTimeMillis() - container.last_keep_alive.getTime()) > KEEP_ALIVE_CHECK_INTERVAL * 1000)
 								|| (container.status != Container.Status.New && container.status != Container.Status.Paused
 								&& container.status != Container.Status.Deleted && (System.currentTimeMillis() - container.update_time.getTime()) > ALIVE_CHECK_INTERVAL * 1000))
 						.forEach(container -> {

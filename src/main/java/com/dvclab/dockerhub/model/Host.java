@@ -237,6 +237,8 @@ public class Host extends DockerHost {
 		new File(name).delete();
 
 		container.status = Container.Status.Paused;
+		// 重置启动时间
+		container.begin_run_time = null;
 
 		// 更新缓存
 		Optional.ofNullable(ContainerCache.containers.get(container.id)).ifPresent(c -> {
