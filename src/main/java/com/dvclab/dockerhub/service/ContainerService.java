@@ -43,7 +43,7 @@ public class ContainerService {
 
 	public static ContainerService instance;
 	private ScheduledExecutorService ses;
-	private final Integer KEEP_ALIVE_CHECK_INTERVAL = 90;
+	private final Integer KEEP_ALIVE_CHECK_INTERVAL = 120;
 	private final Integer INITIAL_KEEP_ALIVE_CHECK_INTERVAL = 30;
 	private final Integer ALIVE_CHECK_INTERVAL = 600;
 
