@@ -185,7 +185,7 @@ public class Host extends DockerHost {
 		FileUtil.writeBytesToFile(container.docker_compose_config.getBytes(), name);
 		sshHost.copyLocalToRemote(name, name);
 		// 构建容器
-		exec("docker-compose -f " + name + " up -d");
+		exec("docker-compose -f " + name + " -p " + container.id +" up -d");
 		// 更新主机容器信息
 		container_num.incrementAndGet();
 		cpu_assign += container.cpus;
@@ -227,7 +227,7 @@ public class Host extends DockerHost {
 		sshHost.copyLocalToRemote(name, name);
 
 		// 暂停容器
-		exec("docker-compose -f " + name + " stop");
+		exec("docker-compose -f " + name + " -p " + container.id + " stop");
 
 		// 更新主机容器信息
 		container_num.decrementAndGet();
@@ -266,7 +266,7 @@ public class Host extends DockerHost {
 		sshHost.copyLocalToRemote(name, name);
 
 		// 开启容器
-		exec("docker-compose -f " + name + " start");
+		exec("docker-compose -f " + name + " -p " + container.id + " start");
 
 		// 更新主机容器信息
 		container_num.incrementAndGet();
@@ -294,7 +294,7 @@ public class Host extends DockerHost {
 	public void removeContainer(Container container) throws DBInitException, SQLException {
 
 		String name = "jupyterlab-" + container.id + ".yml";
-		exec("docker-compose -f " + name + " down -v");
+		exec("docker-compose -f " + name + " -p " + container.id + " down -v");
 		exec("rm " + name);
 
 		cpu_assign -= container.cpus;
