@@ -18,6 +18,7 @@ public class Routes {
 			"/containers/.*/assign$",
 			"/_hosts"
 	);
+	public static String WsRoutes = String.join("|","/_containers", "/_hosts");
 
 	/**
 	 *
@@ -112,7 +113,7 @@ public class Routes {
 			// 设置返回 HTTP header
 			setHeader(a);
 			// 设置ws header
-			if(q.pathInfo().toLowerCase().matches("/_containers")) a.header(WebSocketConstants.SEC_WEBSOCKET_PROTOCOL,
+			if(q.pathInfo().toLowerCase().matches(WsRoutes)) a.header(WebSocketConstants.SEC_WEBSOCKET_PROTOCOL,
 					q.headers(WebSocketConstants.SEC_WEBSOCKET_PROTOCOL));
 		});
 
