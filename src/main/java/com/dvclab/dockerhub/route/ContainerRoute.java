@@ -271,8 +271,11 @@ public class ContainerRoute {
 
 			if(obj != null) {
 
-				// 补全容器用户信息
+				// 补全容器用户信息、镜像信息、运行时长信息
 				obj.user = User.getById(User.class, obj.uid);
+				obj.image = Image.getById(Image.class, obj.image_id);
+				if(obj.status == Container.Status.Running) obj.alive_time = System.currentTimeMillis() - obj.begin_run_time.getTime();
+
 				return Msg.success(obj);
 			}
 			else {
@@ -299,7 +302,7 @@ public class ContainerRoute {
 			Container container = ContainerCache.containers.get(id);
 
 			if(container == null
-					&& container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
+					|| container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			// 权限：用户删除自己的容器
 			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)
