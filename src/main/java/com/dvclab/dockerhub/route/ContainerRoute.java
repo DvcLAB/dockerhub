@@ -10,6 +10,7 @@ import com.dvclab.dockerhub.service.ContainerService;
 import com.dvclab.dockerhub.service.ReverseProxyService;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import one.rewind.db.Daos;
 import one.rewind.db.exception.DBInitException;
 import org.checkerframework.checker.units.qual.C;
@@ -63,6 +64,7 @@ public class ContainerRoute {
 		String query = q.queryParamOrDefault("q", "");
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
+		boolean enabled = Boolean.parseBoolean(q.queryParamOrDefault("enabled", "false"));
 
 		try {
 
@@ -72,17 +74,19 @@ public class ContainerRoute {
 
 			long total = dao.queryBuilder().countOf();
 
+			Where<Container, ?> where = qb.where();
+
 			// 管理员查询分支
 			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
-				qb.where().like("id", query + "%")
+				where.like("id", query + "%")
 						.or().like("uid", query + "%");
 			}
 			// 一般用户查询分支，只能查询到自己的容器
 			else {
-				qb.where().like("id", query + "%")
-						.and().eq("uid", uid).and().ne("status", Container.Status.Deleted); // 使用Enum，而不是对应的字符串
+				where.like("id", query + "%")
+						.and().eq("uid", uid);
 			}
-
+			if (enabled) where.and().eq("status", Container.Status.Running);
 
 			List<Container> list = qb.query();
 
