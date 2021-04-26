@@ -174,6 +174,8 @@ public class ProjectRoute {
 		String url = q.queryParamOrDefault("url", "");
 
 		if(url.length() == 0) return Msg.failure("Null URL");
+		// TODO 仅支持GitHub？
+		if(!url.matches("^https://github.com/.*$")) return new Msg(Msg.Code.BAD_REQUEST, null, null);
 		url = URLDecoder.decode(url, StandardCharsets.UTF_8);
 
 		try {
