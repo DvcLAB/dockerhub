@@ -81,8 +81,7 @@ public class KeycloakAdapter {
 		host = config.getString("host");
 		realm = config.getString("realm");
 
-		frontend_client_id = config.getString("client_name");
-		frontend_client_secret = config.getString("client_secret");
+		frontend_client_id = config.getString("front_client_name");
 
 		client_id = config.getString("client_name");
 		client_secret = config.getString("client_secret");

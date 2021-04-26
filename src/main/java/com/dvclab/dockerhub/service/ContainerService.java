@@ -165,6 +165,7 @@ public class ContainerService {
 		public String description;
 		public List<String> users;
 		public List<String> scopes = new ArrayList<>();
+		public List<String> roles = new ArrayList<>();
 		public String logic = "POSITIVE";
 		public String decisionStrategy = "UNANIMOUS";
 
@@ -187,6 +188,11 @@ public class ContainerService {
 
 		public ApplyResourcePolicyBody withScopes(List<String> scopes) {
 			this.scopes = scopes;
+			return this;
+		}
+
+		public ApplyResourcePolicyBody withRoles(List<String> roles) {
+			this.roles = roles;
 			return this;
 		}
 
@@ -337,8 +343,8 @@ public class ContainerService {
 				.replaceAll("\\$\\{uid\\}", uid)
 				.replaceAll("\\$\\{keycloak_server_addr\\}", KeycloakAdapter.getInstance().host)
 				.replaceAll("\\$\\{keycloak_realm\\}", KeycloakAdapter.getInstance().realm)
-				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().client_id)
-				.replaceAll("\\$\\{client_secret\\}", KeycloakAdapter.getInstance().client_secret)
+				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_id)
+				.replaceAll("\\$\\{resource_server\\}", KeycloakAdapter.getInstance().client_id)
 				.replaceAll("\\$\\{service_addr\\}", service_path)
 				.replaceAll("\\$\\{kafka_server\\}", kafka_server_addr)
 				.replaceAll("\\$\\{kafka_topic\\}", container_event_topic_name)
@@ -479,12 +485,21 @@ public class ContainerService {
 		// 换取后端token
 		token = KeycloakAdapter.getInstance().exchangeToken(token);
 
+		// 1. 第一次 attach policy 为当前用户绑定资源
 		ApplyResourcePolicyBody arp_body = new ApplyResourcePolicyBody()
 				.withDesc(container_uid + "_access_" + container_id)
 				.withName(container_uid + "_access_" + container_id)
 				.withScopes(List.of("view"))
 				.withUsers(List.of(UserCache.USERS.get(container_uid).username));
 		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
+
+		//2. 第二次 attach policy 为管理员绑定资源
+		ApplyResourcePolicyBody arp_body_admin = new ApplyResourcePolicyBody()
+				.withDesc(container_uid + "_access_" + container_id)
+				.withName("admin" + "_access_" + container_id)
+				.withScopes(List.of("view"))
+				.withRoles(List.of(User.Role.DOCKHUB_ADMIN.name()));
+		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body_admin);
 	}
 
 	/**

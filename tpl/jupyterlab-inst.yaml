@@ -11,27 +11,20 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=all
       - container_id=${container_id}
       - frp_service_url=${frp_service_url}
-
       - project_git_url=${project_git_url}.git
       - project_branch=${project_branch}
       - project_name=${project_name}
-
       ${datasets}
-
       - pypi_repo=https://pypi.tuna.tsinghua.edu.cn/simple
-
       - uid=${uid}
       - keycloak_server_addr=${keycloak_server_addr}
       - keycloak_realm=${keycloak_realm}
       - client_id=${client_id}
-      - client_secret=${client_secret}
+      - resource_server=${resource_server}
       - scope=openid+email
       - service_addr=${service_addr}
-
-
       - kafka_server=${kafka_server}
       - kafka_topic=${kafka_topic}
-
       - CPU=${cpus}
       - MEM=${mem}
     entrypoint: /opt/init_container.sh
