@@ -6,9 +6,11 @@ import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.model.ModelD;
 import one.rewind.db.persister.JSONableListPersister;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Queue;
 
 @DBName("dockerhub")
 @DatabaseTable(tableName = "containers")
@@ -119,6 +121,13 @@ public class Container extends ModelD {
 
 	// 容器运行的时长
 	public Long alive_time;
+
+	// 容器CPU时序用量
+	public Queue<Object[]> cpu_series = new CircularFifoQueue<>(30);
+	// 容器内存时序用量
+	public Queue<Object[]> mem_series = new CircularFifoQueue<>(30);
+	// 容器proc时序用量
+	public Queue<Object[]> proc_series = new CircularFifoQueue<>(30);
 
 	public Container(){}
 

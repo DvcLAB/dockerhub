@@ -427,6 +427,12 @@ public class ContainerService {
 				}
 
 				container.update();
+				// 从缓存中取出更新的时序数据
+				Optional.ofNullable(ContainerCache.containers.get(container_id)).ifPresent(c -> {
+					container.cpu_series = c.cpu_series;
+					container.mem_series = c.mem_series;
+					container.proc_series = c.proc_series;
+				});
 				// 缓存更新
 				ContainerCache.containers.put(container.id, container);
 				// 使用websocket推送容器信息

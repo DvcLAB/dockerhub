@@ -152,12 +152,18 @@ public class HostCache {
 			String[] tokens = line.split("\t");
 			String name = tokens[0];
 			Optional.ofNullable(ContainerCache.containers.get(name)).ifPresent(c -> {
-
+				long ts = System.currentTimeMillis();
 				c.cpu_usage = Float.parseFloat(tokens[1].replaceAll("%", ""));
 				c.mem_usage = Float.parseFloat(tokens[2].replaceAll("%", ""));
 				c.proc_num = Integer.parseInt(tokens[3]);
 
+				c.cpu_series.add(new Object[] {ts, c.cpu_usage});
+				c.mem_series.add(new Object[] {ts, c.mem_usage});
+				c.proc_series.add(new Object[] {ts, c.proc_num});
+
 				try {
+					// 更新缓存
+					ContainerCache.containers.put(c.id, c);
 					c.update();
 				}
 				catch (DBInitException | SQLException e) {
