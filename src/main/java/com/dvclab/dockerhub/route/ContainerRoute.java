@@ -122,7 +122,10 @@ public class ContainerRoute {
 
 			Container container = Container.getById(Container.class, id);
 			container.container_name = name;
+
 			if(container.update()) {
+				// 更新容器缓存，否则会被其他地方的缓存更新数据库覆盖
+				ContainerCache.containers.put(id, container);
 				return Msg.success(container);
 			}
 			else {
