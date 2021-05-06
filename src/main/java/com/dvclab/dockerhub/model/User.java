@@ -3,6 +3,7 @@ package com.dvclab.dockerhub.model;
 import com.dvclab.dockerhub.serialization.EnumListPersister;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
@@ -10,10 +11,7 @@ import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @DBName("dockerhub")
@@ -63,6 +61,22 @@ public class User extends ModelD {
 		return Daos.get(User.class).queryBuilder()
 				.where().in("id", uids).query()
 				.stream().collect(Collectors.toMap(User::getId, user -> user));
+	}
+
+	/**
+	 * 根据用户名获取用户ID
+	 */
+	public static String getUserId (String username) throws SQLException, DBInitException {
+
+		QueryBuilder<User, Object> queryBuilder = Daos.get(User.class).queryBuilder();
+		queryBuilder.where().like("username", username + "%");
+		Optional<User> user = Optional.ofNullable(queryBuilder.queryForFirst());
+
+		if(user.isPresent()) {
+			return user.get().id;
+		}
+		return "";
+
 	}
 
 	/**

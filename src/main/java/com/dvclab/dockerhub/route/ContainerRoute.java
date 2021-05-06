@@ -79,7 +79,9 @@ public class ContainerRoute {
 			// 管理员查询分支
 			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
 				where.like("id", query + "%")
-						.or().like("uid", query + "%");
+						.or().like("uid", query + "%")
+						// query可为用户名
+						.or().eq("uid",  User.getUserId(query));
 			}
 			// 一般用户查询分支，只能查询到自己的容器
 			else {
@@ -103,7 +105,7 @@ public class ContainerRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Unable create container, uid[{}], ", uid, e);
+			Routes.logger.error("Unable get container list, uid[{}], ", uid, e);
 			return Msg.failure(e);
 		}
 	};
