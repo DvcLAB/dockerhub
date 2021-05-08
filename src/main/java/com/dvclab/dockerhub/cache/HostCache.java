@@ -37,7 +37,7 @@ public class HostCache {
 				new ThreadFactoryBuilder().setNameFormat("HostStatUpdater-%d").build());
 
 		for (Host host : Host.getAll(Host.class)) {
-			addHost(host);
+			if(host.status != DockerHost.Status.STOPPED) addHost(host);
 		}
 	}
 
@@ -54,7 +54,6 @@ public class HostCache {
 
 		// 定期更新CPU/内存使用情况
 		ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(() -> {
-
 			try {
 				long ts = System.currentTimeMillis();
 
@@ -71,7 +70,6 @@ public class HostCache {
 				NetInfo ni = new NetInfo().probe(host.sshHost);
 				host.net_info = ni;
 				host.network_series.add(new Object[] {ts, ni.total_rate});
-
 				if(host.gpu_enabled) {
 					try {
 						GPUInfo gi = new GPUInfo().probe(host.sshHost);
