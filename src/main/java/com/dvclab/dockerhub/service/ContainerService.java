@@ -330,7 +330,7 @@ public class ContainerService {
 		// TODO 容器ID的生成方法需要更新
 		container.id = StringUtil.md5(uid + "::" + System.currentTimeMillis());
 		container.container_name = image.name + "-" + container.id.substring(0, 8);
-		String service_path = "/users/" + container.uid + "/containers/" + container.id;
+		String service_path = "/containers/" + container.id;
 		container.user_host = true;
 		container.image_id = image_id;
 
@@ -529,7 +529,7 @@ public class ContainerService {
 		container.tunnel_id = tunnel_port.getLeft().id;
 		container.tunnel_port = tunnel_port.getRight();
 
-		container.jupyter_url = "https://" + tunnel.wan_addr + "/users/" + container.uid + "/containers/" + container.id;
+		container.jupyter_url = "https://" + tunnel.wan_addr + "/containers/" + container.id;
 		ReverseProxyService.getInstance().setupProxyPass(container);
 		ContainerService.logger.info("container [{}] assign port", container.id);
 		// 分配一个meta_token写入tunnel的tokens文件

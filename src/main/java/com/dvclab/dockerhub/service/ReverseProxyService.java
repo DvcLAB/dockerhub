@@ -93,7 +93,7 @@ public class ReverseProxyService {
 		Tunnel t = tunnels.get(container.tunnel_id);
 
 		RedissonAdapter.get(redis_db_name).getMap("DynamicRoute")
-				.put(container.uid + "_" + container.id, t.lan_addr + ":" + container.tunnel_port);
+				.put(container.id, t.lan_addr + ":" + container.tunnel_port);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class ReverseProxyService {
 	public void removeProxyPass(Container container) {
 
 		RedissonAdapter.get(redis_db_name).getMap("DynamicRoute")
-				.remove(container.uid + "_" + container.id);
+				.remove(container.id);
 	}
 
 	/**
