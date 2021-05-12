@@ -81,4 +81,21 @@ public class Dataset extends ModelD {
 				)
 				.query();
 	}
+
+	/**
+	 * 获取一组数据集id对应的数据集列表
+	 * @param ids
+	 * @return
+	 * @throws DBInitException
+	 * @throws SQLException
+	 */
+	public static List<Dataset> getByIdlList(List<String> ids) throws DBInitException, SQLException {
+
+		return Daos.get(Dataset.class).queryBuilder().where()
+				.in(
+						"id",
+						ids
+				)
+				.query();
+	}
 }

@@ -10,10 +10,12 @@ import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
+import one.rewind.db.exception.DBInitException;
 import spark.Route;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,9 +45,21 @@ public class ProjectRoute {
 
 			List<Project> list = qb.query();
 
-			// 返回结果补全 用户信息
+			// 返回结果补全 用户信息、数据集信息、镜像信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
-			list.stream().forEach(c -> c.user = users.get(c.uid));
+			list.stream().forEach(c -> {
+				c.user = users.get(c.uid);
+				// 补全项目的数据集信息
+				if(! c.dataset_ids.isEmpty()) {
+					try {
+						c.datasets = Dataset.getByIdlList(c.dataset_ids);
+					} catch (DBInitException e) {
+						e.printStackTrace();
+					} catch (SQLException throwables) {
+						throwables.printStackTrace();
+					}
+				}
+			});
 
 			return Msg.success(list, size, page, total);
 		}
@@ -71,8 +85,11 @@ public class ProjectRoute {
 			obj.uid = uid;
 			if(obj.insert()) {
 
-				// 补全用户信息
+				// 补全用户信息、镜像信息
 				obj.user = User.getById(User.class, obj.uid);
+				if(! obj.dataset_ids.isEmpty()) {
+					obj.datasets = Dataset.getByIdlList(obj.dataset_ids);
+				}
 				return Msg.success();
 			}
 			else {
@@ -99,6 +116,10 @@ public class ProjectRoute {
 
 			Project obj = Project.getById(Project.class, id);
 			if(obj != null) {
+				// 补全项目的数据集信息
+				if(! obj.dataset_ids.isEmpty()) {
+					obj.datasets = Dataset.getByIdlList(obj.dataset_ids);
+				}
 				return Msg.success(obj);
 			}
 			else {
@@ -129,6 +150,10 @@ public class ProjectRoute {
 			if(!obj.id.equals(id)) throw new Exception("Project url can not be changed");
 
 			if(obj.update()) {
+				// 补全项目的数据集信息
+				if(! obj.dataset_ids.isEmpty()) {
+					obj.datasets = Dataset.getByIdlList(obj.dataset_ids);
+				}
 				return Msg.success(obj);
 			}
 			else {
