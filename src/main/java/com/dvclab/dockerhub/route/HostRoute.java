@@ -158,7 +158,7 @@ public class HostRoute {
 			// 用户只能删除自己的Host
 			if(! HostCache.hosts.get(id).uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
-			Dataset.deleteById(Dataset.class, id);
+			Host.deleteById(Host.class, id);
 			// 断开中台与指定主机的ssh连接
 			HostCache.hosts.remove(id).disconnectSshHost();
 
