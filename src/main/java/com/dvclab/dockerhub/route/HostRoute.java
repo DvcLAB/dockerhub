@@ -46,8 +46,8 @@ public class HostRoute {
 			list.forEach(c -> {
 				c.user = users.get(c.uid);
 				c.cpu_series = HostCache.hosts.get(c.id).cpu_series;
-				c.network_series = HostCache.hosts.get(c.id).cpu_series;
-				c.gpu_series = HostCache.hosts.get(c.id).cpu_series;
+				c.network_series = HostCache.hosts.get(c.id).network_series;
+				c.gpu_series = HostCache.hosts.get(c.id).gpu_series;
 				c.private_key = null;
 			});
 
@@ -105,8 +105,8 @@ public class HostRoute {
 				obj.user = User.getById(User.class, obj.uid);
 				obj.private_key = null;
 				obj.cpu_series = HostCache.hosts.get(obj.id).cpu_series;
-				obj.network_series = HostCache.hosts.get(obj.id).cpu_series;
-				obj.gpu_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.network_series = HostCache.hosts.get(obj.id).network_series;
+				obj.gpu_series = HostCache.hosts.get(obj.id).gpu_series;
 
 				return Msg.success(obj);
 			}
@@ -141,8 +141,8 @@ public class HostRoute {
 			if(obj.update()) {
 				// 维持时序数据
 				obj.cpu_series = HostCache.hosts.get(obj.id).cpu_series;
-				obj.network_series = HostCache.hosts.get(obj.id).cpu_series;
-				obj.gpu_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.network_series = HostCache.hosts.get(obj.id).network_series;
+				obj.gpu_series = HostCache.hosts.get(obj.id).gpu_series;
 
 				HostCache.hosts.put(obj.id, obj);
 				return Msg.success(obj);
