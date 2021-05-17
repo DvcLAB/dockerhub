@@ -32,12 +32,12 @@ public class HostCache {
 	 * @throws JSchException
 	 */
 	public static void init() throws DBInitException, SQLException, JSchException {
-
-		ses = Executors.newScheduledThreadPool(2,
+		ses = Executors.newScheduledThreadPool(8,
 				new ThreadFactoryBuilder().setNameFormat("HostStatUpdater-%d").build());
 
 		for (Host host : Host.getAll(Host.class)) {
 			if(host.status != DockerHost.Status.STOPPED) addHost(host);
+			else hosts.put(host.id, host);
 		}
 	}
 
@@ -48,7 +48,6 @@ public class HostCache {
 	 */
 	public static void addHost(Host host) throws JSchException {
 
-		host.container_num.set(0);
 		host.connectSshHost();
 		hosts.put(host.id, host);
 
@@ -109,7 +108,8 @@ public class HostCache {
 			} catch (DBInitException | SQLException e) {
 				logger.error("Error save host info to db, ", e);
 			}
-
+			// 更新缓存
+			hosts.put(host.id, host);
 			// WebSocket 更新消息
 			HostInfoPublisher.broadcast(host.id, host);
 
