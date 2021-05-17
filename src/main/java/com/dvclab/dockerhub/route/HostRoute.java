@@ -41,10 +41,13 @@ public class HostRoute {
 
 			List<Host> list = qb.query();
 
-			// 返回结果补全 用户信息
+			// 返回结果补全 用户信息、时序数据
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
 			list.forEach(c -> {
 				c.user = users.get(c.uid);
+				c.cpu_series = HostCache.hosts.get(c.id).cpu_series;
+				c.network_series = HostCache.hosts.get(c.id).cpu_series;
+				c.gpu_series = HostCache.hosts.get(c.id).cpu_series;
 				c.private_key = null;
 			});
 
@@ -98,9 +101,13 @@ public class HostRoute {
 			Host obj = Host.getById(Host.class, id);
 			if(obj != null) {
 
-				// 补全用户信息
+				// 补全用户信息、时序信息
 				obj.user = User.getById(User.class, obj.uid);
 				obj.private_key = null;
+				obj.cpu_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.network_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.gpu_series = HostCache.hosts.get(obj.id).cpu_series;
+
 				return Msg.success(obj);
 			}
 			else {
@@ -132,6 +139,11 @@ public class HostRoute {
 			if(!obj.id.equals(id)) throw new Exception("Host ip/port/username can not be changed");
 
 			if(obj.update()) {
+				// 维持时序数据
+				obj.cpu_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.network_series = HostCache.hosts.get(obj.id).cpu_series;
+				obj.gpu_series = HostCache.hosts.get(obj.id).cpu_series;
+
 				HostCache.hosts.put(obj.id, obj);
 				return Msg.success(obj);
 			}
