@@ -44,12 +44,18 @@ public class Project extends ModelD {
 
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
+
 	// 项目依赖
 	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
 	public Map<String, String> deps = new HashMap<>();
 
+	// 项目依赖
+	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
+	public Map<String, String> pypi_deps = new HashMap<>();
+
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
+
 	// 项目数据集的ID列表
 	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
 	public List<String> dataset_ids = new ArrayList<>();
@@ -65,7 +71,7 @@ public class Project extends ModelD {
 	 * @param desc
 	 */
 	public Project(String name, String url, String desc, String cover_img_url,
-				   List<String> branches, List<String> dataset_urls, Map<String, String> deps) throws DBInitException, SQLException {
+				   List<String> branches, List<String> dataset_urls, Map<String, String> deps, Map<String, String> pypi_deps) throws DBInitException, SQLException {
 
 		this.name = name;
 		this.url = url;
@@ -73,6 +79,7 @@ public class Project extends ModelD {
 		this.cover_img_url = cover_img_url;
 		this.branches = branches;
 		this.deps = deps;
+		this.pypi_deps = pypi_deps;
 		this.genId();
 
 		if(! dataset_urls.isEmpty()) {

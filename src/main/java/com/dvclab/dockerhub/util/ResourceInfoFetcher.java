@@ -4,6 +4,7 @@ import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Project;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
+import com.jcraft.jsch.JSchException;
 import com.typesafe.config.Config;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.exception.DBInitException;
@@ -24,6 +25,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 远端信息请求器
@@ -65,7 +67,7 @@ public class ResourceInfoFetcher {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException {
+	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException, JSchException {
 
 		Task t1 = new Task(url);
 		BasicRequester.req(t1, proxy);
@@ -82,18 +84,35 @@ public class ResourceInfoFetcher {
 		String dataset_conf_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dataset.conf";
+
 		// 项目封面图的url
 		String cover_image_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/.cover_img.png"; // 1024 * 1024 png
+
 		// 项目依赖配置文件的url
 		String dependencies_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dep.conf";
 
+		// 项目依赖配置文件的url
+		String requirements_url = url.replaceAll("(\\.git|/)$", "")
+				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
+				+ "/master/config/requirements.txt";
+
 		String dependencies_src = BasicRequester.req(dependencies_url, proxy);
 		// 解析得到项目的依赖
 		Map<String, String> deps = JSON.fromJson(dependencies_src, new TypeToken<HashMap<String, String>>(){}.getType());
+
+
+		String requirements_src = BasicRequester.req(requirements_url, proxy);
+
+		Map<String, String> pypi_deps = Arrays.stream(requirements_src.split("\r?\n")).map(line -> {
+			String[] tokens = line.split("=");
+			return new AbstractMap.SimpleEntry<>(tokens[0], tokens[1]);
+		}).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+
+
 		// 解析得到项目的所有分支
 		List<String> branches = new ArrayList<>();
 		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
@@ -107,11 +126,15 @@ public class ResourceInfoFetcher {
 		if(name.isEmpty()) throw new IOException("Can not retrieve project name");
 		if(branches.size() == 0) throw new IOException("Can not retrieve project branches");
 
+		// 更新私有PypiServer的依赖库
+		PypiServerUpdater.getInstance().update(pypi_deps.keySet());
+
 		return new Project(
 				name, url, desc, cover_image_url,
 				branches,
 				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n")),
-				deps
+				deps,
+				pypi_deps
 		);
 	}
 

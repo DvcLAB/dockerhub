@@ -45,6 +45,7 @@ public class Image extends ModelD {
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url;
+
 	// 镜像类型
 	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT")
 	public List<Type> types = new ArrayList<>();
