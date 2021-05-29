@@ -92,7 +92,7 @@ public class PypiServerUpdater {
 				sshHost.copyLocalToRemote(localPath, remotePath);
 
 				// 执行bandersnatch 同步命令
-				sshHost.exec("docker exec -d bandersnatch bandersnatch mirror");
+				sshHost.exec("docker exec -it bandersnatch bandersnatch --config /conf/bandersnatch.conf mirror");
 			}
 			catch (Exception e) {
 				DockerHubService.logger.error("Error refresh bandersnatch mirror, ", e);
