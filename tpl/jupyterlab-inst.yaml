@@ -15,7 +15,7 @@ services:
       - project_branch=${project_branch}
       - project_name=${project_name}
       ${datasets}
-      - pypi_repo=https://bandersnatch.dvclab.com/simple
+      - pypi_repo=https://pypi.dvclab.com/simple
       - uid=${uid}
       - keycloak_server_addr=${keycloak_server_addr}
       - keycloak_realm=${keycloak_realm}
