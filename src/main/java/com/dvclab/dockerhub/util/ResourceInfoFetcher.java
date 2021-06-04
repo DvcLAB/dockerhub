@@ -175,6 +175,6 @@ public class ResourceInfoFetcher {
 		BasicRequester.req(t);
 
 		Map<String, String> map = new ObjectMapper().readValue(t.r.getText(), Map.class);
-		return map.get("access_token");
+		return map.get("token");
 	}
 }
