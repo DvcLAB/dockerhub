@@ -1,6 +1,7 @@
 package com.dvclab.dockerhub.util.test;
 
 import com.dvclab.dockerhub.util.ResourceInfoFetcher;
+import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ResourceInfoFetcherTest {
 
 	@Test
-	public void getProjectInfo() throws URISyntaxException, DBInitException, SQLException, IOException {
+	public void getProjectInfo() throws URISyntaxException, DBInitException, SQLException, IOException, JSchException {
 
 		System.err.println(ResourceInfoFetcher.getProjectInfo("https://github.com/DvcLAB/CNN"));
 	}
