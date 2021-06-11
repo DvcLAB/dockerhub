@@ -13,6 +13,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import one.rewind.db.Daos;
 import one.rewind.db.exception.DBInitException;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.C;
 import spark.Route;
 
@@ -64,7 +65,9 @@ public class ContainerRoute {
 		String query = q.queryParamOrDefault("q", "");
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
-		boolean enabled = Boolean.parseBoolean(q.queryParamOrDefault("enabled", "false"));
+
+		String owner = q.queryParamOrDefault("owner", "");
+		List<String> status_list = List.of(q.queryParamsValues("status"));
 
 		try {
 
@@ -81,21 +84,25 @@ public class ContainerRoute {
 				where.like("id", query + "%")
 						.or().like("uid", query + "%")
 						// query可为用户名
-						.or().eq("uid",  User.getUserId(query));
+						.or().eq("uid", User.getUserId(query));
 			}
 			// 一般用户查询分支，只能查询到自己的容器
+			// TODO 还应该查询到分享给我的容器
 			else {
 				where.like("id", query + "%")
 						.and().eq("uid", uid);
 			}
-			if (enabled) where.and().eq("status", Container.Status.Running);
+
+			if(owner != null && owner.length() > 0) where.and().eq("uid", owner);
+
+			if(status_list.size() > 0) where.and().in("status", status_list);
 
 			List<Container> list = qb.query();
 
 			// 返回结果补全 用户信息、容器运行时长、镜像信息、时序数据信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
 			Map<String, Image> images = Image.getImages(list.stream().map(c -> c.image_id).collect(Collectors.toList()));
-			list.stream().forEach(c -> {
+			list.forEach(c -> {
 				c.user = users.get(c.uid);
 				c.image = images.get(c.image_id);
 				if(c.status == Container.Status.Running) {
