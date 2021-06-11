@@ -19,7 +19,11 @@ class ResourceInfoFetcherTest {
 	@Test
 	public void getProjectInfo() throws URISyntaxException, DBInitException, SQLException, IOException, JSchException {
 
-		System.err.println(ResourceInfoFetcher.getProjectInfo("https://github.com/DvcLAB/CNN"));
+		try {
+			System.err.println(ResourceInfoFetcher.getProjectInfo("https://github.com/DvcLAB/CNN"));
+		} catch (JSchException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test

@@ -127,7 +127,7 @@ public class DatasetRoute {
 
 			Dataset ds = Dataset.fromJSON(source, Dataset.class);
 			ds.genId();
-
+			ds.uid = uid;
 			if(!ds.id.equals(id)) throw new Exception("Dataset url can not be changed");
 
 			if(ds.update()) {

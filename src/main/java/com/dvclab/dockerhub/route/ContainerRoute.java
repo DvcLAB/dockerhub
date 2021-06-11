@@ -98,11 +98,14 @@ public class ContainerRoute {
 			list.stream().forEach(c -> {
 				c.user = users.get(c.uid);
 				c.image = images.get(c.image_id);
-				// 维持时序数据
-				c.cpu_series = ContainerCache.containers.get(c.id).cpu_series;
-				c.mem_series = ContainerCache.containers.get(c.id).mem_series;
-				c.proc_series = ContainerCache.containers.get(c.id).proc_series;
-				if(c.status == Container.Status.Running) c.alive_time = System.currentTimeMillis() - c.begin_run_time.getTime();
+				if(c.status == Container.Status.Running) {
+					// 维持时序数据
+					c.cpu_series = ContainerCache.containers.get(c.id).cpu_series;
+					c.mem_series = ContainerCache.containers.get(c.id).mem_series;
+					c.proc_series = ContainerCache.containers.get(c.id).proc_series;
+					c.alive_time = System.currentTimeMillis() - c.begin_run_time.getTime();
+				}
+
 			});
 
 			return Msg.success(list, size, page, total);
@@ -292,12 +295,16 @@ public class ContainerRoute {
 				// 补全容器用户信息、镜像信息、运行时长信息、时序信息
 				obj.user = User.getById(User.class, obj.uid);
 				obj.image = Image.getById(Image.class, obj.image_id);
-				// 维持时序数据
-				obj.cpu_series = ContainerCache.containers.get(obj.id).cpu_series;
-				obj.mem_series = ContainerCache.containers.get(obj.id).mem_series;
-				obj.proc_series = ContainerCache.containers.get(obj.id).proc_series;
 
-				if(obj.status == Container.Status.Running) obj.alive_time = System.currentTimeMillis() - obj.begin_run_time.getTime();
+				if(obj.status == Container.Status.Running) {
+					// 维持时序数据
+					obj.cpu_series = ContainerCache.containers.get(obj.id).cpu_series;
+					obj.mem_series = ContainerCache.containers.get(obj.id).mem_series;
+					obj.proc_series = ContainerCache.containers.get(obj.id).proc_series;
+
+					obj.alive_time = System.currentTimeMillis() - obj.begin_run_time.getTime();
+				}
+
 
 				return Msg.success(obj);
 			}

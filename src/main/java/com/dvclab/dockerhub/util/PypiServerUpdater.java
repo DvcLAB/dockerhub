@@ -69,7 +69,7 @@ public class PypiServerUpdater {
 				String remotePath = "/opt/bandersnatch/bandersnatch.conf";
 
 				// 将远程主机文件拷贝到本地
-				sshHost.copyRemoteToLocal(localPath, remotePath);
+				sshHost.copyRemoteToLocal(remotePath, localPath);
 
 				String src = FileUtil.readFileByLines(localPath);
 
