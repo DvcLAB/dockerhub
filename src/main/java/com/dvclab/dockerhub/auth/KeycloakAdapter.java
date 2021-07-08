@@ -229,11 +229,8 @@ public class KeycloakAdapter {
 		return node.get("access_token").asText();
 	}
 
-
-
-
 	/**
-	 * Admin用户行为
+	 *
 	 */
 	public class Admin {
 
@@ -245,6 +242,10 @@ public class KeycloakAdapter {
 		private String admin_url_template = "%s/auth/realms/master/protocol/openid-connect/token";
 		private String admin_body_template = "username=%s&password=%s&grant_type=password&client_id=admin-cli";
 
+		/**
+		 *
+		 * @param admin_config
+		 */
 		public Admin(Config admin_config) {
 
 			admin_url_template = admin_config.getString("admin_url_template");

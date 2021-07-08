@@ -1,16 +1,13 @@
 package com.dvclab.dockerhub.auth;
 
-import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.service.ContainerService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class KeycloakAdapterTest {
+public class KeycloakAdapterTest {
 
     @Test
     void deleteResource() throws IOException, URISyntaxException {

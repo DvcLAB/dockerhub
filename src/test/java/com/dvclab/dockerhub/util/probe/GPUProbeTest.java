@@ -6,7 +6,7 @@ import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.monitor.CPUInfo;
 import one.rewind.monitor.GPUInfo;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;

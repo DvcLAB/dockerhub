@@ -67,7 +67,9 @@ public class ContainerRoute {
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
 
 		String owner = q.queryParamOrDefault("owner", "");
-		List<String> status_list = List.of(q.queryParamsValues("status"));
+		List<Container.Status> status_list = List.of(q.queryParamsValues("status")).stream()
+				.map(Container.Status::valueOf)
+				.collect(Collectors.toList());
 
 		try {
 
@@ -119,6 +121,7 @@ public class ContainerRoute {
 		}
 		catch (Exception e) {
 
+			e.printStackTrace();
 			Routes.logger.error("Unable get container list, uid[{}], ", uid, e);
 			return Msg.failure(e);
 		}

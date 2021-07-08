@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.*;
 import one.rewind.db.model.Model;
 import one.rewind.io.requester.basic.BasicRequester;
 import one.rewind.io.requester.exception.AccountException;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
