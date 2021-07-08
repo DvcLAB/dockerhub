@@ -121,7 +121,7 @@ public class ContainerRoute {
 		}
 		catch (Exception e) {
 
-			e.printStackTrace();
+			/*e.printStackTrace();*/
 			Routes.logger.error("Unable get container list, uid[{}], ", uid, e);
 			return Msg.failure(e);
 		}
