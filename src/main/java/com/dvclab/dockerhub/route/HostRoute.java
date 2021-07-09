@@ -9,6 +9,7 @@ import com.dvclab.dockerhub.serialization.Msg;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
+import one.rewind.db.model.Model;
 import spark.Route;
 
 import java.util.List;
@@ -68,8 +69,10 @@ public class HostRoute {
 		String uid = q.session().attribute("uid");
 		String source = q.body();
 
+		Host obj = null;
+
 		try {
-			Host obj = Host.fromJSON(source, Host.class);
+			obj = Host.fromJSON(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
 
@@ -83,7 +86,7 @@ public class HostRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Create Host[{}] error, ", source, e);
+			Routes.logger.error("Create Host[{}] error, ", obj == null ? source : obj, e);
 			return Msg.failure(e);
 		}
 	};

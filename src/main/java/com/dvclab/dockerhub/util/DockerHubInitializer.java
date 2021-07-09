@@ -39,9 +39,9 @@ public class DockerHubInitializer {
 	 * @throws SQLException
 	 */
 	public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchProviderException, IOException, DBInitException, SQLException {
-		// generateRootKeyPair();
+		generateRootKeyPair();
 
 		// 创建数据库
-		Refactor.createTables("com.dvclab.dockerhub.model");
+		// Refactor.createTables("com.dvclab.dockerhub.model");
 	}
 }
