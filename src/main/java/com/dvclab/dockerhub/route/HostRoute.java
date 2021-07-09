@@ -86,7 +86,7 @@ public class HostRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Create Host[{}] error, ", obj == null ? source : obj, e);
+			Routes.logger.error("Create Host[{}] error, ", obj == null ? source : obj.toJSON(), e);
 			return Msg.failure(e);
 		}
 	};
