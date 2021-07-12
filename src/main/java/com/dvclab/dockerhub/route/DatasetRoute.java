@@ -1,6 +1,6 @@
 package com.dvclab.dockerhub.route;
 
-import com.dvclab.dockerhub.cache.UserCache;
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
@@ -8,6 +8,7 @@ import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
+import one.rewind.nio.json.JSON;
 import one.rewind.txt.StringUtil;
 import spark.Route;
 
@@ -67,7 +68,7 @@ public class DatasetRoute {
 
 		try {
 
-			Dataset ds = Dataset.fromJSON(source, Dataset.class);
+			Dataset ds = JSON.fromJson(source, Dataset.class);
 			ds.genId();
 			ds.uid = uid;
 			if(ds.insert()) {
@@ -125,7 +126,7 @@ public class DatasetRoute {
 
 		try {
 
-			Dataset ds = Dataset.fromJSON(source, Dataset.class);
+			Dataset ds = JSON.fromJson(source, Dataset.class);
 			ds.genId();
 			ds.uid = uid;
 			if(!ds.id.equals(id)) throw new Exception("Dataset url can not be changed");
@@ -153,7 +154,7 @@ public class DatasetRoute {
 		String id = q.params(":id");
 
 		// 只有管理员才能删除记录
-		if(! UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 

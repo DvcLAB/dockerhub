@@ -1,8 +1,9 @@
 package com.dvclab.dockerhub.route;
 
-import com.dvclab.dockerhub.filter.Authenticator;
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.serialization.JsonTransformer;
 import com.dvclab.dockerhub.serialization.Msg;
+import one.rewind.nio.web.filter.Authenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.WebSocketConstants;
@@ -48,7 +49,7 @@ public class Routes {
 	 */
 	public static void init() {
 
-		Authenticator authenticator = new Authenticator();
+		Authenticator authenticator = new Authenticator(Caches.userCache);
 
 		JsonTransformer transformer = new JsonTransformer();
 

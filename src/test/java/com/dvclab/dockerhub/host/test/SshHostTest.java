@@ -1,7 +1,7 @@
 package com.dvclab.dockerhub.host.test;
 
 import com.jcraft.jsch.JSchException;
-import one.rewind.io.ssh.SshHost;
+import one.rewind.network.ssh.SshHost;
 import one.rewind.util.FileUtil;
 import org.junit.Test;
 

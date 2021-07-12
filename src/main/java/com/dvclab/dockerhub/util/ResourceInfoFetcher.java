@@ -8,11 +8,11 @@ import com.jcraft.jsch.JSchException;
 import com.typesafe.config.Config;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.exception.DBInitException;
-import one.rewind.io.requester.basic.BasicRequester;
-import one.rewind.io.requester.proxy.Proxy;
-import one.rewind.io.requester.proxy.ProxyImpl;
-import one.rewind.io.requester.task.Task;
-import one.rewind.json.JSON;
+import one.rewind.nio.http.ReqObj;
+import one.rewind.nio.http.Requester;
+import one.rewind.nio.json.JSON;
+import one.rewind.nio.proxy.Proxy;
+import one.rewind.nio.proxy.impl.ProxyImpl;
 import one.rewind.util.Configs;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHeaders;
@@ -69,16 +69,15 @@ public class ResourceInfoFetcher {
 	 */
 	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException, JSchException {
 
-		Task t1 = new Task(url);
-		BasicRequester.req(t1, proxy);
+		ReqObj r = Requester.req(url).get();
 		// 解析项目名
-		String name = t1.r.getDom().select("title")
+		String name = r.getDom().select("title")
 				.html().replaceAll("GitHub - ", "")
 				.split(" ")[0]
 				.replaceAll(":", "")
 				.replaceAll("^.+?/", "");
 		// 解析项目描述
-		String desc = t1.r.getDom().select("meta[name='description']")
+		String desc = r.getDom().select("meta[name='description']")
 				.attr("content");
 		// 项目数据集配置文件的url
 		String dataset_conf_url = url.replaceAll("(\\.git|/)$", "")
@@ -100,23 +99,22 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/requirements.txt";
 
-		String dependencies_src = BasicRequester.req(dependencies_url, proxy);
+		String dependencies_src = Requester.req(dependencies_url, proxy).get().getText();
 		// 解析得到项目的依赖
 		Map<String, String> deps = JSON.fromJson(dependencies_src, new TypeToken<HashMap<String, String>>(){}.getType());
 
 
-		String requirements_src = BasicRequester.req(requirements_url, proxy);
+		String requirements_src = Requester.req(requirements_url, proxy).get().getText();
 
 		Map<String, String> pypi_deps = Arrays.stream(requirements_src.split("\r?\n")).map(line -> {
 			String[] tokens = line.split("=");
 			return new AbstractMap.SimpleEntry<>(tokens[0], tokens[1]);
 		}).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
-
 		// 解析得到项目的所有分支
 		List<String> branches = new ArrayList<>();
 		String branches_url = url.replaceAll("(\\.git|/)$", "") + "/branches/all";
-		String branches_src = BasicRequester.req(branches_url, proxy);
+		String branches_src = Requester.req(branches_url, proxy).get().getText();
 		Pattern p = Pattern.compile("(?<=branch=\").+?(?=\")");
 		Matcher m = p.matcher(branches_src);
 		while (m.find()) {
@@ -132,7 +130,7 @@ public class ResourceInfoFetcher {
 		return new Project(
 				name, url, desc, cover_image_url,
 				branches,
-				Arrays.asList(BasicRequester.req(dataset_conf_url, proxy).split("\r?\n")),
+				Arrays.asList(Requester.req(dataset_conf_url, proxy).get().getText().split("\r?\n")),
 				deps,
 				pypi_deps
 		);
@@ -147,7 +145,7 @@ public class ResourceInfoFetcher {
 
 		url = url.replaceAll("/?$", "");
 		String name = url.replaceAll("^.+/", "");
-		String desc = BasicRequester.req(url + "/README.md");
+		String desc = Requester.req(url + "/README.md").get().getText();
 		String cover_img_url = url + "/.cover_img.png";
 
 		if(desc == null || desc.length() == 0) throw new Exception("Readme file not exist");
@@ -171,10 +169,9 @@ public class ResourceInfoFetcher {
 				auth.getBytes(StandardCharsets.ISO_8859_1));
 		String authHeader = "Basic " + new String(encodedAuth);
 
-		Task t = new Task(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, authHeader), null, null, null);
-		BasicRequester.req(t);
+		ReqObj r = Requester.req(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, authHeader)).get();
 
-		Map<String, String> map = new ObjectMapper().readValue(t.r.getText(), Map.class);
+		Map<String, String> map = new ObjectMapper().readValue(r.getText(), Map.class);
 		return map.get("token");
 	}
 }

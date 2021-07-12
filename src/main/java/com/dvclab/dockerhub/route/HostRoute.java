@@ -1,15 +1,15 @@
 package com.dvclab.dockerhub.route;
 
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.cache.HostCache;
-import com.dvclab.dockerhub.cache.UserCache;
-import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Host;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.jcraft.jsch.JSchException;
 import one.rewind.db.Daos;
-import one.rewind.db.model.Model;
+import one.rewind.nio.json.JSON;
 import spark.Route;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class HostRoute {
 		Long page = Long.parseLong(q.queryParamOrDefault("page", "1"));
 		Long size = Long.parseLong(q.queryParamOrDefault("size", "10"));
 		// 只有管理员可以获得主机列表
-		if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 
@@ -72,13 +72,19 @@ public class HostRoute {
 		Host obj = null;
 
 		try {
-			obj = Host.fromJSON(source, Host.class);
+			obj = JSON.fromJson(source, Host.class);
 			obj.genId();
 			obj.uid = uid;
 
 			if(obj.insert()) {
-				HostCache.addHost(obj);
-				return Msg.success();
+				try {
+					HostCache.addHost(obj);
+					return Msg.success();
+				}
+				catch (JSchException ex) {
+					Host.deleteById(Host.class, obj.id);
+					return Msg.failure();
+				}
 			}
 			else {
 				return Msg.failure();
@@ -86,7 +92,7 @@ public class HostRoute {
 		}
 		catch (Exception e) {
 
-			Routes.logger.error("Create Host[{}] error, ", obj == null ? source : obj.toJSON(), e);
+			Routes.logger.error("Create Host[{}] error, ", obj == null ? source : obj.toJson(), e);
 			return Msg.failure(e);
 		}
 	};
@@ -136,7 +142,7 @@ public class HostRoute {
 
 		try {
 
-			Host obj = Host.fromJSON(source, Host.class);
+			Host obj = JSON.fromJson(source, Host.class);
 			obj.genId();
 
 			if(!obj.id.equals(id)) throw new Exception("Host ip/port/username can not be changed");

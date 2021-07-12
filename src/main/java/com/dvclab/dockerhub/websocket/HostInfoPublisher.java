@@ -1,8 +1,8 @@
 package com.dvclab.dockerhub.websocket;
 
-import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.HostCache;
 import com.dvclab.dockerhub.model.Host;
+import one.rewind.nio.web.auth.KeycloakAdapter;
 import one.rewind.txt.URLUtil;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
@@ -35,7 +35,7 @@ public class HostInfoPublisher {
 		// ws连接认证
 		try {
 			KeycloakAdapter.getInstance().verifyAccessToken(token);
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			session.close(1011, "Not Valid");
 		}
 
@@ -70,7 +70,7 @@ public class HostInfoPublisher {
 		Optional.ofNullable(host_sessions.get(hostId)).ifPresent(sessions -> {
 			sessions.forEach(session -> {
 				try {
-					session.getRemote().sendString(host.toJSON());
+					session.getRemote().sendString(host.toJson());
 				}
 				// IO异常，移除Session
 				catch (IOException e) {

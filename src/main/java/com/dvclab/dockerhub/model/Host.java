@@ -8,10 +8,10 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
-import one.rewind.db.persister.JSONablePersister;
-import one.rewind.io.docker.model.DockerHost;
-import one.rewind.io.ssh.SshHost;
 import one.rewind.monitor.*;
+import one.rewind.network.ssh.SshHost;
+import one.rewind.nio.docker.DockerHost;
+import one.rewind.nio.json.persister.JSONAbleFieldPersister;
 import one.rewind.txt.StringUtil;
 import one.rewind.util.FileUtil;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
@@ -63,19 +63,19 @@ public class Host extends DockerHost {
 	@DatabaseField(dataType = DataType.FLOAT)
 	public float mem_assign = 0;
 
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public CPUInfo cpu_info = new CPUInfo();
 
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public MemInfo mem_info = new MemInfo();
 
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public IoInfo io_info = new IoInfo();
 
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public NetInfo net_info = new NetInfo();
 
-	@DatabaseField(persisterClass = JSONablePersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public GPUInfo gpu_info = null;
 
 	// 主机CPU时序用量

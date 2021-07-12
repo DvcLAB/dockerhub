@@ -1,26 +1,22 @@
 package com.dvclab.dockerhub.websocket;
 
-import com.dvclab.dockerhub.DockerHubService;
-import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.model.Container;
-import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.route.Routes;
+import one.rewind.nio.web.auth.KeycloakAdapter;
 import one.rewind.txt.URLUtil;
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
-import spark.Route;
 
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -44,7 +40,7 @@ public class ContainerInfoPublisher {
 		// ws连接认证
 		try {
 			KeycloakAdapter.getInstance().verifyAccessToken(token);
-		} catch (URISyntaxException | IOException e) {
+		} catch (IOException e) {
 			session.close(1011, "Not Valid");
 		}
 
@@ -78,7 +74,7 @@ public class ContainerInfoPublisher {
 		Optional.ofNullable(container_sessions.get(container_id)).ifPresent(sessions -> {
 			sessions.forEach(session -> {
 				try {
-					session.getRemote().sendString(container.toJSON());
+					session.getRemote().sendString(container.toJson());
 				}
 				// IO异常，移除Session
 				catch (IOException e) {

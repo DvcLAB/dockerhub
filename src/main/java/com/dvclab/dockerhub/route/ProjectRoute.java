@@ -1,8 +1,7 @@
 package com.dvclab.dockerhub.route;
 
-import com.dvclab.dockerhub.cache.UserCache;
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.model.Dataset;
-import com.dvclab.dockerhub.model.Image;
 import com.dvclab.dockerhub.model.Project;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
@@ -11,6 +10,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
 import one.rewind.db.exception.DBInitException;
+import one.rewind.nio.json.JSON;
 import spark.Route;
 
 import java.net.URLDecoder;
@@ -80,7 +80,7 @@ public class ProjectRoute {
 
 		try {
 
-			Project obj = Project.fromJSON(source, Project.class);
+			Project obj = JSON.fromJson(source, Project.class);
 			obj.genId();
 			obj.uid = uid;
 			if(obj.insert()) {
@@ -144,7 +144,7 @@ public class ProjectRoute {
 
 		try {
 
-			Project obj = Project.fromJSON(source, Project.class);
+			Project obj = JSON.fromJson(source, Project.class);
 			obj.genId();
 
 			if(!obj.id.equals(id)) throw new Exception("Project url can not be changed");
@@ -176,7 +176,7 @@ public class ProjectRoute {
 		String id = q.params(":id");
 
 		// 只有管理员才能删除记录
-		if(! UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(! Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 

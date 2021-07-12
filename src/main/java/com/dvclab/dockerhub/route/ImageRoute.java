@@ -1,21 +1,19 @@
 package com.dvclab.dockerhub.route;
 
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.cache.ImageCache;
-import com.dvclab.dockerhub.cache.UserCache;
-import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.Image;
 import com.dvclab.dockerhub.model.Project;
 import com.dvclab.dockerhub.model.User;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
 import io.netty.handler.codec.http.HttpMethod;
 import one.rewind.db.Daos;
 import one.rewind.db.model.ModelD;
-import one.rewind.io.requester.basic.BasicRequester;
-import one.rewind.io.requester.task.Task;
-import one.rewind.txt.StringUtil;
+import one.rewind.nio.http.ReqObj;
+import one.rewind.nio.http.Requester;
+import one.rewind.nio.json.JSON;
 import org.apache.http.HttpHeaders;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -57,12 +55,13 @@ public class ImageRoute {
 			List<String> repo_names = new ArrayList<>();
 
 			// 代理请求
-			Task t = new Task(url, HttpMethod.GET,
-					Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), null, null, null);
-			BasicRequester.req(t);
+			ReqObj r = Requester.req(url,
+					HttpMethod.GET,
+					Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)),
+					(byte[]) null, null).get();
 
 			// 解析docker_registry返回结果
-			JSONObject res = new JSONObject(t.r.getText());
+			JSONObject res = new JSONObject(r.getText());
 			JSONArray repos = res.getJSONArray("repositories");
 
 			for(int i=0; i<repos.length(); i++) {
@@ -127,11 +126,11 @@ public class ImageRoute {
 			List<String> tags = new ArrayList<>();
 
 			// 代理请求
-			Task t = new Task(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), null, null, null);
-			BasicRequester.req(t);
+			ReqObj r = Requester.req(url, HttpMethod.GET,
+					Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)), (byte[]) null, null).get();
 
 			// 解析docker_registry返回结果
-			JSONObject res = new JSONObject(t.r.getText());
+			JSONObject res = new JSONObject(r.getText());
 			JSONArray tags_ = res.getJSONArray("tags");
 
 			for(int i=0; i<tags_.length(); i++) {
@@ -218,16 +217,16 @@ public class ImageRoute {
 		String source = q.body();
 
 		// 只有管理员才可以更新镜像
-		if(! UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(! Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 
-			Image obj = Image.fromJSON(source, Image.class);
+			Image obj = JSON.fromJson(source, Image.class);
 			obj.genId();
 
 			// 认领镜像用户
 			obj.uid = uid;
-			obj.user = UserCache.USERS.get(uid);
+			obj.user = Caches.userCache.USERS.get(uid);
 
 			if(!obj.id.equals(id)) throw new Exception("Dataset url can not be changed");
 			if(obj.update()) {
@@ -255,7 +254,7 @@ public class ImageRoute {
 		String id = q.params(":id");
 
 		// 只有管理员才能删除记录
-		if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 

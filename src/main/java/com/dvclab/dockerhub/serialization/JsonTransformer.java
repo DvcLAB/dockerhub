@@ -2,7 +2,8 @@ package com.dvclab.dockerhub.serialization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import one.rewind.json.JSON;
+import one.rewind.nio.json.JSON;
+import one.rewind.nio.json.adapter.DateAdapter;
 import spark.ResponseTransformer;
 
 import java.text.DateFormat;
@@ -14,7 +15,7 @@ import java.util.Date;
 public class JsonTransformer implements ResponseTransformer {
 
 	private Gson gson = new GsonBuilder()
-		.registerTypeAdapter(Date.class, new JSON.DateSerializer())
+		.registerTypeAdapter(Date.class, new DateAdapter())
 		.setDateFormat(DateFormat.LONG)
 		.create();
 

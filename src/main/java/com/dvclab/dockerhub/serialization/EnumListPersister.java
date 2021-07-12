@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.field.types.StringType;
-import one.rewind.json.JSON;
+import one.rewind.nio.json.JSON;
 
 import java.util.List;
 

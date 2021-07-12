@@ -1,6 +1,8 @@
 package com.dvclab.dockerhub.auth;
 
 import com.dvclab.dockerhub.service.ContainerService;
+import one.rewind.nio.json.JSON;
+import one.rewind.nio.web.auth.KeycloakAdapter;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.util.List;
 public class KeycloakAdapterTest {
 
     @Test
-    void deleteResource() throws IOException, URISyntaxException {
+    void deleteResource() throws IOException {
         String resource_id = "ed166e5d-80ff-b502-5696-54004748a4bd";
         KeycloakAdapter.getInstance().deleteResource(resource_id);
     }
@@ -34,6 +36,6 @@ public class KeycloakAdapterTest {
                 .withName("1" + "_access_" + "3101277246277cd6d3d70b435eb9f35e")
                 .withScopes(List.of("view"))
                 .withUsers(List.of("goodnight"));
-        KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
+        KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, JSON.toJson(arp_body));
     }
 }

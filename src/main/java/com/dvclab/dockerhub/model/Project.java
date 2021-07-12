@@ -6,9 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
-import one.rewind.db.persister.JSONableListPersister;
-import one.rewind.db.persister.JSONableMapPersister;
-import one.rewind.db.persister.JSONablePersister;
+import one.rewind.nio.json.persister.JSONAbleFieldPersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
@@ -42,22 +40,22 @@ public class Project extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 1024)
 	public String cover_img_url = "";
 
-	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public List<String> branches = new ArrayList<>();
 
 	// 项目依赖
-	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public Map<String, String> deps = new HashMap<>();
 
 	// 项目依赖
-	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public Map<String, String> pypi_deps = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 2048)
 	public String desc;
 
 	// 项目数据集的ID列表
-	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public List<String> dataset_ids = new ArrayList<>();
 
 	public List<Dataset> datasets;

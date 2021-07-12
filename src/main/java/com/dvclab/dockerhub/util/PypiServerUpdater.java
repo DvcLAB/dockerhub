@@ -3,13 +3,12 @@ package com.dvclab.dockerhub.util;
 import com.dvclab.dockerhub.DockerHubService;
 import com.jcraft.jsch.JSchException;
 import com.typesafe.config.Config;
-import one.rewind.io.ssh.SshHost;
+import one.rewind.network.ssh.SshHost;
 import one.rewind.util.Configs;
 import one.rewind.util.FileUtil;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -6,19 +6,17 @@ import com.github.zafarkhaja.semver.Version;
 import one.rewind.db.exception.DBInitException;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.github.zafarkhaja.semver.expr.CompositeExpression.Helper.eq;
+import static one.rewind.nio.web.cache.Caches.ses;
 
 /**
  * 镜像缓存
  */
-public class ImageCache extends Caches{
+public class ImageCache {
 
 	public static long update_interval = 60;
 
@@ -37,7 +35,7 @@ public class ImageCache extends Caches{
 
 		// 定期批量保存回数据库
 		ses.scheduleWithFixedDelay(() -> {
-			Image.batchUpsert(new ArrayList(images.values()), "UPDATE tags = VALUES(tags)");
+			Image.batchUpsert(List.copyOf(images.values()), "UPDATE tags = VALUES(tags)");
 		}, update_interval, update_interval, TimeUnit.SECONDS);
 	}
 

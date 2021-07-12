@@ -1,10 +1,8 @@
 package com.dvclab.dockerhub.service;
 
 import com.dvclab.dockerhub.DockerHubService;
-import com.dvclab.dockerhub.auth.KeycloakAdapter;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.HostCache;
-import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.*;
 import com.dvclab.dockerhub.serialization.ServiceMsg;
 import com.dvclab.dockerhub.websocket.ContainerInfoPublisher;
@@ -13,6 +11,9 @@ import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.kafka.KafkaClient;
 import one.rewind.db.kafka.msg.MsgStringSerializer;
+import one.rewind.nio.json.JSON;
+import one.rewind.nio.web.auth.KeycloakAdapter;
+import one.rewind.nio.web.cache.Caches;
 import one.rewind.txt.StringUtil;
 import one.rewind.util.FileUtil;
 import org.apache.commons.lang3.tuple.Pair;
@@ -343,7 +344,7 @@ public class ContainerService {
 				.replaceAll("\\$\\{uid\\}", uid)
 				.replaceAll("\\$\\{keycloak_server_addr\\}", KeycloakAdapter.getInstance().host)
 				.replaceAll("\\$\\{keycloak_realm\\}", KeycloakAdapter.getInstance().realm)
-				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_id)
+				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_name)
 				.replaceAll("\\$\\{resource_server\\}", KeycloakAdapter.getInstance().client_id)
 				.replaceAll("\\$\\{service_addr\\}", service_path)
 				.replaceAll("\\$\\{kafka_server\\}", kafka_server_addr)
@@ -464,12 +465,12 @@ public class ContainerService {
 				// 容器ID转UUID
 				.withId(resource_id)
 				.withName("jupyterlab_" + container_id)
-				.withOwner(UserCache.USERS.get(container_uid).username)
+				.withOwner(Caches.userCache.USERS.get(container_uid).username)
 				.withType("jupyterlab")
 				.withResource_scopes(List.of("view"))
 				.withOwnerManagedAccess(true);
 		// 获取资源ID
-		KeycloakAdapter.getInstance().createResource(cr_body);
+		KeycloakAdapter.getInstance().createResource(JSON.toJson(cr_body));
 	}
 
 	/**
@@ -487,7 +488,7 @@ public class ContainerService {
 				.insert(18, "-")
 				.insert(23, "-").toString();
 		// 为资源添加policy
-		String token = UserCache.UID_TOKEN.get(container_uid);
+		String token = Caches.userCache.UID_TOKEN.get(container_uid);
 		// 换取后端token
 		token = KeycloakAdapter.getInstance().exchangeToken(token);
 
@@ -496,8 +497,8 @@ public class ContainerService {
 				.withDesc(container_uid + "_access_" + container_id)
 				.withName(container_uid + "_access_" + container_id)
 				.withScopes(List.of("view"))
-				.withUsers(List.of(UserCache.USERS.get(container_uid).username));
-		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body);
+				.withUsers(List.of(Caches.userCache.USERS.get(container_uid).username));
+		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, JSON.toJson(arp_body));
 
 		//2. 第二次 attach policy 为管理员绑定资源
 		ApplyResourcePolicyBody arp_body_admin = new ApplyResourcePolicyBody()
@@ -505,7 +506,8 @@ public class ContainerService {
 				.withName("admin" + "_access_" + container_id)
 				.withScopes(List.of("view"))
 				.withRoles(List.of(User.Role.DOCKHUB_ADMIN.name()));
-		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, arp_body_admin);
+
+		KeycloakAdapter.getInstance().applyResourcePolicy(token, resource_id, JSON.toJson(arp_body_admin));
 	}
 
 	/**

@@ -8,9 +8,7 @@ import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
-import one.rewind.db.persister.JSONableListPersister;
-import one.rewind.db.persister.JSONableMapPersister;
-import one.rewind.db.persister.JSONablePersister;
+import one.rewind.nio.json.persister.JSONAbleFieldPersister;
 import one.rewind.txt.StringUtil;
 
 import java.sql.SQLException;
@@ -37,10 +35,10 @@ public class Image extends ModelD {
 	@DatabaseField(dataType = DataType.STRING, width = 128, index = true)
 	public String name;
 	// 镜像标签
-	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public List<String> tags = new ArrayList<>();
 	// 镜像类库
-	@DatabaseField(persisterClass = JSONableMapPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public Map<String, String> libs = new HashMap<>();
 
 	@DatabaseField(dataType = DataType.STRING, width = 1024)

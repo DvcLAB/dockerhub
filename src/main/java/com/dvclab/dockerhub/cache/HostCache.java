@@ -6,8 +6,8 @@ import com.dvclab.dockerhub.websocket.HostInfoPublisher;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.jcraft.jsch.JSchException;
 import one.rewind.db.exception.DBInitException;
-import one.rewind.io.docker.model.DockerHost;
 import one.rewind.monitor.*;
+import one.rewind.nio.docker.DockerHost;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import static com.dvclab.dockerhub.DockerHubService.logger;
+import static one.rewind.nio.web.cache.Caches.ses;
 
 /**
  * 主机缓存
@@ -23,8 +24,6 @@ public class HostCache {
 
 	public static Map<String, Host> hosts = new HashMap<>();
 
-	public static ScheduledExecutorService ses;
-
 	/**
 	 *
 	 * @throws DBInitException
@@ -32,8 +31,6 @@ public class HostCache {
 	 * @throws JSchException
 	 */
 	public static void init() throws DBInitException, SQLException, JSchException {
-		ses = Executors.newScheduledThreadPool(8,
-				new ThreadFactoryBuilder().setNameFormat("HostStatUpdater-%d").build());
 
 		for (Host host : Host.getAll(Host.class)) {
 			if(host.status != DockerHost.Status.STOPPED) addHost(host);

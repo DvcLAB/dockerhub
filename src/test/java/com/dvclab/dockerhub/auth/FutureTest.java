@@ -2,8 +2,6 @@ package com.dvclab.dockerhub.auth;
 
 import com.google.common.util.concurrent.*;
 import one.rewind.db.model.Model;
-import one.rewind.io.requester.basic.BasicRequester;
-import one.rewind.io.requester.exception.AccountException;
 import org.junit.Test;
 
 import java.net.URISyntaxException;
@@ -23,7 +21,7 @@ public class FutureTest {
 
 		ListenableFuture<Void> f1 = es.submit(
 				new Callable<Void>() {
-					public Void call() throws URISyntaxException, AccountException, InterruptedException {
+					public Void call() throws URISyntaxException, InterruptedException {
 						Thread.sleep(10000);
 						//System.err.println(src);
 						return null;

@@ -1,11 +1,8 @@
 package com.dvclab.dockerhub.util;
 
-import com.dvclab.dockerhub.route.Routes;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import one.rewind.io.requester.basic.BasicRequester;
-import one.rewind.io.requester.proxy.IpDetector;
-import one.rewind.io.requester.task.Task;
-import org.apache.commons.collections4.map.PassiveExpiringMap;
+import one.rewind.nio.http.ReqObj;
+import one.rewind.nio.http.Requester;
+import one.rewind.nio.proxy.IpDetector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
@@ -13,12 +10,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * IP转经纬度
@@ -52,11 +45,10 @@ public class GeoConnectionResolver {
 
             try {
 
-                Task t = new Task(String.format(url_tpl, ip));
-                BasicRequester.req(t);
+                ReqObj r = Requester.req(String.format(url_tpl, ip)).get();
 
                 ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(t.r.rBody);
+                JsonNode node = mapper.readTree(r.rBody);
 
                 double latitude = node.get("latitude").getDoubleValue();
                 double longitude = node.get("longitude").getDoubleValue();
@@ -69,7 +61,7 @@ public class GeoConnectionResolver {
 
                 return new double[]{longitude, latitude};
             }
-            catch (IOException | URISyntaxException e) {
+            catch (IOException e) {
                 logger.error("Error get local address, ", e);
                 return null;
             }

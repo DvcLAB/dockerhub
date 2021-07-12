@@ -1,9 +1,8 @@
 package com.dvclab.dockerhub.route;
 
-import com.dvclab.dockerhub.DockerHubService;
+import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.cache.ContainerCache;
 import com.dvclab.dockerhub.cache.HostCache;
-import com.dvclab.dockerhub.cache.UserCache;
 import com.dvclab.dockerhub.model.*;
 import com.dvclab.dockerhub.serialization.Msg;
 import com.dvclab.dockerhub.service.ContainerService;
@@ -12,12 +11,8 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import one.rewind.db.Daos;
-import one.rewind.db.exception.DBInitException;
-import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.C;
 import spark.Route;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,7 +77,7 @@ public class ContainerRoute {
 			Where<Container, ?> where = qb.where();
 
 			// 管理员查询分支
-			if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
+			if(Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) {
 				where.like("id", query + "%")
 						.or().like("uid", query + "%")
 						// query可为用户名
@@ -185,7 +180,7 @@ public class ContainerRoute {
 			// 指定 host_id
 			if(HostCache.hosts.containsKey(host_id)) {
 				// 只有管理员才可以选取主机
-				if(UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)) {
+				if(Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)) {
 					host = HostCache.hosts.get(host_id);
 				}
 				else {
@@ -217,18 +212,12 @@ public class ContainerRoute {
 
 		try {
 
-			Container container = ContainerCache.containers.computeIfAbsent(id, v -> {
-				try {
-					return Container.getById(Container.class, id);
-				} catch (DBInitException | SQLException e) {
-					return null;
-				}
-			});
+			Container container = ContainerCache.containers.computeIfAbsent(id, v -> Container.getById(Container.class, id));
 
 			// 容器不存在
 			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
 			// 无权执行容器
-			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 			// 首先检查容器状态，只在Running和Port_Forwarding_Success状态才能执行暂停操作
 			if(container.status != Container.Status.Running &&
 			container.status != Container.Status.Port_Forwarding_Success)
@@ -257,23 +246,18 @@ public class ContainerRoute {
 
 		try {
 
-			Container container = ContainerCache.containers.computeIfAbsent(id, v -> {
-				try {
-					return Container.getById(Container.class, id);
-				} catch (DBInitException | SQLException e) {
-					return null;
-				}
-			});
+			Container container = ContainerCache.containers.computeIfAbsent(id, v -> Container.getById(Container.class, id));
 
 			// 容器不存在
-			if(container == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			if(container == null) return Msg.failure(Msg.Code.NOT_FOUND);
 			// 无权执行容器
-			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !container.uid.equals(uid))
+				return Msg.failure(Msg.Code.ACCESS_DENIED);
 			// 首先检查容器状态，避免重复运行
-			if(container.status != Container.Status.Paused) return new Msg(Msg.Code.METHOD_REJECTED, null, null);
+			if(container.status != Container.Status.Paused) return Msg.failure(Msg.Code.METHOD_REJECTED);
 
 			Host host = HostCache.hosts.get(container.host_id);
-			if(host == null) return new Msg(Msg.Code.NOT_FOUND, null, null);
+			if(host == null) return Msg.failure(Msg.Code.NOT_FOUND);
 			host.restartContainer(container);
 
 			return Msg.success();
@@ -297,7 +281,7 @@ public class ContainerRoute {
 
 			Container obj = Container.getById(Container.class, id);
 			// 普通用户不能查到删除状态的容器
-			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)
+			if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)
 					&& obj.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			if(obj != null) {
@@ -345,7 +329,7 @@ public class ContainerRoute {
 					|| container.status == Container.Status.Deleted) return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			// 权限：用户删除自己的容器
-			if(!UserCache.USERS.get(uid).roles.contains(User.Role.DOCKHUB_ADMIN)
+			if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN)
 					&& ! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 			// 公共服务器shutdown容器
@@ -384,9 +368,9 @@ public class ContainerRoute {
 				return new Msg(Msg.Code.NOT_FOUND, null, null);
 
 			// 权限：用户只能获取自己容器的信息
-			if(! container.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+			if(! container.uid.equals(uid)) return new Msg<>(Msg.Code.ACCESS_DENIED, null, null);
 			// 仍未分配端口
-			if(container.tunnel_id == null) return new Msg(Msg.Code.BAD_REQUEST, null, null);
+			if(container.tunnel_id == null) return new Msg<>(Msg.Code.BAD_REQUEST, null, null);
 
 			Tunnel t = ReverseProxyService.getInstance().tunnels.get(container.tunnel_id);
 			ContainerService.AssignInfo assignInfo = new ContainerService.AssignInfo()

@@ -1,6 +1,5 @@
 package com.dvclab.dockerhub.model;
 
-import com.dvclab.dockerhub.serialization.EnumListPersister;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -8,37 +7,25 @@ import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.exception.DBInitException;
-import one.rewind.db.model.ModelD;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @DBName("dockerhub")
 @DatabaseTable(tableName = "users")
-public class User extends ModelD {
+public class User extends one.rewind.nio.web.model.User {
+
 	// 用户角色类型
-	public static enum Role {
+	public enum Role {
 		DOCKHUB_ADMIN,
 		DOCKHUB_USER,
 		OFFLINE_ACCESS,
 		UMA_AUTHORIZATION,
 	}
-
-	@DatabaseField(dataType = DataType.STRING, width = 32, indexName = "ue")
-	public String username;
-
-	@DatabaseField(dataType = DataType.STRING, width = 128)
-	public String email;
-
-	@DatabaseField(dataType = DataType.STRING, width = 128)
-	public String avatar_url;
-
-	@DatabaseField(dataType = DataType.BOOLEAN, width = 1, indexName = "ue")
-	public boolean enabled = true;
-
-	@DatabaseField(persisterClass = EnumListPersister.class, columnDefinition = "TEXT", width = 256)
-	public List<Role> roles = new ArrayList<>();
 
 	@DatabaseField(dataType = DataType.INTEGER, width = 4)
 	public int max_container_num = 10;
@@ -47,6 +34,32 @@ public class User extends ModelD {
 	public int container_num = 0;
 
 	public User() {}
+
+	/**
+	 *
+	 * @param u_
+	 */
+	public User(one.rewind.nio.web.model.User u_) {
+		this.id = u_.id;
+		this.username = u_.username;
+		this.email = u_.email;
+		this.avatar_url = u_.avatar_url;
+		this.roles = u_.roles;
+	}
+
+	/**
+	 *
+	 * @param id
+	 * @return
+	 */
+	public static User getById(String id) {
+		try {
+			return Daos.get(User.class).queryForId(id);
+		} catch (SQLException | DBInitException e) {
+			logger.error("Error query User[{}]", id, e);
+			return null;
+		}
+	}
 
 	/**
 	 * 根据用户id列表获取用户列表
@@ -75,38 +88,16 @@ public class User extends ModelD {
 		if(user.isPresent()) {
 			return user.get().id;
 		}
-		return "";
 
+		return "";
 	}
 
 	/**
 	 *
-	 * @param init_password
+	 * @param role
 	 * @return
 	 */
-	@Deprecated
-	public Map<String, Object> genUserRepresentation(String init_password) {
-
-		Map<String, Object> rep = new HashMap<>();
-		rep.put("firstName", this.username);
-		rep.put("lastName", this.username);
-		rep.put("username", this.username);
-		rep.put("email", this.email);
-		rep.put("emailVerified", true);
-		rep.put("enabled", this.enabled);
-
-		if(init_password != null) {
-			rep.put("credentials",
-				List.of(
-					Map.of(
-						"type", "password",
-						"value", init_password,
-						"temporary", true
-					)
-				)
-			);
-		}
-
-		return rep;
+	public boolean hasRole(Role role) {
+		return this.roles.contains(role.name());
 	}
 }

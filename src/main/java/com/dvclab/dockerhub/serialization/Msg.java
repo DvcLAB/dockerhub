@@ -1,8 +1,8 @@
 package com.dvclab.dockerhub.serialization;
 
 import com.google.common.collect.ImmutableMap;
-import one.rewind.json.JSON;
-import one.rewind.json.JSONable;
+import one.rewind.nio.json.JSON;
+import one.rewind.nio.json.JSONAble;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  * 响应状态信息与状态码
  * @author lw
  */
-public class Msg<T> implements JSONable<Msg> {
+public class Msg<T> implements JSONAble<Msg> {
 
 	public enum Code {
 
@@ -149,6 +149,10 @@ public class Msg<T> implements JSONable<Msg> {
 		return new Msg(Code.FAILURE, null, null);
 	}
 
+	public static Msg failure(Code code) {
+		return new Msg(code, null, null);
+	}
+
 
 	/**
 	 * failure(返回异常或错误信息)
@@ -177,7 +181,6 @@ public class Msg<T> implements JSONable<Msg> {
 	 *
 	 * @return json
 	 */
-	@Override
 	public String toJSON() {
 		return JSON.toJson(this);
 	}

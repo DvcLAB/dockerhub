@@ -5,7 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import one.rewind.db.annotation.DBName;
 import one.rewind.db.model.ModelD;
-import one.rewind.db.persister.JSONableListPersister;
+import one.rewind.nio.json.persister.JSONAbleFieldPersister;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.util.Date;
@@ -60,7 +60,7 @@ public class Container extends ModelD {
 	public String gpu_devices;
 
 	// GPU 设备名
-	@DatabaseField(persisterClass = JSONableListPersister.class, columnDefinition = "TEXT")
+	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public List<String> gpu_devices_product_names;
 
 	// 可访问的JupyterLab地址
