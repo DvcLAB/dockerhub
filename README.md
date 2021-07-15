@@ -15,8 +15,8 @@
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/docker-compose.png)
 
 3. 基于Keycloak的统一认证管理(支持微信登录与Github登录)
-- 用户登录
-- 用户访问资源（容器、项目、数据集..）
+    - 用户登录
+    - 用户访问资源（容器、项目、数据集..）
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/login.png)
 
 4. 在线项目管理
@@ -30,3 +30,34 @@
    
 7. 在线容器管理
 ![](https://github.com/DvcLAB/dockerhub/blob/main/images/container.png)
+
+# 配置文件
+## Conf
+1. DockerHost.conf
+    * 容器所在主机相关配置
+2. DockerHubServer.conf
+    * 主服务配置
+3. ESClient.conf
+    * ElasticSearch连接配置
+4. HBaseClient.conf
+    * HBase连接配置
+5. IpDetector.conf
+    * IP检测器公网验证地址配置
+6. KafkaClient.conf
+    * Kafka集群连接配置
+7. KeycloakAdapter.conf
+    * Keycloak统一认证服务配置
+8. MongoDBAdapter.conf
+    * MongoDB连接配置
+9. PooledDataSource.conf
+    * RDBMS数据库连接配置
+10. PypiServerUpdater.conf
+    * bandersnatch python镜像源服务器连接配置
+11. RedissonAdapter.conf
+    * Redis集群连接配置
+12. Requester.conf
+    * nio requester相关参数
+13. ResourceInfoFetcher.conf
+    * 外部资源采集器相关参数
+14. S3Adapter.conf
+    * 对象存储服务配置
