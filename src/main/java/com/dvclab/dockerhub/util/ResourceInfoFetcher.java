@@ -94,7 +94,7 @@ public class ResourceInfoFetcher {
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/dep.conf";
 
-		// 项目依赖配置文件的url
+		// 项目python依赖配置文件的url
 		String requirements_url = url.replaceAll("(\\.git|/)$", "")
 				.replaceAll("(?si)(www\\.)?github\\.com", "raw.githubusercontent.com")
 				+ "/master/config/requirements.txt";
