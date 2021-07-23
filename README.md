@@ -116,3 +116,83 @@ sudo rm -rf /var/lib/docker && \
 sudo rm -rf /var/lib/containerd && \
 sudo apt-get update && \
 ```
+## 软件环境安装
+
+### Bind9
+#### 安装
+```dtd
+docker pull sameersbn/bind:9.16.1-20200524 && \
+sudo service systemd-resolved stop && \
+sudo systemctl disable systemd-resolved && \
+docker run --name bind -d --restart=always \
+  --publish 53:53/tcp --publish 53:53/udp --publish 10000:10000/tcp \
+  --volume /srv/docker/bind:/data \
+  sameersbn/bind:9.16.1-20200524
+```
+1. 修改/etc/resolv.conf，设置nameserver 127.0.0.1
+2. Ubuntu20.04更改/etc/netplan/00-installer-config.yaml文件中的nameservers为容器所在宿主机的IP，然后保存，执行netplan apply即可更新DNS配置
+
+#### 配置
+假设服务器IP地址为10.0.0.41，本地根域名为rr。访问Webmin管理界面，地址为：https://10.0.0.41:10000/，默认用户名：root，密码：password，相关设置如下：
+1. Servers → BIND DNS Server → Global Server Options → Access Control Lists，添加： 
+   1. allow-query any
+2. Servers → BIND DNS Server → Global Server Options → Forwarding and Transfers → Global forwarding and zone transfer options，添加转发dns服务器IP地址： 
+   1. 8.8.8.8
+   2. 8.8.4.4
+   3. 暂时只添加了Google的DNS。添加其他的一些国内的DNS（如AliDNS），反而会有问题（ntp 服务器访问失败等等）
+3. Servers → BIND DNS Server → Existing DNS Zones →  Create Master Zone
+   1. Zone type: Forward (Names to Addresses)
+   2. Domain name / Network: rr
+   3. Master server: 41.rr
+   4. Email address: admin@rr
+4. Servers → BIND DNS Server → Existing DNS Zones →  Create Master Zone
+   1. Zone type: Reverse (Addresses to Names)
+   2. Domain name / Network: 10.0.0
+   3. Master server: 41.rr
+   4. Email address: admin@rr
+5. Servers → BIND DNS Server → Existing DNS Zones → rr
+   1. Address中添加DNS记录
+        * Name: 41，Address: 10.0.0.41，点击Create，会自动添加并更新逆向地址记录
+        * 按需添加其他DNS记录（可能需要重启容器才会使新添加的DNS记录生效）
+   2. Name Server确认存在域名服务器地址
+        * Zone Name: rr
+        * Name Server: 41.rr.
+
+
+
+
+
+### MySQL
+#### HeidiSQL
+
+### Redis
+#### redisclient
+
+### zookeeper
+
+### Kafka
+#### Kafka-Manager
+1. https://reid.red:233/w/Hadoop/HBase/Kafka_%E6%90%AD%E5%BB%BA#Kafka_Manager
+
+### KeyCloak
+1. realm / client / role / user 设置
+2. 是否需要添加 WX / Github Identity Provider （需要单独申请，与生产环境不同）
+3. 测试：引入KeyCloakAdapter(common项目中)，本项目补充测试用例
+
+### Pypi Server
+1. 测试：命令行
+
+### Bandersnatch Server
+1. 测试
+
+### Ceph
+
+#### Ceph Dashboard
+
+### Prometheus
+
+### OpenResty
+1. 配置服务转发
+2. 配置动态容器转发
+
+## VPN配置
