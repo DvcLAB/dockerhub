@@ -61,3 +61,58 @@
     * 外部资源采集器相关参数
 14. S3Adapter.conf
     * 对象存储服务配置
+    
+# 测试环境安装
+## 系统环境安装
+### 安装 Ubuntu server 20.04 系统
+1. 官网下载[Ubuntu server 20.04系统镜像](https://releases.ubuntu.com/20.04.2/ubuntu-20.04.2-live-server-amd64.iso)
+2. 创建U盘安装盘[Win32DiskImager](https://sourceforge.net/projects/win32diskimager/) 或 [UltraISO](https://www.ultraiso.com/)
+3. [安装Ubuntu server 20.04](https://www.jianshu.com/p/da49cd69e8ff)
+
+#### 配置网络
+
+修改配置文件
+```dtd
+echo 'network:
+  ethernets:
+    # 配置的网卡的名称
+    eth0:
+      # 关闭DHCP，如果需要打开DHCP则写true
+      dhcp4: false  
+      addresses:
+        # 配置的静态ip地址和掩码
+        - aa.bb.cc.dd/24
+      optional: true
+      # 网关地址
+      gateway4: aa.bb.cc.1  
+      nameservers:
+        # DNS服务器地址
+        addresses:          
+          - 8.8.8.8
+          - 8.8.4.4 
+  version: 2' > /etc/netplan/netplan.yaml && \
+sudo netplan apply
+```
+#### 配置APT更新源
+```dtd
+echo 'deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+' > /etc/apt/sources.list && \
+sudo apt update && \
+sudo apt upgrade
+```
+### 安装Docker
+```dtd
+sudo apt-get purge docker-ce docker-ce-cli containerd.io && \
+sudo rm -rf /var/lib/docker && \
+sudo rm -rf /var/lib/containerd && \
+sudo apt-get update && \
+```
