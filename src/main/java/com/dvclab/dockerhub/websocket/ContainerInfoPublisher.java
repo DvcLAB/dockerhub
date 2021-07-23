@@ -28,7 +28,7 @@ public class ContainerInfoPublisher {
 	// private static final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
 	public static Map<String, Queue<Session>> container_sessions = new HashMap<>();
-	private static Map<Session, String> session_container_map = new HashMap<>();
+	private static Map<Session, String> session_container_map = new HashMap<>(); // TODO 一个Session多个Container是否能处理？
 	private final String WS_AUTH_HEADER = "Sec-WebSocket-Protocol";
 
 	@OnWebSocketConnect

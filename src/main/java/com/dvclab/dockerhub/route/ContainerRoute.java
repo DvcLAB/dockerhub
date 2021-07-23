@@ -72,6 +72,7 @@ public class ContainerRoute {
 			QueryBuilder<Container, ?> qb = dao.queryBuilder()
 					.offset((page-1)*size).limit(size).orderBy("create_time", false);
 
+			// TODO 总数查询没有考虑到条件
 			long total = dao.queryBuilder().countOf();
 
 			Where<Container, ?> where = qb.where();

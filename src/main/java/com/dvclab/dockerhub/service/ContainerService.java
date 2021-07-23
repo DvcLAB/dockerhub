@@ -579,7 +579,7 @@ public class ContainerService {
 
 		String update_token_shell_path = "tpl/updateToken.sh";
 		String cmd = "#! /bin/bash\n" +
-				"pkill fp-multiuser && nohup /opt/frps/fp-multiuser -l 127.0.0.1:7200 -f /opt/frps/tokens > nohup.out 2> nohup.err < /dev/null &\n";
+				"pkill fp-multiuser && nohup /opt/frps/fp-multiuser -l 172.17.221.237:7200 -f /opt/frps/tokens > nohup.out 2> nohup.err < /dev/null &\n";
 
 		// 清除旧脚本
 		File file = new File(update_token_shell_path);
