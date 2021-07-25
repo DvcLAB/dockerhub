@@ -110,12 +110,50 @@ sudo apt update && \
 sudo apt upgrade
 ```
 ### 安装Docker
+#### 卸载旧版本
 ```dtd
 sudo apt-get purge docker-ce docker-ce-cli containerd.io && \
 sudo rm -rf /var/lib/docker && \
-sudo rm -rf /var/lib/containerd && \
-sudo apt-get update && \
+sudo rm -rf /var/lib/containerd
 ```
+#### 安装Docker
+1. 添加源/访问证书
+```dtd
+sudo apt-get update && \
+sudo apt-get install \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        software-properties-common
+```
+2. 使用脚本自动安装
+```dtd
+curl -fsSL get.docker.com -o get-docker.sh && \
+sudo sh get-docker.sh --mirror Aliyun
+```
+3. 创建Docker用户组
+```dtd
+sudo groupadd docker && \
+sudo usermod -aG docker $USER
+```
+4. 启动Docker
+```dtd
+sudo systemctl enable docker && \
+sudo systemctl start docker
+```
+5. 使用国内镜像
+修改 /etc/docker/daemon.json
+```dtd
+{
+  "registry-mirrors": ["http://hub-mirror.c.163.com"]
+}
+```
+重启Docker
+```dtd
+sudo service docker restart
+```
+
+
 ## 软件环境安装
 
 ### Bind9
@@ -195,4 +233,11 @@ docker run --name bind -d --restart=always \
 1. 配置服务转发
 2. 配置动态容器转发
 
+### wireguard
+
 ## VPN配置
+
+## test01 22 端口映射到 tunnel-1 19307
+frp client 实现 （如何连接 frp server）
+
+
