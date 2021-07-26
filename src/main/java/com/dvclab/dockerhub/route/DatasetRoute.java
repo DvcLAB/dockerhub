@@ -1,5 +1,6 @@
 package com.dvclab.dockerhub.route;
 
+import com.amazonaws.services.s3.model.AccessControlList;
 import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.model.Dataset;
 import com.dvclab.dockerhub.model.User;
@@ -8,12 +9,16 @@ import com.dvclab.dockerhub.util.ResourceInfoFetcher;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import one.rewind.db.Daos;
+import one.rewind.db.S3Adapter;
 import one.rewind.nio.json.JSON;
 import one.rewind.txt.StringUtil;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpHeaders;
 import spark.Route;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -185,6 +190,59 @@ public class DatasetRoute {
 		}
 		catch (Exception e) {
 			Routes.logger.error("Unable get Dataset info, url[{}], ", url, e);
+			return Msg.failure(e);
+		}
+	};
+
+
+	/**
+	 * 添加用户该数据集编辑权限
+	 */
+	public static Route addUserAccess = (q, a) -> {
+		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
+		String owner_id = q.session().attribute("uid");
+		String id = q.params(":id");
+		String visitors = q.queryParamOrDefault("uid", "");
+
+		try {
+			// 根据own查询buckets
+			Map<String, Pair<Date, AccessControlList>> buckets = S3Adapter.get("dvclab").listOwnBuckets();
+			String[] visitor_ids = visitors.replace("[", "").replace("]", "").split(",");
+
+			for (String visitor_id : visitor_ids) {
+				for (Map.Entry<String, Pair<Date, AccessControlList>> bucketEntry : buckets.entrySet()) {
+					S3Adapter.addUserAccess(keycloak_token, owner_id, visitor_id, bucketEntry.getKey());
+				}
+			}
+			return Msg.success();
+		} catch (Exception e) {
+			Routes.logger.error("Unable add Dataset user access, dataSet id[{}], ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 移除用户该数据集编辑权限
+	 */
+	public static Route delUserAccess = (q, a) -> {
+		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
+		String owner_id = q.session().attribute("uid");
+		String id = q.params(":id");
+		String visitors = q.queryParamOrDefault("uid", "");
+
+		try {
+			// 根据own查询buckets
+			Map<String, Pair<Date, AccessControlList>> buckets = S3Adapter.get("dvclab").listOwnBuckets();
+			String[] visitor_ids = visitors.replace("[", "").replace("]", "").split(",");
+
+			for (String visitor_id : visitor_ids) {
+				for (Map.Entry<String, Pair<Date, AccessControlList>> bucketEntry : buckets.entrySet()) {
+					S3Adapter.delUserAccess(keycloak_token, owner_id, visitor_id, bucketEntry.getKey());
+				}
+			}
+			return Msg.success();
+		} catch (Exception e) {
+			Routes.logger.error("Unable add Dataset user access, dataSet id[{}], ", id, e);
 			return Msg.failure(e);
 		}
 	};
