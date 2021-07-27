@@ -194,13 +194,11 @@ public class DatasetRoute {
 		}
 	};
 
-
 	/**
 	 * 添加用户该数据集编辑权限
 	 */
 	public static Route addUserAccess = (q, a) -> {
 		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
-		String owner_id = q.session().attribute("uid");
 		String id = q.params(":id");
 		String visitors = q.queryParamOrDefault("uid", "");
 
@@ -211,7 +209,7 @@ public class DatasetRoute {
 
 			for (String visitor_id : visitor_ids) {
 				for (Map.Entry<String, Pair<Date, AccessControlList>> bucketEntry : buckets.entrySet()) {
-					S3Adapter.addUserAccess(keycloak_token, owner_id, visitor_id, bucketEntry.getKey());
+					S3Adapter.addUserAccess(keycloak_token, visitor_id, bucketEntry.getKey());
 				}
 			}
 			return Msg.success();
@@ -224,9 +222,8 @@ public class DatasetRoute {
 	/**
 	 * 移除用户该数据集编辑权限
 	 */
-	public static Route delUserAccess = (q, a) -> {
+	public static Route deleteUserAccess = (q, a) -> {
 		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
-		String owner_id = q.session().attribute("uid");
 		String id = q.params(":id");
 		String visitors = q.queryParamOrDefault("uid", "");
 
@@ -237,12 +234,46 @@ public class DatasetRoute {
 
 			for (String visitor_id : visitor_ids) {
 				for (Map.Entry<String, Pair<Date, AccessControlList>> bucketEntry : buckets.entrySet()) {
-					S3Adapter.delUserAccess(keycloak_token, owner_id, visitor_id, bucketEntry.getKey());
+					S3Adapter.delUserAccess(keycloak_token, visitor_id, bucketEntry.getKey());
 				}
 			}
 			return Msg.success();
 		} catch (Exception e) {
 			Routes.logger.error("Unable add Dataset user access, dataSet id[{}], ", id, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 创建bucket
+	 */
+	public static Route createBucket = (q, a) -> {
+		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
+		String id = q.params(":id");
+		String name = q.params(":name");
+
+		try {
+			S3Adapter.createBucketWithKeycloak(keycloak_token, name);
+			return Msg.success();
+		} catch (Exception e) {
+			Routes.logger.error("create bucket failed, dataSet id[{}], bucket name[{}] ", id, name, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 删除bucket
+	 */
+	public static Route deleteBucket = (q, a) -> {
+		String keycloak_token = q.headers(HttpHeaders.AUTHORIZATION).replace("bearer ", "");
+		String id = q.params(":id");
+		String name = q.params(":name");
+
+		try {
+			S3Adapter.delBucketWithKeycloak(keycloak_token, name);
+			return Msg.success();
+		} catch (Exception e) {
+			Routes.logger.error("delete bucket failed, dataSet id[{}], bucket name[{}] ", id, name, e);
 			return Msg.failure(e);
 		}
 	};
