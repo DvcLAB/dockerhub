@@ -169,7 +169,7 @@ public class ResourceInfoFetcher {
 				auth.getBytes(StandardCharsets.ISO_8859_1));
 		String authHeader = "Basic " + new String(encodedAuth);
 
-		ReqObj r = Requester.req(url, HttpMethod.GET, Map.of(HttpHeaders.AUTHORIZATION, authHeader)).get();
+		ReqObj r = Requester.req(url, HttpMethod.GET, new HashMap<>(Map.of(HttpHeaders.AUTHORIZATION, authHeader))).get();
 
 		Map<String, String> map = new ObjectMapper().readValue(r.getText(), Map.class);
 		return map.get("token");

@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
  */
 public class ImageRoute {
 
-	static String docker_registry_addr = "registry.dvclab.com";
+//	static String docker_registry_addr = "registry.dvclab.com";
+	static String docker_registry_addr = "registry.33.dvc";
 
 	/**
 	 * 获取镜像列表
@@ -57,7 +58,7 @@ public class ImageRoute {
 			// 代理请求
 			ReqObj r = Requester.req(url,
 					HttpMethod.GET,
-					Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope)),
+					new HashMap<>(Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + ResourceInfoFetcher.getDockerAuthToken(scope))),
 					(byte[]) null, null).get();
 
 			// 解析docker_registry返回结果
