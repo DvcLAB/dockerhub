@@ -171,30 +171,26 @@ docker run --name bind -d --restart=always \
 2. Ubuntu20.04更改/etc/netplan/00-installer-config.yaml文件中的nameservers为容器所在宿主机的IP，然后保存，执行netplan apply即可更新DNS配置
 
 #### 配置
-假设服务器IP地址为10.0.0.41，本地根域名为rr。访问Webmin管理界面，地址为：https://10.0.0.41:10000/，默认用户名：root，密码：password，相关设置如下：
-1. Servers → BIND DNS Server → Global Server Options → Access Control Lists，添加： 
-   1. allow-query any
-2. Servers → BIND DNS Server → Global Server Options → Forwarding and Transfers → Global forwarding and zone transfer options，添加转发dns服务器IP地址： 
-   1. 8.8.8.8
-   2. 8.8.4.4
-   3. 暂时只添加了Google的DNS。添加其他的一些国内的DNS（如AliDNS），反而会有问题（ntp 服务器访问失败等等）
-3. Servers → BIND DNS Server → Existing DNS Zones →  Create Master Zone
-   1. Zone type: Forward (Names to Addresses)
-   2. Domain name / Network: rr
-   3. Master server: 41.rr
-   4. Email address: admin@rr
-4. Servers → BIND DNS Server → Existing DNS Zones →  Create Master Zone
-   1. Zone type: Reverse (Addresses to Names)
-   2. Domain name / Network: 10.0.0
-   3. Master server: 41.rr
-   4. Email address: admin@rr
-5. Servers → BIND DNS Server → Existing DNS Zones → rr
-   1. Address中添加DNS记录
-        * Name: 41，Address: 10.0.0.41，点击Create，会自动添加并更新逆向地址记录
-        * 按需添加其他DNS记录（可能需要重启容器才会使新添加的DNS记录生效）
-   2. Name Server确认存在域名服务器地址
-        * Zone Name: rr
-        * Name Server: 41.rr.
+假设服务器IP地址为${ip}，本地根域名为rr。访问Webmin管理界面，地址为：https://${ip}:10000/，默认用户名：root，密码：password
+1. BIND DNS Server 的 DNS Zones 的配置文件位于： Others ⇒ File Manager ⇒ /var/lib/bind 目录下
+2. 快速导入现有DNS Zones配置文件：
+   * 将配置文件上传到Others ⇒ File Manager ⇒ /var/lib/bind 目录下
+   * 编辑/etc/bind/named.conf.local文件，添加如下部分：
+   ```dtd
+   zone "dvc" {
+	  type master;
+	  file "/var/lib/bind/dvc.hosts";
+   };
+   zone "7.0.10.in-addr.arpa" {
+      type master;
+      file "/var/lib/bind/10.0.7.rev";
+   };
+   ```
+3. 配置文件说明：
+   * Zone类型为Forward的转发区域配置文件：dvc.hosts
+   * Zone类型为Reverse的反向区域配置文件：10.0.7.rev
+
+
 
 
 
@@ -437,6 +433,87 @@ docker-compose -f /opt/keycloak/docker-compose-keycloak.yml up -d keycloakmysql 
 docker-compose -f /opt/keycloak/docker-compose-keycloak.yml up -d keycloak
 ```
 
+### Docker Registry
+#### 部署
+1. 准备文件
+```dtd
+mkdir -p /opt/docker_registry/config /opt/docker_registry/data /opt/docker_registry/ssl && \
+touch /opt/docker_registry/config/config.yml
+```
+   * 将registry.33.dvc域名所对应的ssl证书文件（.pem和.key）添加至路径/opt/docker_registry/ssl下
+   * 登录KeyCloak >> DvcLAB(realm) >> Clients >> docker-registry >>Installation >> Docker Compose Yaml >>Download，将下载文件中的localhost_trust_chain.pem文件添加至路径/opt/docker_registry/ssl下
+
+参考：
+   * [Configure a registry](https://docs.docker.com/registry/configuration/#token)
+   * [Docker Authentication with Keycloak](https://developers.redhat.com/blog/2017/10/31/docker-authentication-keycloak#)
+
+2. 配置文件
+```dtd
+echo 'version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  delete:
+    enabled: true
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+auth:
+  token:
+    realm: https://auth.33.dvc/auth/realms/DvcLAB/protocol/docker-v2/auth
+    service: docker-registry
+    issuer: https://auth.33.dvc/auth/realms/DvcLAB
+    rootcertbundle: /root/localhost_trust_chain.pem
+http:
+  addr: :5000
+  tls:
+    certificate: /root/cert.pem
+    key: /root/cert.key
+  headers:
+    X-Content-Type-Options: [nosniff]
+  health:
+    storagedriver:
+      enabled: true
+      interval: 10s
+threshold: 3'   > /opt/docker_registry/config/config.yml
+```
+
+3. 启动容器
+```dtd
+echo  ‘version: '3.7'
+services:
+  docker_registry:
+    image: registry:2.3
+    container_name: registry
+    ports:
+      - 61642:5000
+    volumes:
+      - /opt/docker_registry/config:/etc/docker/registry
+      - /opt/docker_registry/data:/var/lib/registry
+      - /opt/docker_registry/ssl/localhost_trust_chain.pem:/root/localhost_trust_chain.pem:ro
+      - /opt/docker_registry/ssl/registry.33.dvc.pem:/root/cert.pem:ro
+      - /opt/docker_registry/ssl/registry.33.dvc.key:/root/cert.key:ro
+    restart: always’ > /opt/docker_registry/registry.yaml && \
+docker-compose -f /opt/docker_registry/registry.yaml up -d
+```
+
+4. 对于自签发ssl证书需要通过配置解决 x509: certificate signed by unknown authority
+   * 首先生成的自签发证书必须具有参数subjectAltName
+   * 将CA根证书（.crt或.pem文件）复制并重命名为ca.crt到 /etc/docker/certs.d/registry.33.dvc:443/ca.crt（无需重启Docker）
+   * 若上述依然没解决问题，执行以下步骤:将CA根证书（.crt文件，.pem文件不识别转为.crt文件）添加到/usr/local/share/ca-certificates/路径下
+   
+   执行一下命令：
+   ```dtd
+    update-ca-certificates
+    service docker restart
+   ```
+   
+   参考：
+      * [Logging into your docker registry fails with x509 certificate signed by unknown authority error](https://www.ibm.com/docs/en/cloud-paks/cp-management/2.2.x?topic=tcnm-logging-into-your-docker-registry-fails-x509-certificate-signed-by-unknown-authority-error)
+      * [Use self-signed certificates](https://docs.docker.com/registry/insecure/)
+
 
 ### Pypi Server
 #### 部署
@@ -609,22 +686,46 @@ docker run -d -p ${port}:8080 --restart=always --name=pypiserver \
    docker-compose -f /opt/openresty/openresty.yaml up -d
    ```
 2. 自签发域名证书
-   安装OpenSSL
+   * 安装OpenSSL
    ```dtd
    apt-get install openssl
    ```
-   生成证书
+   
+   * 生成CA根证书
    ```dtd
-   # 生成的证书放在/opt/openresty/ssl
-   cd /opt/openresty/ssl
-   # 生成证书
-   openssl req -newkey rsa:4096 \
-   -x509 \
-   -sha256 \
-   -days 3650 \
-   -nodes \
-   -out example.crt \
-   -keyout example.key
+   cd /opt/CA
+   # 生成CA私钥
+   openssl genrsa -des3 -out rootCA.key 4096
+   #执行命令后，需要输入一个密码作为私钥的密码，后续通过该私钥来生成或者签发证书都要用到这个私钥。
+
+   # 生成私钥后，执行以下命令生成CA证书
+   openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3560 -out rootCA.crt
+   # 执行后会进入交互式界面，需要输入CN相关信息。等待根证书生成后，一个CA也就创建完成了，此时要做的是生成用户证书，并使用CA证书对它签名，然后就可以用了。
+   ```
+   
+   * 生成用户证书
+   ```dtd
+   # 1. 生成用户证书的私钥
+   openssl genrsa -out 33.dvc.key 2048
+
+   # 2. 生成csr，csr是一个证书签名的请求，后面生成证书需要使用这个csr文件
+   openssl req -new -key 33.dvc.key -out 33.dvc.csr
+   # 这一步也需要输入地区、CN等相关的信息(A challenge password []:dvclab)
+
+   # 3. 创建ext.ini文件，内容如下（设置subjectAltName参数）：
+   echo '
+      basicConstraints = CA:FALSE
+      keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+      subjectAltName = @alt_names
+
+      [alt_names]
+      DNS.1 = *.33.dvc
+      DNS.2 = 33.dvc
+   '  > /opt/CA/ssl/ext.ini
+
+   # 4. 使用CA证书签发用户证书
+   openssl x509 -req -in 33.dvc.csr -CA /opt/CA/rootCA.crt -CAkey /opt/CA/rootCA.key -CAcreateserial -extfile ext.ini -out 33.dvc.crt -days 3650
+
    ```
 3. 配置服务转发
    以KeyCloak为例
