@@ -68,8 +68,9 @@ public class ResourceInfoFetcher {
 	 * @throws IOException
 	 */
 	public static Project getProjectInfo(String url) throws URISyntaxException, DBInitException, SQLException, IOException, JSchException {
+		//Proxy tokyo_proxy = new ProxyImpl("10.0.7.3", 8888, null, null);
 
-		ReqObj r = Requester.req(url).get();
+		ReqObj r = Requester.req(url,proxy).get();
 		// 解析项目名
 		String name = r.getDom().select("title")
 				.html().replaceAll("GitHub - ", "")
