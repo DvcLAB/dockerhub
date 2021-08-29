@@ -18,6 +18,13 @@ import java.util.stream.Collectors;
 @DBName("dockerhub")
 @DatabaseTable(tableName = "datasets")
 public class Dataset extends ModelD {
+	public enum Type {
+		PUBLIC,
+		PRIVATE
+	}
+	//是否是私有数据集 true私有
+	@DatabaseField(dataType = DataType.ENUM_STRING, canBeNull = false)
+	public Type type;
 
 	@DatabaseField(dataType = DataType.STRING, width = 64, index = true)
 	public String uid;
@@ -54,6 +61,24 @@ public class Dataset extends ModelD {
 		this.cover_img_url = cover_img_url;
 		this.id = StringUtil.md5(this.url);
 		this.genId();
+	}
+
+	/**
+	 *
+	 * @param name
+	 * @param desc
+	 * @param type
+	 * @param tags
+	 * @param uid
+	 * @param username
+	 */
+	public Dataset(String name, String desc, Type type, List<String> tags, String uid, String username) {
+		this.name = name;
+		this.desc = desc;
+		this.tags = tags;
+		this.type = type;
+		this.uid = uid;
+		this.id = StringUtil.md5(username + name);
 	}
 
 	/**

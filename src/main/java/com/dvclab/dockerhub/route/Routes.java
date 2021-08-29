@@ -126,6 +126,7 @@ public class Routes {
 		// 用户列表
 		path("/users", () -> {
 			get("", UserRoute.listUsers, transformer);
+			post("/:uid/s3tokens", UserRoute.listS3Tokens, transformer);
 		});
 
 		// 主机
@@ -165,6 +166,10 @@ public class Routes {
 			get("/:id", DatasetRoute.getDataset, transformer);
 			post("/:id", DatasetRoute.updateDataset, transformer);
 			delete("/:id", DatasetRoute.deleteDataset, transformer);
+			put("/:id/members", DatasetRoute.addMembers, transformer);
+			delete("/:id/members", DatasetRoute.delMembers, transformer);
+			get("/:id/members", DatasetRoute.listMembers, transformer);
+			post("/:id/members",DatasetRoute.exitMember, transformer);
 		});
 
 		// 容器
