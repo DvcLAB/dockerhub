@@ -32,7 +32,11 @@ public class Member extends ModelD {
     public Member (String did, String uid) {
         this.uid = uid;
         this.did = did;
-        this.id = StringUtil.md5(did + "::" + uid);
+        this.id = genId(did, uid);
+    }
+
+    public static String genId(String did, String uid){
+        return StringUtil.md5(did + "::" + uid);
     }
 
 }

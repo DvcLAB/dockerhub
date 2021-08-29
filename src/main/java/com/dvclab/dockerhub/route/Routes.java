@@ -169,7 +169,6 @@ public class Routes {
 			put("/:id/members", DatasetRoute.addMembers, transformer);
 			delete("/:id/members", DatasetRoute.delMembers, transformer);
 			get("/:id/members", DatasetRoute.listMembers, transformer);
-			post("/:id/members",DatasetRoute.exitMember, transformer);
 		});
 
 		// 容器

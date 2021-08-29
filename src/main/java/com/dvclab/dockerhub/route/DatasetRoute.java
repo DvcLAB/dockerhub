@@ -162,7 +162,8 @@ public class DatasetRoute {
 		try {
 
 			Dataset ds = Dataset.getById(Dataset.class, id);
-			if(ds != null) {
+
+			if(ds != null && ds.uid.equals(uid)) {
 
 				// 补全数据集用户信息
 				ds.user = User.getById(User.class, ds.uid);
@@ -269,34 +270,37 @@ public class DatasetRoute {
 		String id = q.params(":id");
 		String mid = q.queryParams("mid");
 
-		// 只有数据集的owner可以添加成员
+		// 1 只有数据集的owner可以添加成员
 		Dataset ds = Dataset.getById(Dataset.class, id);
 		if(!ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 		try {
-			Member memberById = Member.getById(Member.class, StringUtil.md5(id + "::" + mid));
+			// 2 判断是否是owner添加的自己
+			if(ds.uid.equals(mid)) return Msg.failure(Msg.Code.INVALID_PARAMETERS);
 
-			// 数据集成员用户不存在，添加
+			Member memberById = Member.getById(Member.class, Member.genId(id, mid));
+
+			// 3 数据集成员用户不存在，添加
 			if(memberById == null){
 				Member member = new Member(id, mid);
 				member.status = Member.Status.Normal;
 				if(member.insert()){
 					return Msg.success();
-				}else{
-					return Msg.failure();
+				} else {
+					return Msg.failure(Msg.Code.INSERT_FAILURE);
 				}
 			}
-			// 数据集成员用户状态为Deleted，更新为Normal
-			else if(memberById.status.equals(Member.Status.Deleted)){
+			// 4 数据集成员用户状态为Deleted，更新为Normal
+			else if(memberById.status == Member.Status.Deleted){
 				memberById.status = Member.Status.Normal;
 				if(memberById.update()){
 					return Msg.success();
-				}else{
-					return Msg.failure();
+				} else {
+					return Msg.failure(Msg.Code.UPDATE_FAILURE);
 				}
 			}
-			// 数据集成员用户状态为Normal
-			else{
+			// 5 数据集成员用户状态为Normal
+			else {
 				return Msg.failure();
 			}
 
@@ -308,7 +312,7 @@ public class DatasetRoute {
 	};
 
 	/**
-	 * 剔除数据集成员，将其状态设置为Deleted
+	 * 剔除数据集成员或用户主动退出，将其状态设置为Deleted
 	 * 只有owner可以剔除数据集成员
 	 */
 	public static Route delMembers = (q, a) -> {
@@ -316,22 +320,24 @@ public class DatasetRoute {
 		String id = q.params(":id");
 		String mid = q.queryParams("mid");
 
-		// 只有数据集的owner可以剔除成员
+		// 只有数据集的owner可以剔除成员 或 用户主动退出
 		Dataset ds = Dataset.getById(Dataset.class, id);
-		if(!ds.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		Member member = Member.getById(Member.class, Member.genId(id, mid));
+		if(!ds.uid.equals(uid) && !member.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 		try {
-			Member member = Member.getById(Member.class, StringUtil.md5(id + "::" + mid));
+			if(member == null) return Msg.success();
 			member.status = Member.Status.Deleted;
+
 			if(member.update()){
 				return Msg.success();
-			}else{
-				return Msg.failure();
+			} else {
+				return Msg.failure(Msg.Code.UPDATE_FAILURE);
 			}
 
 		}
 		catch (Exception e) {
-			Routes.logger.error("Delete Member[{}] error, ", mid, e);
+			Routes.logger.error("Delete or Exited Member[{}] error, ", mid, e);
 			return Msg.failure(e);
 		}
 	};
@@ -361,32 +367,6 @@ public class DatasetRoute {
 		}
 		catch (Exception e) {
 			Routes.logger.error("List Host error, uid[{}], ", uid, e);
-			return Msg.failure(e);
-		}
-	};
-
-	/**
-	 * 用户主动退出，将其状态设置为Exit
-	 */
-	public static Route exitMember = (q, a) -> {
-		String uid = q.session().attribute("uid");
-		String id = q.params(":id");
-		String mid = q.queryParams("mid");
-
-		// 用户自己退出
-		Member member = Member.getById(Member.class, StringUtil.md5(id + "::" + mid));
-		if(member.uid.equals(uid)) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
-
-		try {
-			member.status = Member.Status.Deleted;
-			if (member.update()){
-				return Msg.success();
-			} else {
-				return Msg.failure();
-			}
-		}
-		catch (Exception e) {
-			Routes.logger.error("Member Exit error, uid[{}], ", uid, e);
 			return Msg.failure(e);
 		}
 	};
