@@ -85,8 +85,8 @@ public class DatasetRoute {
 
 		// 1 解析前端传来的multipart类型数据， 数据集name、tags、isPrivate（text），头图、说明文件（file）
 		String username = UserCache.userCache.USERS.get(uid).username;
-		List<String> tags = Arrays.asList(q.queryParamsValues("tags"));
-		String name = q.queryParamOrDefault("name", "");
+		List<String> tags = Arrays.asList(q.queryParamsValues("tag"));
+		String name = q.queryParams("name");
 		Dataset.Type type = Dataset.Type.valueOf(q.queryParamOrDefault("type", Dataset.Type.PUBLIC.name()));
 
 		// 2 创建Dataset记录
@@ -160,10 +160,12 @@ public class DatasetRoute {
 		String id = q.params(":id");
 
 		try {
-
+			Member member = Member.getById(Member.class, Member.genId(id, uid));
 			Dataset ds = Dataset.getById(Dataset.class, id);
 
-			if(ds != null && ds.uid.equals(uid)) {
+			if(member == null || !ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
+
+			if(ds != null) {
 
 				// 补全数据集用户信息
 				ds.user = User.getById(User.class, ds.uid);
@@ -171,7 +173,7 @@ public class DatasetRoute {
 				return Msg.success(ds);
 			}
 			else {
-				return new Msg(Msg.Code.NOT_FOUND, null, null);
+				return Msg.failure(Msg.Code.NOT_FOUND);
 			}
 		}
 		catch (Exception e) {
@@ -235,27 +237,6 @@ public class DatasetRoute {
 		catch (Exception e) {
 
 			Routes.logger.error("Delete Dataset[{}] error, ", id, e);
-			return Msg.failure(e);
-		}
-	};
-
-	/**
-	 * 通过url获取数据集信息
-	 */
-	public static Route getInfo = (q, a) -> {
-
-		String uid = q.session().attribute("uid");
-		String url = q.queryParamOrDefault("url", "");
-
-		if(url.length() == 0) return Msg.failure("Null URL");
-		if(!url.matches("^https://s3.dvclab.com/.*$")) return new Msg(Msg.Code.BAD_REQUEST, null, null);
-		url = URLDecoder.decode(url, StandardCharsets.UTF_8);
-
-		try {
-			return Msg.success(ResourceInfoFetcher.getDatasetInfo(url));
-		}
-		catch (Exception e) {
-			Routes.logger.error("Unable get Dataset info, url[{}], ", url, e);
 			return Msg.failure(e);
 		}
 	};

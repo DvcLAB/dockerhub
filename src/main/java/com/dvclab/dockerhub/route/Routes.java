@@ -160,7 +160,6 @@ public class Routes {
 
 		// 数据集
 		path("/datasets", () -> {
-			get("_info", DatasetRoute.getInfo, transformer);
 			get("", DatasetRoute.listDatasets, transformer);
 			put("", DatasetRoute.createDataset, transformer);
 			get("/:id", DatasetRoute.getDataset, transformer);
