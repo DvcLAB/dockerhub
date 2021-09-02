@@ -78,7 +78,11 @@ public class Dataset extends ModelD {
 		this.tags = tags;
 		this.type = type;
 		this.uid = uid;
-		this.id = StringUtil.md5(username + name);
+		this.id = genId(username, name);
+	}
+
+	public static String genId(String username, String name){
+		return StringUtil.md5(username + name);
 	}
 
 	/**

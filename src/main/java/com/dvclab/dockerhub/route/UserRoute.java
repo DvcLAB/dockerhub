@@ -53,10 +53,11 @@ public class UserRoute {
 	 */
 	public static Route listS3Tokens = (q, a) -> {
 		String uid = q.session().attribute("uid");
-		String keycloak_token = q.headers("AUTHORIZATION").replace("bearer ","");
+		String keycloak_token = q.headers("AUTHORIZATION").replace("Bearer ", "");
+		String id_token = q.headers("id-token");
 
 		try {
-			Map<String, String> tempS3Tokens = S3Adapter.getS3CredentialWithKeycloak(keycloak_token);
+			Map<String, String> tempS3Tokens = S3Adapter.getS3CredentialWithKeycloak(id_token);
 
 			return Msg.success(tempS3Tokens);
 		} catch (Exception e) {

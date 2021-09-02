@@ -12,6 +12,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.typesafe.config.Config;
 import one.rewind.db.Daos;
 import one.rewind.db.S3Adapter;
+import one.rewind.nio.http.Requester;
 import one.rewind.nio.json.JSON;
 import one.rewind.nio.persistence.Source;
 import one.rewind.nio.tpl.Vars;
@@ -79,12 +80,12 @@ public class DatasetRoute {
 	public static Route createDataset = (q, a) -> {
 		// 0 token验证
 		String uid = q.session().attribute("uid");
-		String keycloak_token = q.headers("AUTHORIZATION").replace("bearer", "");
+		String keycloak_token = q.headers("AUTHORIZATION").replace("Bearer ", "");
 
 		q.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
 
 		// 1 解析前端传来的multipart类型数据， 数据集name、tags、isPrivate（text），头图、说明文件（file）
-		String username = UserCache.userCache.USERS.get(uid).username;
+		String username = User.getById(User.class, uid).username;
 		List<String> tags = Arrays.asList(q.queryParamsValues("tag"));
 		String name = q.queryParams("name");
 		Dataset.Type type = Dataset.Type.valueOf(q.queryParamOrDefault("type", Dataset.Type.PUBLIC.name()));
@@ -92,11 +93,11 @@ public class DatasetRoute {
 		// 2 创建Dataset记录
 		Dataset ds = new Dataset(name, null, type, tags, uid, username);
 
-		String bucket_name = username + "_" + ds.name;
+		String bucket_name = ds.id;
 		String cover_img_name = ".cover_img.png";
 		String rm_name = "README.md";
 
-		// 3 创建bucket，user.username + "_" + dataset.name作为bucket_name
+		// 3 创建bucket
 		try {
 			S3Adapter.createBucketWithKeycloak(keycloak_token, bucket_name);
 		}
@@ -123,7 +124,7 @@ public class DatasetRoute {
 			metadata_rm.setContentLength(q.raw().getPart(rm_name).getSize());
 			metadata_rm.setContentType(q.raw().getPart(rm_name).getContentType());
 
-			S3Adapter.get(s3_name).s3.putObject(bucket_name, rm_name, q.raw().getPart(rm_name).getInputStream(), metadata);
+			S3Adapter.get(s3_name).s3.putObject(bucket_name, rm_name, q.raw().getPart(rm_name).getInputStream(), metadata_rm);
 		}
 		// 文件上传报错
 		catch (Throwable e) {
@@ -136,6 +137,8 @@ public class DatasetRoute {
 		try {
 			ds.url = "https://s3.33.dvc/" + bucket_name;
 			ds.cover_img_url = ds.url + "/.cover_img.png";
+			String desc = Requester.req(ds.url + "/README.md").get().getText();
+			ds.desc = desc;
 			if(ds.insert()) {
 				return Msg.success();
 			}
@@ -163,18 +166,12 @@ public class DatasetRoute {
 			Member member = Member.getById(Member.class, Member.genId(id, uid));
 			Dataset ds = Dataset.getById(Dataset.class, id);
 
-			if(member == null || !ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
+			if(member == null && !ds.uid.equals(uid) && ds.type == Dataset.Type.PRIVATE) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
-			if(ds != null) {
+			// 补全数据集用户信息
+			ds.user = User.getById(User.class, ds.uid);
 
-				// 补全数据集用户信息
-				ds.user = User.getById(User.class, ds.uid);
-
-				return Msg.success(ds);
-			}
-			else {
-				return Msg.failure(Msg.Code.NOT_FOUND);
-			}
+			return Msg.success(ds);
 		}
 		catch (Exception e) {
 
@@ -185,21 +182,33 @@ public class DatasetRoute {
 
 	/**
 	 * 更新数据集
-	 * Note: 数据集URL不能修改
+	 * Note: 仅更改名称，标签和是否为私有
+	 * 如果将私有数据集改为public，删除私有数据集原有的成员
 	 */
 	public static Route updateDataset = (q, a) -> {
 
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
-		String source = q.body();
+		Dataset ds = Dataset.getById(Dataset.class, id);
+		String name = q.queryParamOrDefault("name", ds.name);
+		List<String> tags = Arrays.asList(q.queryParamsValues("tag"));
+		Dataset.Type type = Dataset.Type.valueOf(q.queryParamOrDefault("type", ds.type.name()));
 
 		try {
+			// 1 只有数据集的owner可以更改数据集信息
+			if(!ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
-			Dataset ds = JSON.fromJson(source, Dataset.class);
-			ds.genId();
-			ds.uid = uid;
-			if(!ds.id.equals(id)) throw new Exception("Dataset url can not be changed");
+			// 2 如果将私有数据集改为public，删除私有数据集原有的成员
+			if(ds.type == Dataset.Type.PRIVATE && type == Dataset.Type.PUBLIC){
+				List<Member> members = Daos.get(Member.class).queryBuilder().where().eq("did", ds.id).query();
+				Collection<Object> member_ids = members.stream().map(m -> m.id).collect(Collectors.toList());
+				Daos.get(Member.class).deleteIds(member_ids);
+			}
 
+			ds.name = name;
+			ds.tags = tags;
+			ds.type = type;
+			// 3 更新数据集
 			if(ds.update()) {
 				return Msg.success(ds);
 			}
@@ -221,20 +230,26 @@ public class DatasetRoute {
 
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
-		String keycloak_token = q.headers("AUTHORIZATION").replace("bearer", "");
+		String keycloak_token = q.headers("AUTHORIZATION").replace("Bearer ", "");
 
 		// 只有管理员才能删除记录    或     私有数据集的owner删除自己的数据集
 		Dataset ds = Dataset.getById(Dataset.class, id);
-		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !(ds.type.equals(Dataset.Type.PRIVATE) && ds.uid.equals(uid))) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !(ds.type == Dataset.Type.PRIVATE && ds.uid.equals(uid))) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 
-			//删除数据集的同时，删除对应的bucket
+			// 删除数据集的同时，删除对应的bucket
 			S3Adapter.delBucketWithKeycloak(keycloak_token, ds.id);
+			// 如果数据集为私有数据集，删除members表中对应的成员
+			if(ds.type == Dataset.Type.PRIVATE) {
+				List<Member> members = Daos.get(Member.class).queryBuilder().where().eq("did", ds.id).query();
+				Collection<Object> member_ids = members.stream().map(m -> m.id).collect(Collectors.toList());
+				Daos.get(Member.class).deleteIds(member_ids);
+			}
 			Dataset.deleteById(Dataset.class, id);
 			return Msg.success();
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 
 			Routes.logger.error("Delete Dataset[{}] error, ", id, e);
 			return Msg.failure(e);
@@ -265,6 +280,7 @@ public class DatasetRoute {
 			if(memberById == null){
 				Member member = new Member(id, mid);
 				member.status = Member.Status.Normal;
+				member.roles = Member.Roles.Viewer;
 				if(member.insert()){
 					return Msg.success();
 				} else {
@@ -337,7 +353,7 @@ public class DatasetRoute {
 			QueryBuilder<Member, ?> qb = dao.queryBuilder()
 					.offset((page-1)*size).limit(size).orderBy("update_time", false);
 			long total = dao.queryBuilder().countOf();
-			
+
 			List<Member> members = qb.where().eq("did", id).and().eq("status", Member.Status.Normal).query();
 
 			// 补全用户信息
