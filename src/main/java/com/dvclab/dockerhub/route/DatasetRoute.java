@@ -1,5 +1,6 @@
 package com.dvclab.dockerhub.route;
 
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.dvclab.dockerhub.cache.Caches;
 import com.dvclab.dockerhub.cache.HostCache;
@@ -125,6 +126,9 @@ public class DatasetRoute {
 			metadata_rm.setContentType(q.raw().getPart(rm_name).getContentType());
 
 			S3Adapter.get(s3_name).s3.putObject(bucket_name, rm_name, q.raw().getPart(rm_name).getInputStream(), metadata_rm);
+			// 4.3 将头图和README.md文件设为公开可读
+			S3Adapter.get(s3_name).s3.setObjectAcl(bucket_name, cover_img_name, CannedAccessControlList.PublicRead);
+			S3Adapter.get(s3_name).s3.setObjectAcl(bucket_name, rm_name, CannedAccessControlList.PublicRead);
 		}
 		// 文件上传报错
 		catch (Throwable e) {
@@ -156,6 +160,8 @@ public class DatasetRoute {
 
 	/**
 	 * 获取数据集
+	 * 公有数据集都可获取数据集信息
+	 * 私有数据集只有owner和成员可获取信息
 	 */
 	public static Route getDataset = (q, a) -> {
 
@@ -166,7 +172,7 @@ public class DatasetRoute {
 			Member member = Member.getById(Member.class, Member.genId(id, uid));
 			Dataset ds = Dataset.getById(Dataset.class, id);
 
-			if(member == null && !ds.uid.equals(uid) && ds.type == Dataset.Type.PRIVATE) return Msg.failure(Msg.Code.ACCESS_DENIED);
+			if(ds.type == Dataset.Type.PRIVATE && (!ds.uid.equals(uid) && member ==null)) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 			// 补全数据集用户信息
 			ds.user = User.getById(User.class, ds.uid);
@@ -182,7 +188,7 @@ public class DatasetRoute {
 
 	/**
 	 * 更新数据集
-	 * Note: 仅更改名称，标签和是否为私有
+	 * 仅更改名称，标签和是否为私有
 	 * 如果将私有数据集改为public，删除私有数据集原有的成员
 	 */
 	public static Route updateDataset = (q, a) -> {
@@ -199,7 +205,7 @@ public class DatasetRoute {
 			if(!ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 			// 2 如果将私有数据集改为public，删除私有数据集原有的成员
-			if(ds.type == Dataset.Type.PRIVATE && type == Dataset.Type.PUBLIC){
+			if(ds.type == Dataset.Type.PRIVATE && type == Dataset.Type.PUBLIC) {
 				List<Member> members = Daos.get(Member.class).queryBuilder().where().eq("did", ds.id).query();
 				Collection<Object> member_ids = members.stream().map(m -> m.id).collect(Collectors.toList());
 				Daos.get(Member.class).deleteIds(member_ids);
@@ -225,6 +231,7 @@ public class DatasetRoute {
 
 	/**
 	 * 删除数据集
+	 * 管理员或数据集的owner可删除数据集
 	 */
 	public static Route deleteDataset = (q, a) -> {
 
@@ -232,9 +239,10 @@ public class DatasetRoute {
 		String id = q.params(":id");
 		String keycloak_token = q.headers("AUTHORIZATION").replace("Bearer ", "");
 
-		// 只有管理员才能删除记录    或     私有数据集的owner删除自己的数据集
+		// 管理员或数据集的owner可删除数据集
 		Dataset ds = Dataset.getById(Dataset.class, id);
-		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !(ds.type == Dataset.Type.PRIVATE && ds.uid.equals(uid))) return new Msg(Msg.Code.ACCESS_DENIED, null, null);
+		if(!Caches.userCache.USERS.get(uid).hasRole(User.Role.DOCKHUB_ADMIN) && !ds.uid.equals(uid))
+			return new Msg(Msg.Code.ACCESS_DENIED, null, null);
 
 		try {
 
@@ -258,29 +266,33 @@ public class DatasetRoute {
 
 
 	/**
+	 * 私有数据集
 	 * 数据集添加成员
-	 * 只有数据集的owner可以添加成员
+	 * 数据集的owner可以添加成员为Admin或Viewer
+	 * 数据集的Admin可以添加成员为Viewer
 	 */
-	public static Route addMembers = (q, a) -> {
+	public static Route addMember = (q, a) -> {
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
 		String mid = q.queryParams("mid");
+		Member.Roles role = Member.Roles.valueOf(q.queryParamOrDefault("role", Member.Roles.Viewer.name()));
 
-		// 1 只有数据集的owner可以添加成员
+		// 1 私有数据集  数据集的owner可以添加成员为Admin或Viewer，数据集的Admin可以添加成员为Viewer
 		Dataset ds = Dataset.getById(Dataset.class, id);
-		if(!ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
+		if(ds.type == Dataset.Type.PUBLIC) return Msg.failure(Msg.Code.BAD_REQUEST);
+		Member memberById = Member.getById(Member.class, Member.genId(id, mid));
+		if(!ds.uid.equals(uid) && !(memberById.role == Member.Roles.Admin && role == Member.Roles.Viewer))
+			return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 		try {
-			// 2 判断是否是owner添加的自己
+			// 2 判断是否是操作者添加的自己
 			if(ds.uid.equals(mid)) return Msg.failure(Msg.Code.INVALID_PARAMETERS);
-
-			Member memberById = Member.getById(Member.class, Member.genId(id, mid));
 
 			// 3 数据集成员用户不存在，添加
 			if(memberById == null){
 				Member member = new Member(id, mid);
 				member.status = Member.Status.Normal;
-				member.roles = Member.Roles.Viewer;
+				member.role = role;
 				if(member.insert()){
 					return Msg.success();
 				} else {
@@ -288,8 +300,9 @@ public class DatasetRoute {
 				}
 			}
 			// 4 数据集成员用户状态为Deleted，更新为Normal
-			else if(memberById.status == Member.Status.Deleted){
+			else if(memberById.status == Member.Status.Deleted) {
 				memberById.status = Member.Status.Normal;
+				memberById.role = role;
 				if(memberById.update()){
 					return Msg.success();
 				} else {
@@ -309,23 +322,28 @@ public class DatasetRoute {
 	};
 
 	/**
+	 * 私有数据集
 	 * 剔除数据集成员或用户主动退出，将其状态设置为Deleted
-	 * 只有owner可以剔除数据集成员
+	 * owner可以剔除role为Admin或Viewer的数据集成员
+	 * Admin可以剔除role为Viewer的数据集成员
 	 */
-	public static Route delMembers = (q, a) -> {
+	public static Route delMember = (q, a) -> {
 		String uid = q.session().attribute("uid");
 		String id = q.params(":id");
 		String mid = q.queryParams("mid");
 
-		// 只有数据集的owner可以剔除成员 或 用户主动退出
+		// 私有数据集 数据集的owner可以剔除所有成员，数据集的Admin可以剔除Viewer，用户主动退出
 		Dataset ds = Dataset.getById(Dataset.class, id);
+		if(ds.type == Dataset.Type.PUBLIC) return Msg.failure(Msg.Code.BAD_REQUEST);
+		Member member_operator = Member.getById(Member.class, Member.genId(id, uid));
 		Member member = Member.getById(Member.class, Member.genId(id, mid));
-		if(!ds.uid.equals(uid) && !member.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
+		if(!ds.uid.equals(uid) && !member.uid.equals(uid) && !(member_operator.role == Member.Roles.Admin && member.role == Member.Roles.Viewer))
+			return Msg.failure(Msg.Code.ACCESS_DENIED);
 
 		try {
 			if(member == null) return Msg.success();
-			member.status = Member.Status.Deleted;
 
+			member.status = Member.Status.Deleted;
 			if(member.update()){
 				return Msg.success();
 			} else {
@@ -364,6 +382,35 @@ public class DatasetRoute {
 		}
 		catch (Exception e) {
 			Routes.logger.error("List Host error, uid[{}], ", uid, e);
+			return Msg.failure(e);
+		}
+	};
+
+	/**
+	 * 更改数据集成员的权限
+	 */
+	public static Route updateMember = (q, a) -> {
+		String uid = q.session().attribute("uid");
+		String id = q.params(":id");
+		String mid = q.queryParams("mid");
+		Member.Roles role = Member.Roles.valueOf(q.queryParams("role"));
+
+		try {
+			Dataset ds = Dataset.getById(Dataset.class, id);
+
+			// 如果此操作者为数据集owner，可将数据集成员的role设置为Admin或Viewer
+			if(!ds.uid.equals(uid)) return Msg.failure(Msg.Code.ACCESS_DENIED);
+
+			Member member = Member.getById(Member.class, Member.genId(id, mid));
+			member.role = role;
+			if(member.update()) {
+				return Msg.success();
+			} else {
+				return Msg.failure();
+			}
+		}
+		catch (Exception e) {
+			Routes.logger.error("Update Member error, mid[{}], ", mid, e);
 			return Msg.failure(e);
 		}
 	};

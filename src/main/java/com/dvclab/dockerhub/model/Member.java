@@ -18,8 +18,7 @@ public class Member extends ModelD {
     // 数据集成员的角色
     public enum Roles {
         Viewer,
-        Editor,
-        Owner
+        Admin
     }
 
     // 数据集id
@@ -33,7 +32,7 @@ public class Member extends ModelD {
     public Status status = Status.Normal;
 
     @DatabaseField(dataType = DataType.ENUM_STRING, width = 32)
-    public Roles roles = Roles.Viewer;
+    public Roles role = Roles.Viewer;
 
     // 用户获取数据集成员列表时，获取对应成员的信息并存储
     public User user;
