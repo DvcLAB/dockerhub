@@ -85,6 +85,9 @@ public class Host extends DockerHost {
 	// 主机GPU时序用量
 	public Queue<Object[]> gpu_series = new CircularFifoQueue<>(30);
 
+	@DatabaseField(dataType = DataType.STRING, width = 8192, canBeNull = false)
+	public transient String private_key;
+
 	/**
 	 *
 	 */

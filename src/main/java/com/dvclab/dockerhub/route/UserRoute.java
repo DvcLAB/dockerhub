@@ -57,7 +57,8 @@ public class UserRoute {
 		String id_token = q.headers("id-token");
 
 		try {
-			Map<String, String> tempS3Tokens = S3Adapter.getS3CredentialWithKeycloak(id_token);
+			S3Adapter s3_admin = S3Adapter.get("dvclab");
+			Map<String, String> tempS3Tokens = S3Adapter.getS3TemporaryCredential(id_token, s3_admin);
 
 			return Msg.success(tempS3Tokens);
 		} catch (Exception e) {

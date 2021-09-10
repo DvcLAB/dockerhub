@@ -100,7 +100,8 @@ public class DatasetRoute {
 
 		// 3 创建bucket
 		try {
-			S3Adapter.createBucketWithKeycloak(keycloak_token, bucket_name);
+			S3Adapter s3_admin = S3Adapter.get("dvclab");
+			S3Adapter.createBucketWithKeycloak(keycloak_token, bucket_name, s3_admin);
 		}
 		// S3权限问题、服务问题
 		catch (Throwable e) {
@@ -247,7 +248,8 @@ public class DatasetRoute {
 		try {
 
 			// 删除数据集的同时，删除对应的bucket
-			S3Adapter.delBucketWithKeycloak(keycloak_token, ds.id);
+			S3Adapter s3_admin = S3Adapter.get("dvclab");
+			S3Adapter.delBucketWithKeycloak(keycloak_token, ds.id, s3_admin);
 			// 如果数据集为私有数据集，删除members表中对应的成员
 			if(ds.type == Dataset.Type.PRIVATE) {
 				List<Member> members = Daos.get(Member.class).queryBuilder().where().eq("did", ds.id).query();

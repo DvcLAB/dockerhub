@@ -344,7 +344,7 @@ public class ContainerService {
 				.replaceAll("\\$\\{uid\\}", uid)
 				.replaceAll("\\$\\{keycloak_server_addr\\}", KeycloakAdapter.getInstance().host)
 				.replaceAll("\\$\\{keycloak_realm\\}", KeycloakAdapter.getInstance().realm)
-				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_name)
+				.replaceAll("\\$\\{client_id\\}", KeycloakAdapter.getInstance().frontend_client_id)
 				.replaceAll("\\$\\{resource_server\\}", KeycloakAdapter.getInstance().client_id)
 				.replaceAll("\\$\\{service_addr\\}", service_path)
 				.replaceAll("\\$\\{kafka_server\\}", kafka_server_addr)
