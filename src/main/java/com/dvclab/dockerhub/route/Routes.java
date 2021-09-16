@@ -126,7 +126,7 @@ public class Routes {
 		// 用户列表
 		path("/users", () -> {
 			get("", UserRoute.listUsers, transformer);
-			post("/:uid/s3tokens", UserRoute.listS3Tokens, transformer);
+			post("/:uid/s3tokens", UserRoute.getS3Credential, transformer);
 		});
 
 		// 主机

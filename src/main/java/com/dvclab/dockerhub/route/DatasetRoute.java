@@ -58,7 +58,9 @@ public class DatasetRoute {
 			long total = dao.queryBuilder().countOf();
 
 			qb.where().like("id", query + "%")
-					.or().like("name", query + "%");
+					.or().like("name", query + "%")
+					.or().like("uid", query + "%")
+					.or().raw("tags LIKE '%" + query + "%'");
 
 			List<Dataset> list = qb.query();
 
@@ -200,6 +202,7 @@ public class DatasetRoute {
 		String name = q.queryParamOrDefault("name", ds.name);
 		List<String> tags = Arrays.asList(q.queryParamsValues("tag"));
 		Dataset.Type type = Dataset.Type.valueOf(q.queryParamOrDefault("type", ds.type.name()));
+		String desc = q.queryParamOrDefault("desc", "");
 
 		try {
 			// 1 只有数据集的owner可以更改数据集信息
@@ -210,6 +213,14 @@ public class DatasetRoute {
 				List<Member> members = Daos.get(Member.class).queryBuilder().where().eq("did", ds.id).query();
 				Collection<Object> member_ids = members.stream().map(m -> m.id).collect(Collectors.toList());
 				Daos.get(Member.class).deleteIds(member_ids);
+			}
+
+			// 3 修改数据集的desc，并更新README.md
+			if(!desc.equals("")) {
+				Config config = Configs.getConfig(KeycloakAdapter.class);
+				String s3_name = config.getString("s3_admin");
+				S3Adapter.get(s3_name).s3.putObject(ds.id, "README.md", desc);
+				ds.desc = desc;
 			}
 
 			ds.name = name;
