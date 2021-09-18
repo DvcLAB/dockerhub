@@ -3,9 +3,18 @@ package com.dvclab.dockerhub.model;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import one.rewind.db.Daos;
 import one.rewind.db.annotation.DBName;
+import one.rewind.db.exception.DBInitException;
 import one.rewind.db.model.ModelD;
 import one.rewind.txt.StringUtil;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @DBName("dockerhub")
 @DatabaseTable(tableName = "members")
@@ -45,8 +54,24 @@ public class Member extends ModelD {
         this.id = genId(did, uid);
     }
 
-    public static String genId(String did, String uid){
+    public static String genId(String did, String uid) {
         return StringUtil.md5(did + "::" + uid);
+    }
+
+
+    /**
+     * 根据数据集id获取成员列表
+     * @param dids
+     * @return
+     */
+    public static Map<String, List<Member>> getMembers(List<String> dids) throws SQLException, DBInitException {
+        if(dids.size() == 0) {
+            return new HashMap<>();
+        }
+
+        return Daos.get(Member.class).queryBuilder()
+                .where().in("did", dids).query()
+                .stream().collect(Collectors.groupingBy(c -> c.did));
     }
 
 }

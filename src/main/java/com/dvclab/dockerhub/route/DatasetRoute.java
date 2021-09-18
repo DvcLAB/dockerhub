@@ -59,14 +59,17 @@ public class DatasetRoute {
 
 			qb.where().like("id", query + "%")
 					.or().like("name", query + "%")
-					.or().like("uid", query + "%")
-					.or().raw("tags LIKE '%" + query + "%'");
+					.or().like("uid", query + "%");
 
 			List<Dataset> list = qb.query();
 
 			// 返回结果补全 用户信息
 			Map<String, User> users = User.getUsers(list.stream().map(c -> c.uid).collect(Collectors.toList()));
 			list.stream().forEach(c -> c.user = users.get(c.uid));
+
+			// 返回结果补全 数据集的成员
+			Map<String, List<Member>> members = Member.getMembers(list.stream().map(c -> c.id).collect(Collectors.toList()));
+			list.stream().forEach(c -> c.members = members.get(c.id));
 
 			return Msg.success(list, size, page, total);
 		}

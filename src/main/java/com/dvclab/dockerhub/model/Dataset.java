@@ -46,6 +46,8 @@ public class Dataset extends ModelD {
 	@DatabaseField(persisterClass = JSONAbleFieldPersister.class, columnDefinition = "TEXT")
 	public List<String> tags = new ArrayList<>();
 
+	public List<Member> members;
+
 	public Dataset() {}
 
 	/**
